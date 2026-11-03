@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>机票追踪</title>
+<style>
+:root{--bg:#f6f7f9;--card:#fff;--fg:#1c2330;--mut:#6b7686;--line:#e3e7ee;--acc:#2f6fed;--est:#c9d3e6}
+@media(prefers-color-scheme:dark){:root{--bg:#12161d;--card:#1b212b;--fg:#e6eaf0;--mut:#97a1b0;--line:#2b3340;--acc:#6c9bff;--est:#3a4558}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.5 system-ui,sans-serif}
+main{max-width:920px;margin:0 auto;padding:16px}h1{font-size:20px;margin:8px 0 12px}h2{font-size:16px;margin:0 0 8px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px;margin-bottom:14px}
+form{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px}
+label{display:flex;flex-direction:column;font-size:12px;color:var(--mut);gap:3px}
+input,select{font:inherit;padding:7px;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--fg)}
+button{font:inherit;padding:8px 14px;border:0;border-radius:6px;background:var(--acc);color:#fff;cursor:pointer;align-self:end}
+.note{color:var(--mut);font-size:13px}.warn{color:#b45309}
+table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:7px 6px;border-bottom:1px solid var(--line);font-size:14px}
+th{color:var(--mut);font-weight:500;font-size:12px}.num{text-align:right;font-variant-numeric:tabular-nums}
+.tag{display:inline-block;padding:0 6px;border-radius:9px;background:var(--bg);border:1px solid var(--line);font-size:12px}
+canvas{max-height:300px}
+</style></head><body><main>
+<h1>✈ 机票追踪</h1>
+<div class="card"><form id="f">
+<label>出发地<input id="o" value="YUL" maxlength="3"></label>
+<label>目的地<input id="d" value="PEK" maxlength="3"></label>
+<label>出发日期<input id="dep" type="date"></label>
+<label>返程日期<input id="ret" type="date"></label>
+<label>停靠次数<select id="st"><option value="0">仅直飞</option><option value="1" selected>≤1 次</option><option value="2">≤2 次</option></select></label>
+<label>舱位<select id="cab"><option value="economy" selected>经济舱</option><option value="premium-economy">超级经济舱</option><option value="business">商务舱</option><option value="first">头等舱</option></select></label>
+<label>成人<input id="ad" type="number" min="1" max="9" value="1"></label>
+<label>儿童<input id="ch" type="number" min="0" max="8" value="0"></label>
+<button>查看</button></form>
+<p class="note" id="status"></p></div>
+<div class="card"><h2>淡旺季（每月参考价）</h2><canvas id="sea"></canvas><p class="note" id="seaNote"></p></div>
+<div class="card"><h2>价格走势（各出发日的最低价）</h2><canvas id="trend"></canvas><p class="note" id="trNote"></p></div>
+<div class="card"><h2>推荐航班（转机少 → 用时短 → 价格低）</h2><div id="res"></div></div>
+</main>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script>
+const $=id=>document.getElementById(id);
+const MONTHS=['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'];
+let charts={};
+const fmtMin=m=>Math.floor(m/60)+'小时'+String(m%60).padStart(2,'0')+'分';
+async function j(u){const r=await fetch(u,{cache:'no-cache'});if(!r.ok)throw 0;return r.json()}
+function draw(id,cfg){charts[id]&&charts[id].destroy();charts[id]=new Chart($(id),cfg)}
+function mk(tag,txt,cls){const e=document.createElement(tag);if(txt!=null)e.textContent=txt;if(cls)e.className=cls;return e}
+
+async function run(e){
+  e&&e.preventDefault();
+  const o=$('o').value.toUpperCase().trim(),d=$('d').value.toUpperCase().trim(),id=o+'-'+d;
+  const stops=+$('st').value;
+  let seas,doc=null;
+  try{seas=await j('data/seasonality.json')}catch{seas=null}
+  try{doc=await j('data/'+id+'.json')}catch{}
+  // seasonality: estimate bars + measured overlay
+  if(seas){
+    const f=seas.dest_factor[d]||seas.dest_factor.default;
+    const est=seas.month_index_roundtrip_economy_1stop.map(x=>Math.round(x*seas.base_price*f));
+    const meas=Array(12).fill(null);
+    if(doc){const by={};
+      for(const[dep,h]of Object.entries(doc.history)){const days=Object.keys(h).sort();
+        const m=+dep.slice(5,7)-1;(by[m]=by[m]||[]).push(h[days[days.length-1]])}
+      for(const m in by)meas[m]=Math.round(by[m].reduce((a,b)=>a+b)/by[m].length)}
+    draw('sea',{type:'bar',data:{labels:MONTHS,datasets:[
+      {label:'估算',data:est,backgroundColor:getComputedStyle(document.body).getPropertyValue('--est')||'#c9d3e6'},
+      {label:'实测',data:meas,backgroundColor:'#2f6fed'}]},
+      options:{plugins:{legend:{position:'bottom'}},scales:{y:{title:{display:true,text:seas.currency}}}}});
+    $('seaNote').textContent=seas.note+(['PEK','PVG','SHA','CGO','CAN'].includes(d)?'':'（该目的地使用通用系数）');
+  }
+  if(!doc){
+    $('status').innerHTML='';
+    $('status').appendChild(mk('span','路线 '+id+' 还没有被追踪。请在 config.json 的 routes 中添加后，下次定时任务会开始记录。','warn'));
+    $('trNote').textContent='';$('res').textContent='';charts.trend&&charts.trend.destroy();return}
+  $('status').textContent='数据更新于 '+doc.updated.replace('T',' ').replace('Z',' UTC')+
+    (doc.route.cabin!==$('cab').value||doc.route.adults!=$('ad').value||doc.route.children!=$('ch').value?
+     ' ｜ 注意：该路线追踪的是 '+doc.route.cabin+'、成人'+doc.route.adults+'、儿童'+doc.route.children+'，与你选的不同，价格仅供参考':'');
+  // trend
+  if(!$('dep').dataset.touched&&doc.route.depart){$('dep').value=doc.route.depart;if(doc.route.return)$('ret').value=doc.route.return}
+  const dep=$('dep').value,flex=7;
+  const near=Object.keys(doc.latest).sort().filter(k=>!dep||Math.abs((new Date(k)-new Date(dep))/864e5)<=flex);
+  const days=[...new Set(near.flatMap(k=>Object.keys(doc.history[k]||{})))].sort();
+  const pal=['#2f6fed','#e0662b','#1b9e77','#9b59b6','#d4a017','#c0392b','#16a085'];
+  draw('trend',{type:'line',data:{labels:days,datasets:near.map((k,i)=>({label:'出发 '+k,
+    data:days.map(x=>(doc.history[k]||{})[x]??null),borderColor:pal[i%7],spanGaps:true,tension:.2}))},
+    options:{plugins:{legend:{position:'bottom'}}}});
+  $('trNote').textContent=days.length<2?'目前只有 '+days.length+' 天的数据，走势会随每日记录逐步形成。':'';
+  // offers
+  const rows=[];
+  for(const k of near){const L=doc.latest[k];for(const of of L.offers)if(of.stops<=stops)rows.push({k,ret:L.return,...of})}
+  rows.sort((a,b)=>a.stops-b.stops||a.duration-b.duration||a.price-b.price);
+  const box=$('res');box.textContent='';
+  if(!rows.length){box.textContent='所选日期范围内没有符合条件的航班。';return}
+  const t=mk('table'),h=mk('tr');
+  ['出发','航司','停靠','用时','价格'].forEach((x,i)=>h.appendChild(mk('th',x,i==4?'num':'')));
+  t.appendChild(h);
+  for(const r of rows.slice(0,25)){const tr=mk('tr');
+    tr.appendChild(mk('td',r.dep));
+    tr.appendChild(mk('td',r.airlines.join(' / ')));
+    tr.appendChild(mk('td',r.stops==0?'直飞':r.stops+' 次'+(r.via.length?'（'+r.via.join(',')+'）':'')));
+    tr.appendChild(mk('td',fmtMin(r.duration)));
+    tr.appendChild(mk('td',r.price+' '+doc.currency,'num'));t.appendChild(tr)}
+  box.appendChild(t);
+}
+const t0=new Date(Date.now()+180*864e5);$('dep').value=t0.toISOString().slice(0,10);
+$('ret').value=new Date(t0.getTime()+30*864e5).toISOString().slice(0,10);
+$('dep').addEventListener('input',()=>{$('dep').dataset.touched=1});$('f').addEventListener('submit',run);run();
+</script></body></html>

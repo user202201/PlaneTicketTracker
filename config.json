@@ -1,0 +1,22 @@
+{
+  "currency": "CAD",
+  "default_route": "YUL-PEK",
+  "alert": { "email_to": "", "below_price": null, "pct_below_avg": 10 },
+  "routes": [
+    {
+      "id": "YUL-PEK", "origin": "YUL", "dest": "PEK",
+      "depart": "2027-07-10", "return": "2027-08-10", "flex_days": 7, "sample_step": 3,
+      "max_stops": 1, "cabin": "economy", "adults": 1, "children": 0
+    },
+    {
+      "id": "YUL-PVG", "origin": "YUL", "dest": "PVG",
+      "depart": "2027-07-10", "return": "2027-08-10", "flex_days": 7, "sample_step": 3,
+      "max_stops": 1, "cabin": "economy", "adults": 1, "children": 0
+    },
+    {
+      "id": "YUL-CGO", "origin": "YUL", "dest": "CGO",
+      "depart": "2027-07-10", "return": "2027-08-10", "flex_days": 7, "sample_step": 3,
+      "max_stops": 1, "cabin": "economy", "adults": 1, "children": 0
+    }
+  ]
+}
