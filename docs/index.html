@@ -30,9 +30,10 @@ canvas{max-height:300px}
 <label>儿童<input id="ch" type="number" min="0" max="8" value="0"></label>
 <button>查看</button></form>
 <div id="chips" style="margin-top:8px"></div><p class="note" id="status"></p></div>
+<div class="card" id="sumCard" style="display:none"><h2>智能总结</h2><ul id="sumList" style="margin:0;padding-left:20px"></ul><p class="note">基于已收集数据的统计规则生成（不是 AI 预测）；数据不足时不会给出建议。</p></div>
 <div class="card" id="mxCard" style="display:none"><h2>价格矩阵（出发日 × 返程日）</h2>
 <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:8px">
-<label>查看日期<select id="mxSnap"></select></label><label>对比<select id="mxCmp"></select></label></div>
+<label>查看日期<select id="mxSnap"></select></label><label>对比<select id="mxCmp"></select></label><label>月份<select id="mxMonth"></select></label><label>天数从<input id="mxMin" type="number" style="width:70px"></label><label>到<input id="mxMax" type="number" style="width:70px"></label></div>
 <div style="overflow-x:auto"><table id="mx"></table></div><p class="note" id="mxNote"></p></div>
 <div class="card"><h2>淡旺季（每月参考价）</h2><canvas id="sea"></canvas><p class="note" id="seaNote"></p></div>
 <div class="card"><h2>价格走势（各出发日的最低价）</h2><canvas id="trend"></canvas><p class="note" id="trNote"></p></div>
@@ -75,26 +76,45 @@ async function loadMatrix(id){
   const fill=(sel,opts)=>{sel.textContent='';opts.forEach(([v,t])=>{const o=mk('option',t);o.value=v;sel.appendChild(o)})};
   fill($('mxSnap'),snaps.map(x=>[x,x]));
   fill($('mxCmp'),[['','不对比'],...snaps.map(x=>[x,x])]);
+  let cur0=await j('data/matrix/'+id+'/'+snaps[0]+'.json');
+  const months=[...new Set(Object.keys(cur0.p).map(k=>k.slice(0,7)))];
+  fill($('mxMonth'),months.map(m=>[m,m.slice(5).replace(/^0/,'')+'月']));
+  const sel=$('mxMonth'); if(!sel.dataset.set){sel.dataset.set=1;$('mxMin').value=cur0.offsets[0];$('mxMax').value=cur0.offsets[cur0.offsets.length-1]}
   const draw_=async()=>{
     const cur=await j('data/matrix/'+id+'/'+$('mxSnap').value+'.json');
     let cmp=null;if($('mxCmp').value&&$('mxCmp').value!==$('mxSnap').value)try{cmp=await j('data/matrix/'+id+'/'+$('mxCmp').value+'.json')}catch{}
-    const all=Object.values(cur.p).flat().filter(x=>x!=null),lo=Math.min(...all),hi=Math.max(...all);
+    const mo=$('mxMonth').value,dmin=+$('mxMin').value,dmax=+$('mxMax').value;
+    const deps=Object.keys(cur.p).filter(k=>k.startsWith(mo));
+    const ok=i=>cur.offsets[i]>=dmin&&cur.offsets[i]<=dmax;
+    const vals=deps.flatMap(k=>cur.p[k].filter((v,i)=>v!=null&&ok(i)));
+    const lo=Math.min(...vals),hi=Math.max(...vals);
     const t=$('mx');t.textContent='';
     const h=mk('tr');h.appendChild(mk('th','出发 \\ 停留天数'));
-        cur.offsets.forEach(o=>h.appendChild(mk('th',o+' 天','num')));
+    cur.offsets.forEach(o=>h.appendChild(mk('th',o+' 天','num')));
     t.appendChild(h);
-    for(const[dep,row]of Object.entries(cur.p)){
+    for(const dep of deps){const row=cur.p[dep];
       const tr=mk('tr');tr.appendChild(mk('td',dep.slice(5)+' '+WD[new Date(dep+'T00:00:00Z').getUTCDay()]));
-      row.forEach((v,i)=>{const td=mk('td',v==null?'–':v,'num');td.title='返程 '+addDays(dep,cur.offsets[i]);
-        if(v!=null){const f=hi>lo?(v-lo)/(hi-lo):0;td.style.background='hsla(145,55%,45%,'+(0.42*(1-f)).toFixed(2)+')';if(v===lo)td.style.fontWeight='700';
+      row.forEach((v,i)=>{const td=mk('td',null,'num');
+        if(v==null){td.textContent='–'}else{
+          td.appendChild(mk('div',v));
+          const ret=addDays(dep,cur.offsets[i]);
+          const sm=mk('div','返'+ret.slice(5)+' · '+cur.offsets[i]+'天','note');sm.style.fontSize='11px';td.appendChild(sm);
+          const f=hi>lo?(v-lo)/(hi-lo):0;td.style.background='hsla(145,55%,45%,'+(0.42*(1-f)).toFixed(2)+')';
+          if(v===lo&&ok(i)){td.style.fontWeight='700';td.style.outline='2px solid #1b9e77'}
           const pv=cmp&&cmp.p[dep]?cmp.p[dep][i]:null;
           if(pv!=null&&pv!==v){const d=v-pv,sp=mk('div',(d>0?'▲':'▼')+Math.abs(d),'note');sp.style.color=d>0?'#c0392b':'#1b9e77';sp.style.fontSize='11px';td.appendChild(sp)}}
+        if(!ok(i))td.style.opacity='.25';
         tr.appendChild(td)});t.appendChild(tr)}
-    $('mxNote').textContent='单位 '+cur.currency+'，每格为该日期组合当天抓到的最低价（鼠标悬停可看返程日期）；绿色越深越便宜，最低价加粗。'+(cmp?'小三角为相对 '+$('mxCmp').value+' 的涨跌。':'');
+    $('mxNote').textContent='单位 '+cur.currency+'。每格：上为价格，下为返程日期和旅行总天数；绿色越深越便宜，带框加粗的是所选范围内最低价。天数不在筛选范围内的格子会变淡。'+(cmp?'小三角为相对 '+$('mxCmp').value+' 的涨跌。':'');
   };
-  $('mxSnap').onchange=$('mxCmp').onchange=draw_;
-  if(snaps.length>1)$('mxCmp').value=snaps[Math.min(7,snaps.length-1)];
+  $('mxSnap').onchange=$('mxCmp').onchange=$('mxMonth').onchange=$('mxMin').oninput=$('mxMax').oninput=draw_;
+  if(snaps.length>1&&!$('mxCmp').value)$('mxCmp').value=snaps[Math.min(7,snaps.length-1)];
   draw_();
+}
+async function loadSummary(id){
+  const card=$('sumCard'),ul=$('sumList');ul.textContent='';
+  try{const s=(await j('data/summary.json')).routes[id];if(!s)throw 0;
+    s.bullets.forEach(b=>ul.appendChild(mk('li',b)));card.style.display=''}catch{card.style.display='none'}
 }
 function draw(id,cfg){charts[id]&&charts[id].destroy();charts[id]=new Chart($(id),cfg)}
 function mk(tag,txt,cls){const e=document.createElement(tag);if(txt!=null)e.textContent=txt;if(cls)e.className=cls;return e}
@@ -121,7 +141,7 @@ async function run(e){
       options:{plugins:{legend:{position:'bottom'}},scales:{y:{title:{display:true,text:seas.currency}}}}});
     $('seaNote').textContent=seas.note+(['PEK','PVG','SHA','CGO','CAN'].includes(d)?'':'（该目的地使用通用系数）');
   }
-  if(!doc){$('mxCard').style.display='none';charts.wk&&charts.wk.destroy();charts.dtd&&charts.dtd.destroy();
+  if(!doc){$('mxCard').style.display='none';$('sumCard').style.display='none';charts.wk&&charts.wk.destroy();charts.dtd&&charts.dtd.destroy();
     $('status').innerHTML='';
     $('status').appendChild(mk('span','路线 '+id+' 还没有被追踪。请在 config.json 的 routes 中添加后，下次定时任务会开始记录。','warn'));
     $('trNote').textContent='';$('res').textContent='';charts.trend&&charts.trend.destroy();return}
@@ -134,7 +154,7 @@ async function run(e){
   const ch=$('chips');ch.textContent='';
   W.forEach(w=>{const b=mk('button',w.label);b.type='button';b.style.cssText='margin:0 6px 6px 0;padding:4px 10px;font-size:13px';
     b.onclick=()=>{$('dep').value=w.center;$('dep').dataset.touched=1;$('ret').value=addDays(w.center,stay);run()};ch.appendChild(b)});
-  analyze(doc);loadMatrix(id);
+  analyze(doc);loadMatrix(id);loadSummary(id);
   const dep=$('dep').value,flex=7;
   const near=Object.keys(doc.latest).sort().filter(k=>!dep||Math.abs((new Date(k)-new Date(dep))/864e5)<=flex);
   const days=[...new Set(near.flatMap(k=>Object.keys(doc.history[k]||{})))].sort();

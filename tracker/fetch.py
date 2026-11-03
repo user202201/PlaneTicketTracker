@@ -10,7 +10,7 @@ HISTORY_DAYS = 800
 
 def dates_for(route, cfg):
     mx = cfg.get("matrix") or {}
-    skip_month = mx.get("month") if route["id"] in mx.get("routes", []) else None
+    skip_months = tuple(mx.get("months", [])) if route["id"] in mx.get("routes", []) else ()
     """All (depart, return) pairs: every window's centre +/- flex, return = depart + stay."""
     flex = route.get("flex_days", cfg.get("flex_days", 7))
     step = route.get("sample_step", cfg.get("sample_step", 2))
@@ -21,7 +21,7 @@ def dates_for(route, cfg):
         c = dt.date.fromisoformat(w["center"])
         for off in range(-flex, flex + 1, step):
             d = c + dt.timedelta(days=off)
-            if d > today and d not in seen and not (skip_month and d.isoformat().startswith(skip_month)):
+            if d > today and d not in seen and not d.isoformat().startswith(skip_months):
                 seen.add(d)
                 yield d, (d + dt.timedelta(days=stay) if stay else None)
 
@@ -59,15 +59,19 @@ def run_matrix(route, cfg, cur, doc, today, errors):
     """Depart x return price grid for one month. One query per cell; stores min price per cell."""
     mx = cfg["matrix"]
     offs = mx["return_offsets"]
-    first = dt.date.fromisoformat(mx["month"] + "-01")
     stay = cfg.get("stay_days")
     grid, fails_in_row, n_ok = {}, 0, 0
-    d = first
-    while d.month == first.month:
+    days = []
+    for mo in mx["months"]:
+        d = dt.date.fromisoformat(mo + "-01")
+        while d.month == dt.date.fromisoformat(mo + "-01").month:
+            days.append(d)
+            d += dt.timedelta(days=1)
+    for d in days:
         if d > dt.date.today():
             row = []
             for off in offs:
-                if fails_in_row >= 12:      # looks blocked: stop wasting runner time
+                if fails_in_row >= 25:      # looks blocked: stop wasting runner time
                     row.append(None)
                     continue
                 ret = d + dt.timedelta(days=off)
@@ -87,17 +91,16 @@ def run_matrix(route, cfg, cur, doc, today, errors):
                 else:
                     fails_in_row += 1
                     row.append(None)
-                time.sleep(random.uniform(1, 2.5))
+                time.sleep(random.uniform(0.5, 1.5))
             grid[d.isoformat()] = row
-        d += dt.timedelta(days=1)
     if n_ok:
         mdir = DATA / "matrix" / route["id"]
         mdir.mkdir(parents=True, exist_ok=True)
         (mdir / f"{today}.json").write_text(json.dumps(
-            {"month": mx["month"], "offsets": offs, "currency": cur, "p": grid},
+            {"months": mx["months"], "offsets": offs, "currency": cur, "p": grid},
             separators=(",", ":")))
         idx_path = mdir / "index.json"
-        idx = json.loads(idx_path.read_text()) if idx_path.exists() else {"month": mx["month"], "snapshots": []}
+        idx = json.loads(idx_path.read_text()) if idx_path.exists() else {"months": mx["months"], "snapshots": []}
         if today not in idx["snapshots"]:
             idx["snapshots"].append(today)
         idx_path.write_text(json.dumps(idx))

@@ -9,13 +9,14 @@ concurrency: track
 jobs:
   track:
     runs-on: ubuntu-latest
-    timeout-minutes: 120
+    timeout-minutes: 240
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with: { python-version: "3.12", cache: pip, cache-dependency-path: tracker/requirements.txt }
       - run: pip install -r tracker/requirements.txt
       - run: python tracker/fetch.py
+      - run: python tracker/summarize.py
       - name: Email alerts
         env:
           SMTP_USER: ${{ secrets.SMTP_USER }}
