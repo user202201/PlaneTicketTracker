@@ -95,5 +95,6 @@
    3
   ],
   "max_runtime_minutes": 200
- }
+ },
+ "pricing": "oneway_sum"
 }

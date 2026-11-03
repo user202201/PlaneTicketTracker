@@ -58,37 +58,86 @@ def dates_for(route, cfg):
                 yield d, (d + dt.timedelta(days=stay) if stay else None)
 
 
-def search(route, dep, ret, currency):
-    from fast_flights import FlightQuery, Passengers, create_query, get_flights
-    legs = [FlightQuery(date=dep.isoformat(), from_airport=route["origin"],
-                        to_airport=route["dest"], max_stops=route.get("max_stops"))]
-    if ret:
-        legs.append(FlightQuery(date=ret.isoformat(), from_airport=route["dest"],
-                                to_airport=route["origin"], max_stops=route.get("max_stops")))
-    q = create_query(flights=legs, seat=route.get("cabin", "economy"),
-                     trip="round-trip" if ret else "one-way",
-                     passengers=Passengers(adults=route.get("adults", 1),
-                                           children=route.get("children", 0)),
-                     language="en-US", currency=currency)
-    try:
-        res = get_flights(q)
-    except (TypeError, AttributeError, IndexError, KeyError) as e:
-        # the scraper's parser hit a page without flight data (no results / blocked / format change)
-        raise RuntimeError(f"unexpected Google response structure ({type(e).__name__}: {e})") from e
+PRICING = {"mode": "oneway_sum"}   # "oneway_sum" (estimate: outbound + return one-way) or "roundtrip"
+CACHE = {}                          # (origin, dest, date, cabin, adults, children) -> ("ok", offers) | ("err", msg)
+
+
+def _parse_offers(res):
     out = []
     for f in res:
         fl = f.flights
         if not fl:
             continue
-        dur = sum(getattr(s, "duration", 0) or 0 for s in fl)
+        fly = sum(getattr(s, "duration", 0) or 0 for s in fl)
+        lay = 0
+        for x, y in zip(fl, fl[1:]):          # layover = next departure - arrival, both in the local time of the connection airport
+            try:
+                arr = dt.datetime(*x.arrival.date, *x.arrival.time)
+                dep_ = dt.datetime(*y.departure.date, *y.departure.time)
+                lay += max(0, int((dep_ - arr).total_seconds() // 60))
+            except Exception:
+                pass
         out.append({
             "price": f.price, "airlines": f.airlines, "stops": len(fl) - 1,
-            "duration": dur,
+            "duration": fly + lay,
             "via": [s.to_airport.code for s in fl[:-1]],
             "dep": "%04d-%02d-%02d %02d:%02d" % (*fl[0].departure.date, *fl[0].departure.time),
             "arr": "%04d-%02d-%02d %02d:%02d" % (*fl[-1].arrival.date, *fl[-1].arrival.time),
         })
     return [o for o in out if o["price"]]
+
+
+def _net(route, legs, trip, currency):
+    """One real request to Google (followed by human-like pacing). Stops are NOT sent to Google
+    (its stop filter errors out); they are filtered locally."""
+    from fast_flights import FlightQuery, Passengers, create_query, get_flights
+    q = create_query(flights=[FlightQuery(date=d.isoformat(), from_airport=a, to_airport=b) for d, a, b in legs],
+                     seat=route.get("cabin", "economy"), trip=trip,
+                     passengers=Passengers(adults=route.get("adults", 1), children=route.get("children", 0)),
+                     language="en-US", currency=currency)
+    try:
+        try:
+            res = get_flights(q)
+        except (TypeError, AttributeError, IndexError, KeyError) as e:
+            # parser hit a page without flight data (no results / format change)
+            raise RuntimeError(f"unexpected Google response structure ({type(e).__name__}: {e})") from e
+        return _parse_offers(res)
+    finally:
+        pace()
+
+
+def oneway(route, a, b, date, currency):
+    key = (a, b, date.isoformat(), route.get("cabin"), route.get("adults"), route.get("children"))
+    if key not in CACHE:
+        try:
+            CACHE[key] = ("ok", _net(route, [(date, a, b)], "one-way", currency))
+        except Exception as e:
+            CACHE[key] = ("err", f"{type(e).__name__}: {str(e)[:120]}")
+    kind, val = CACHE[key]
+    if kind == "err":
+        raise RuntimeError(val)
+    return val
+
+
+def _ok_stops(route, offers):
+    ms = route.get("max_stops")
+    return [o for o in offers if ms is None or o["stops"] <= ms]
+
+
+def search(route, dep, ret, currency):
+    """Offers for a trip. oneway_sum: price = outbound fare + cheapest return fare (an estimate;
+    the airline's real round-trip fare is usually somewhat lower)."""
+    if PRICING["mode"] == "roundtrip" and ret:
+        legs = [(dep, route["origin"], route["dest"]), (ret, route["dest"], route["origin"])]
+        return _ok_stops(route, _net(route, legs, "round-trip", currency))
+    out = _ok_stops(route, oneway(route, route["origin"], route["dest"], dep, currency))
+    if not ret:
+        return out
+    back = _ok_stops(route, oneway(route, route["dest"], route["origin"], ret, currency))
+    if not out or not back:
+        return []
+    bmin = min(o["price"] for o in back)
+    return [{**o, "price": o["price"] + bmin, "est": True} for o in out]
 
 
 def run_matrix(route, cfg, cur, doc, today, errors):
@@ -131,13 +180,12 @@ def run_matrix(route, cfg, cur, doc, today, errors):
                 else:
                     fails_in_row += 1
                     row.append(None)
-                pace()
             grid[d.isoformat()] = row
     if n_ok:
         mdir = DATA / "matrix" / route["id"]
         mdir.mkdir(parents=True, exist_ok=True)
         (mdir / f"{today}.json").write_text(json.dumps(
-            {"months": mx["months"], "offsets": offs, "currency": cur, "p": dict(sorted(grid.items()))},
+            {"months": mx["months"], "offsets": offs, "currency": cur, "pricing": PRICING["mode"], "p": dict(sorted(grid.items()))},
             separators=(",", ":")))
         idx_path = mdir / "index.json"
         idx = json.loads(idx_path.read_text()) if idx_path.exists() else {"months": mx["months"], "snapshots": []}
@@ -166,10 +214,11 @@ def main():
     ok = fail = 0
     errors = []
     pace_init(cfg)
+    PRICING["mode"] = cfg.get("pricing", "oneway_sum")
     for route in cfg["routes"]:
         path = DATA / f"{route['id']}.json"
         doc = json.loads(path.read_text()) if path.exists() else {"history": {}, "latest": {}}
-        doc["route"] = {**route, "windows": cfg["windows"], "stay_days": cfg.get("stay_days")}
+        doc["route"] = {**route, "windows": cfg["windows"], "stay_days": cfg.get("stay_days"), "pricing": PRICING["mode"]}
         doc["currency"] = cur
         doc["updated"] = now
         pairs = list(dates_for(route, cfg))
@@ -184,7 +233,6 @@ def main():
             except Exception as e:  # network block, parse change, no results...
                 fail += 1
                 errors.append(f"{route['id']} {key}: {type(e).__name__}: {str(e)[:120]}")
-                pace()
                 continue
             if not offers:
                 fail += 1
@@ -195,7 +243,6 @@ def main():
                                   "offers": offers[:MAX_OFFERS]}
             doc["history"].setdefault(key, {})[today] = min(o["price"] for o in offers)
             ok += 1
-            pace()
         if route["id"] in (cfg.get("matrix") or {}).get("routes", []):
             n = run_matrix(route, cfg, cur, doc, today, errors)
             ok += n

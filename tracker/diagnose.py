@@ -22,14 +22,20 @@ def run_case(name, legs, trip, stops, seat="economy", cur="CAD"):
     from fast_flights.parser import parse
     from primp import Client
     r = {"case": name}
-    q = create_query(flights=[FlightQuery(date=d, from_airport=a, to_airport=b, max_stops=stops) for d, a, b in legs],
-                     seat=seat, trip=trip, passengers=Passengers(adults=1), language="en-US", currency=cur)
-    r["url"] = q.url()
+    if isinstance(legs, str):               # natural-language query variant
+        q = legs
+        r["url"] = "q=" + legs
+    else:
+        q = create_query(flights=[FlightQuery(date=d, from_airport=a, to_airport=b, max_stops=stops) for d, a, b in legs],
+                         seat=seat, trip=trip, passengers=Passengers(adults=1), language="en-US", currency=cur)
+        r["url"] = q.url()
     try:
         c = Client(impersonate="chrome_145", impersonate_os="macos", referer=True, cookie_store=True)
-        res = c.get(URL, params=q.params())
+        res = c.get(URL, params=({"q": q, "hl": "en-US", "curr": cur} if isinstance(q, str) else q.params()))
         html = res.text
         r.update(status=res.status_code, length=len(html), final_url=str(res.url)[:200])
+        import re
+        r["ds_scripts"] = sorted(set(re.findall(r'class="(ds:\d+)"', html)))
         r["has_ds1"] = 'class="ds:1"' in html or "ds:1" in html
         low = html.lower()
         r["hints"] = [k for k in ("consent", "unusual traffic", "captcha", "before you continue", "sorry") if k in low]
@@ -70,6 +76,8 @@ def main():
         ("round-trip YUL-PEK Mar10/Apr21 any", [(mar, "YUL", "PEK"), (apr, "PEK", "YUL")], "round-trip", None),
         ("round-trip YUL-PEK Mar10/Apr21 <=1", [(mar, "YUL", "PEK"), (apr, "PEK", "YUL")], "round-trip", 1),
         ("one-way YUL-PVG Mar10", [(mar, "YUL", "PVG")], "one-way", None),
+        ("one-way PEK-YUL Apr21 (return leg)", [(apr, "PEK", "YUL")], "one-way", None),
+        ("round-trip natural-language q", "Flights from YUL to PEK on 2027-03-10 returning 2027-04-21", "round-trip", None),
         ("one-way YYZ-LHR (control, +45d)", [(near, "YYZ", "LHR")], "one-way", None),
     ]
     out = {"when": dt.datetime.now(dt.timezone.utc).isoformat(timespec="seconds"), "results": []}
