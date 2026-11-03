@@ -43,6 +43,59 @@ def month_avgs(p):
     return {k: st.mean(v) for k, v in by.items()}
 
 
+LANGS = ("zh", "en", "fr")
+MON = {"zh": [f"{i}月" for i in range(1, 13)],
+       "en": ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+       "fr": ["janv.", "févr.", "mars", "avr.", "mai", "juin", "juil.", "août", "sept.", "oct.", "nov.", "déc."]}
+WDN = {"zh": ["周一", "周二", "周三", "周四", "周五", "周六", "周日"],
+       "en": ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+       "fr": ["lun.", "mar.", "mer.", "jeu.", "ven.", "sam.", "dim."]}
+CAT = {
+ "zh": {
+  "collected": "已收集 {n} 天的数据（最新：{last}）。",
+  "need": "至少积累 {min} 天后才会给出买入/观望建议，目前以下仅为当前价格的描述。",
+  "months": "各月当前平均最低价（低→高）：{list} {cur}",
+  "cheap": "当前最便宜的组合：{list}", "cheap_i": "{d} 出发 / {r} 返程 {v} {cur}",
+  "dwd": "出发星期：{b}出发平均比当月均价低 {lo}%，{w}出发最贵（高 {hi}%）。",
+  "stay": "停留天数：在 {a}–{b} 天中，停留 {s} 天平均最便宜（比同一出发日的最低价高 {p}%）。",
+  "wow": "近一周变化（对比 {ref}）：{list}",
+  "near": "{m}：接近已观察到的最低价，价格合适可考虑入手。",
+  "rise": "{m}：高于已观察低点 {gap}% 且一周涨 {t}%，上涨中，不想再涨可尽早决定。",
+  "below": "{m}：低于观察期均价，高于最低点 {gap}%，可继续观察。",
+  "wait": "{m}：高于观察期均价，高于最低点 {gap}%，建议观望。",
+  "buywd": "买票星期：{b}查到的价格平均比前后一周均价低 {lo}%，{w}最高（高 {hi}%）。差异在 1–2% 以内时没有实际意义。",
+  "buyneed": "“星期几买票最划算”需要至少 {min} 天数据（目前 {n} 天）。"},
+ "en": {
+  "collected": "Collected {n} days of data (latest: {last}).",
+  "need": "Buy/wait advice appears after {min} days of data; for now this only describes current prices.",
+  "months": "Current average lowest price by month (low→high): {list} {cur}",
+  "cheap": "Cheapest combinations now: {list}", "cheap_i": "depart {d} / return {r} {v} {cur}",
+  "dwd": "Departure weekday: leaving on {b} is on average {lo}% below the monthly average; {w} is the most expensive ({hi}% above).",
+  "stay": "Trip length: within {a}–{b} days, {s} days is cheapest on average ({p}% above the cheapest for the same departure date).",
+  "wow": "Change over the past week (vs {ref}): {list}",
+  "near": "{m}: close to the lowest price seen so far — a reasonable time to buy.",
+  "rise": "{m}: {gap}% above the lowest seen and up {t}% this week — rising; decide soon if you don't want to pay more.",
+  "below": "{m}: below the average over the observed period, {gap}% above the lowest — keep watching.",
+  "wait": "{m}: above the observed average, {gap}% above the lowest — suggest waiting.",
+  "buywd": "Best day to buy: prices seen on {b} are on average {lo}% below the surrounding week; {w} is the highest ({hi}% above). Differences within 1–2% are not meaningful.",
+  "buyneed": "“Best weekday to buy” needs at least {min} days of data (currently {n})."},
+ "fr": {
+  "collected": "{n} jours de données collectés (dernier : {last}).",
+  "need": "Les conseils d'achat/attente apparaissent après {min} jours de données ; pour l'instant, simple description des prix actuels.",
+  "months": "Prix minimum moyen actuel par mois (bas→haut) : {list} {cur}",
+  "cheap": "Combinaisons les moins chères : {list}", "cheap_i": "départ {d} / retour {r} {v} {cur}",
+  "dwd": "Jour de départ : partir le {b} coûte en moyenne {lo} % de moins que la moyenne du mois ; le {w} est le plus cher ({hi} % au-dessus).",
+  "stay": "Durée du séjour : entre {a} et {b} jours, {s} jours est le moins cher en moyenne ({p} % au-dessus du minimum pour le même départ).",
+  "wow": "Évolution sur la semaine (vs {ref}) : {list}",
+  "near": "{m} : proche du prix le plus bas observé — bon moment pour acheter.",
+  "rise": "{m} : {gap} % au-dessus du minimum observé et +{t} % cette semaine — en hausse ; décidez vite pour éviter de payer plus.",
+  "below": "{m} : sous la moyenne observée, {gap} % au-dessus du minimum — continuez à surveiller.",
+  "wait": "{m} : au-dessus de la moyenne observée, {gap} % au-dessus du minimum — mieux vaut attendre.",
+  "buywd": "Meilleur jour pour acheter : les prix du {b} sont en moyenne {lo} % sous la semaine environnante ; le {w} est le plus élevé ({hi} % au-dessus). Un écart de 1 à 2 % n'est pas significatif.",
+  "buyneed": "« Meilleur jour pour acheter » nécessite au moins {min} jours de données (actuellement {n})."},
+}
+
+
 def summarize(route_id):
     loaded = load(route_id)
     if not loaded:
@@ -51,24 +104,32 @@ def summarize(route_id):
     days = sorted(data)
     last = days[-1]
     p = data[last]
-    out = []
     n = len(days)
-    out.append(f"已收集 {n} 天的数据（最新：{last}）。" + ("" if n >= MIN_DAYS_ADVICE else
-               f"至少积累 {MIN_DAYS_ADVICE} 天后才会给出买入/观望建议，目前以下仅为当前价格的描述。"))
+    out = {lg: [] for lg in LANGS}
 
-    # 1. cheapest months now
+    def say(cls, key, fn=lambda lg: {}):
+        """Append one bullet in every language; fn(lang) supplies language-specific fields."""
+        for lg in LANGS:
+            out[lg].append({"c": cls, "t": CAT[lg][key].format(**fn(lg))})
+
+    def mname(m, lg):
+        return MON[lg][int(m[5:7]) - 1]
+
+    say("info", "collected", lambda lg: {"n": n, "last": last})
+    if n < MIN_DAYS_ADVICE:
+        say("info", "need", lambda lg: {"min": MIN_DAYS_ADVICE})
+
     ma = month_avgs(p)
     if ma:
         rank = sorted(ma.items(), key=lambda kv: kv[1])
-        out.append("各月当前平均最低价（低→高）：" + "，".join(f"{m[5:].lstrip('0')}月 {v:.0f}" for m, v in rank) + f" {cur}")
+        say("info", "months", lambda lg: {"list": ", ".join(f"{mname(m, lg)} {v:.0f}" for m, v in rank), "cur": cur})
 
-    # 2. cheapest cells
     cells = [(v, dep, add(dep, offs[i])) for dep, row in p.items() for i, v in enumerate(row) if v is not None]
     if cells:
         top = sorted(cells)[:3]
-        out.append("当前最便宜的组合：" + "；".join(f"{d[5:]} 出发 / {r[5:]} 返程 {v} {cur}" for v, d, r in top))
+        say("good", "cheap", lambda lg: {"list": "; ".join(
+            CAT[lg]["cheap_i"].format(d=d[5:], r=r[5:], v=v, cur=cur) for v, d, r in top)})
 
-    # 3. depart weekday & stay length (relative, so month level doesn't distort)
     dw = {i: [] for i in range(7)}
     for dep, row in p.items():
         m = row_min(row)
@@ -77,9 +138,9 @@ def summarize(route_id):
             dw[wd(dep)].append(m / mon)
     good = {i: st.mean(v) for i, v in dw.items() if len(v) >= 4}
     if len(good) >= 5:
-        b = min(good, key=good.get)
-        w = max(good, key=good.get)
-        out.append(f"出发星期：{WD[b]}出发平均比当月均价低 {(1 - good[b]) * 100:.1f}%，{WD[w]}出发最贵（高 {(good[w] - 1) * 100:.1f}%）。")
+        b, w = min(good, key=good.get), max(good, key=good.get)
+        say("info", "dwd", lambda lg: {"b": WDN[lg][b], "w": WDN[lg][w],
+                                       "lo": f"{(1 - good[b]) * 100:.1f}", "hi": f"{(good[w] - 1) * 100:.1f}"})
     so = {o: [] for o in offs}
     for row in p.values():
         m = row_min(row)
@@ -90,9 +151,8 @@ def summarize(route_id):
     sa = {o: st.mean(v) for o, v in so.items() if v}
     if sa:
         b = min(sa, key=sa.get)
-        out.append(f"停留天数：在 {offs[0]}–{offs[-1]} 天中，停留 {b} 天平均最便宜（比同一出发日的最低价高 {(sa[b] - 1) * 100:.1f}%）。")
+        say("info", "stay", lambda lg: {"a": offs[0], "b": offs[-1], "s": b, "p": f"{(sa[b] - 1) * 100:.1f}"})
 
-    # 4. trend vs ~7 days ago
     trend = {}
     ref = next((d for d in reversed(days[:-1]) if (dt.date.fromisoformat(last) - dt.date.fromisoformat(d)).days >= 7), None)
     if ref:
@@ -101,9 +161,9 @@ def summarize(route_id):
             if m in old and old[m]:
                 trend[m] = (v / old[m] - 1) * 100
         if trend:
-            out.append(f"近一周变化（对比 {ref}）：" + "，".join(f"{m[5:].lstrip('0')}月 {t:+.1f}%" for m, t in sorted(trend.items())))
+            say("info", "wow", lambda lg: {"ref": ref, "list": ", ".join(
+                f"{mname(m, lg)} {t:+.1f}%" for m, t in sorted(trend.items()))})
 
-    # 5. verdict per month
     if n >= MIN_DAYS_ADVICE:
         hist = {}
         for d in days:
@@ -113,17 +173,16 @@ def summarize(route_id):
             lo, mean = min(hist[m]), st.mean(hist[m])
             gap = (v / lo - 1) * 100
             t = trend.get(m)
+            kw = lambda lg, m=m, gap=gap, t=t: {"m": mname(m, lg), "gap": f"{gap:.0f}", "t": f"{t:.0f}" if t is not None else ""}
             if gap <= 3:
-                s = "接近已观察到的最低价，价格合适可考虑入手"
+                say("good", "near", kw)
             elif t is not None and t > 3:
-                s = f"高于已观察低点 {gap:.0f}% 且一周涨 {t:.0f}%，上涨中，不想再涨可尽早决定"
+                say("wait", "rise", kw)
             elif v < mean:
-                s = f"低于观察期均价，高于最低点 {gap:.0f}%，可继续观察"
+                say("good", "below", kw)
             else:
-                s = f"高于观察期均价，高于最低点 {gap:.0f}%，建议观望"
-            out.append(f"{m[5:].lstrip('0')}月：{s}。")
+                say("wait", "wait", kw)
 
-    # 6. best weekday to buy (detrended across daily snapshots)
     if n >= MIN_DAYS_WEEKDAY:
         g = {i: [] for i in range(7)}
         have = set(days)
@@ -137,9 +196,10 @@ def summarize(route_id):
         res = {i: st.mean(v) for i, v in g.items() if len(v) >= 30}
         if len(res) == 7:
             b, w = min(res, key=res.get), max(res, key=res.get)
-            out.append(f"买票星期：{WD[b]}查到的价格平均比前后一周均价低 {(1 - res[b]) * 100:.1f}%，{WD[w]}最高（高 {(res[w] - 1) * 100:.1f}%）。差异在 1–2% 以内时没有实际意义。")
+            say("info", "buywd", lambda lg: {"b": WDN[lg][b], "w": WDN[lg][w],
+                                             "lo": f"{(1 - res[b]) * 100:.1f}", "hi": f"{(res[w] - 1) * 100:.1f}"})
     else:
-        out.append(f"“星期几买票最划算”需要至少 {MIN_DAYS_WEEKDAY} 天数据（目前 {n} 天）。")
+        say("info", "buyneed", lambda lg: {"min": MIN_DAYS_WEEKDAY, "n": n})
     return {"days": n, "latest": last, "bullets": out}
 
 
