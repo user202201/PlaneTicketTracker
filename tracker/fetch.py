@@ -70,7 +70,11 @@ def search(route, dep, ret, currency):
                      passengers=Passengers(adults=route.get("adults", 1),
                                            children=route.get("children", 0)),
                      language="en-US", currency=currency)
-    res = get_flights(q)
+    try:
+        res = get_flights(q)
+    except (TypeError, AttributeError, IndexError, KeyError) as e:
+        # the scraper's parser hit a page without flight data (no results / blocked / format change)
+        raise RuntimeError(f"unexpected Google response structure ({type(e).__name__}: {e})") from e
     out = []
     for f in res:
         fl = f.flights
@@ -157,7 +161,7 @@ def main():
     cfg = json.loads((ROOT / "config.json").read_text())
     cur = cfg.get("currency", "CAD")
     DATA.mkdir(parents=True, exist_ok=True)
-    now = dt.datetime.utcnow().replace(microsecond=0).isoformat() + "Z"
+    now = dt.datetime.now(dt.timezone.utc).replace(microsecond=0, tzinfo=None).isoformat() + "Z"
     today = dt.date.today().isoformat()
     ok = fail = 0
     errors = []
