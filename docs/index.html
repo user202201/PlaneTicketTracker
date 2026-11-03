@@ -30,6 +30,10 @@ canvas{max-height:300px}
 <label>儿童<input id="ch" type="number" min="0" max="8" value="0"></label>
 <button>查看</button></form>
 <div id="chips" style="margin-top:8px"></div><p class="note" id="status"></p></div>
+<div class="card" id="mxCard" style="display:none"><h2>价格矩阵（出发日 × 返程日）</h2>
+<div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:8px">
+<label>查看日期<select id="mxSnap"></select></label><label>对比<select id="mxCmp"></select></label></div>
+<div style="overflow-x:auto"><table id="mx"></table></div><p class="note" id="mxNote"></p></div>
 <div class="card"><h2>淡旺季（每月参考价）</h2><canvas id="sea"></canvas><p class="note" id="seaNote"></p></div>
 <div class="card"><h2>价格走势（各出发日的最低价）</h2><canvas id="trend"></canvas><p class="note" id="trNote"></p></div>
 <div class="card"><h2>哪天买票更划算（按星期几）</h2><canvas id="wk"></canvas><p class="note" id="wkNote"></p></div>
@@ -63,6 +67,35 @@ function analyze(doc){
   draw('dtd',{type:'line',data:{labels:ks.map(k=>k+'–'+(k+13)+' 天前'),datasets:[{label:'相对均价 (%)',data:ks.map(k=>pct(dt.get(k))),borderColor:'#e0662b',tension:.2}]},options:{plugins:{legend:{display:false}}}});
   $('dtdNote').textContent=ks.length<3?'数据还不够，需要几周后才能看出价格随临近出发的变化。':'从左（离出发远）到右（临近出发）；上升段就是开始涨价的时期。';
 }
+async function loadMatrix(id){
+  const card=$('mxCard');let idx;
+  try{idx=await j('data/matrix/'+id+'/index.json')}catch{card.style.display='none';return}
+  card.style.display='';
+  const snaps=[...idx.snapshots].sort().reverse();
+  const fill=(sel,opts)=>{sel.textContent='';opts.forEach(([v,t])=>{const o=mk('option',t);o.value=v;sel.appendChild(o)})};
+  fill($('mxSnap'),snaps.map(x=>[x,x]));
+  fill($('mxCmp'),[['','不对比'],...snaps.map(x=>[x,x])]);
+  const draw_=async()=>{
+    const cur=await j('data/matrix/'+id+'/'+$('mxSnap').value+'.json');
+    let cmp=null;if($('mxCmp').value&&$('mxCmp').value!==$('mxSnap').value)try{cmp=await j('data/matrix/'+id+'/'+$('mxCmp').value+'.json')}catch{}
+    const all=Object.values(cur.p).flat().filter(x=>x!=null),lo=Math.min(...all),hi=Math.max(...all);
+    const t=$('mx');t.textContent='';
+    const h=mk('tr');h.appendChild(mk('th','出发 \\ 停留天数'));
+        cur.offsets.forEach(o=>h.appendChild(mk('th',o+' 天','num')));
+    t.appendChild(h);
+    for(const[dep,row]of Object.entries(cur.p)){
+      const tr=mk('tr');tr.appendChild(mk('td',dep.slice(5)+' '+WD[new Date(dep+'T00:00:00Z').getUTCDay()]));
+      row.forEach((v,i)=>{const td=mk('td',v==null?'–':v,'num');td.title='返程 '+addDays(dep,cur.offsets[i]);
+        if(v!=null){const f=hi>lo?(v-lo)/(hi-lo):0;td.style.background='hsla(145,55%,45%,'+(0.42*(1-f)).toFixed(2)+')';if(v===lo)td.style.fontWeight='700';
+          const pv=cmp&&cmp.p[dep]?cmp.p[dep][i]:null;
+          if(pv!=null&&pv!==v){const d=v-pv,sp=mk('div',(d>0?'▲':'▼')+Math.abs(d),'note');sp.style.color=d>0?'#c0392b':'#1b9e77';sp.style.fontSize='11px';td.appendChild(sp)}}
+        tr.appendChild(td)});t.appendChild(tr)}
+    $('mxNote').textContent='单位 '+cur.currency+'，每格为该日期组合当天抓到的最低价（鼠标悬停可看返程日期）；绿色越深越便宜，最低价加粗。'+(cmp?'小三角为相对 '+$('mxCmp').value+' 的涨跌。':'');
+  };
+  $('mxSnap').onchange=$('mxCmp').onchange=draw_;
+  if(snaps.length>1)$('mxCmp').value=snaps[Math.min(7,snaps.length-1)];
+  draw_();
+}
 function draw(id,cfg){charts[id]&&charts[id].destroy();charts[id]=new Chart($(id),cfg)}
 function mk(tag,txt,cls){const e=document.createElement(tag);if(txt!=null)e.textContent=txt;if(cls)e.className=cls;return e}
 
@@ -88,7 +121,7 @@ async function run(e){
       options:{plugins:{legend:{position:'bottom'}},scales:{y:{title:{display:true,text:seas.currency}}}}});
     $('seaNote').textContent=seas.note+(['PEK','PVG','SHA','CGO','CAN'].includes(d)?'':'（该目的地使用通用系数）');
   }
-  if(!doc){charts.wk&&charts.wk.destroy();charts.dtd&&charts.dtd.destroy();
+  if(!doc){$('mxCard').style.display='none';charts.wk&&charts.wk.destroy();charts.dtd&&charts.dtd.destroy();
     $('status').innerHTML='';
     $('status').appendChild(mk('span','路线 '+id+' 还没有被追踪。请在 config.json 的 routes 中添加后，下次定时任务会开始记录。','warn'));
     $('trNote').textContent='';$('res').textContent='';charts.trend&&charts.trend.destroy();return}
@@ -101,7 +134,7 @@ async function run(e){
   const ch=$('chips');ch.textContent='';
   W.forEach(w=>{const b=mk('button',w.label);b.type='button';b.style.cssText='margin:0 6px 6px 0;padding:4px 10px;font-size:13px';
     b.onclick=()=>{$('dep').value=w.center;$('dep').dataset.touched=1;$('ret').value=addDays(w.center,stay);run()};ch.appendChild(b)});
-  analyze(doc);
+  analyze(doc);loadMatrix(id);
   const dep=$('dep').value,flex=7;
   const near=Object.keys(doc.latest).sort().filter(k=>!dep||Math.abs((new Date(k)-new Date(dep))/864e5)<=flex);
   const days=[...new Set(near.flatMap(k=>Object.keys(doc.history[k]||{})))].sort();

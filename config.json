@@ -59,5 +59,20 @@
    "adults": 1,
    "children": 0
   }
- ]
+ ],
+ "matrix": {
+  "month": "2027-03",
+  "return_offsets": [
+   39,
+   40,
+   41,
+   42,
+   43,
+   44,
+   45
+  ],
+  "routes": [
+   "YUL-PEK"
+  ]
+ }
 }

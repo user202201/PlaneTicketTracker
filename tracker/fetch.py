@@ -9,6 +9,8 @@ HISTORY_DAYS = 800
 
 
 def dates_for(route, cfg):
+    mx = cfg.get("matrix") or {}
+    skip_month = mx.get("month") if route["id"] in mx.get("routes", []) else None
     """All (depart, return) pairs: every window's centre +/- flex, return = depart + stay."""
     flex = route.get("flex_days", cfg.get("flex_days", 7))
     step = route.get("sample_step", cfg.get("sample_step", 2))
@@ -19,7 +21,7 @@ def dates_for(route, cfg):
         c = dt.date.fromisoformat(w["center"])
         for off in range(-flex, flex + 1, step):
             d = c + dt.timedelta(days=off)
-            if d > today and d not in seen:
+            if d > today and d not in seen and not (skip_month and d.isoformat().startswith(skip_month)):
                 seen.add(d)
                 yield d, (d + dt.timedelta(days=stay) if stay else None)
 
@@ -51,6 +53,55 @@ def search(route, dep, ret, currency):
             "arr": "%04d-%02d-%02d %02d:%02d" % (*fl[-1].arrival.date, *fl[-1].arrival.time),
         })
     return [o for o in out if o["price"]]
+
+
+def run_matrix(route, cfg, cur, doc, today, errors):
+    """Depart x return price grid for one month. One query per cell; stores min price per cell."""
+    mx = cfg["matrix"]
+    offs = mx["return_offsets"]
+    first = dt.date.fromisoformat(mx["month"] + "-01")
+    stay = cfg.get("stay_days")
+    grid, fails_in_row, n_ok = {}, 0, 0
+    d = first
+    while d.month == first.month:
+        if d > dt.date.today():
+            row = []
+            for off in offs:
+                if fails_in_row >= 12:      # looks blocked: stop wasting runner time
+                    row.append(None)
+                    continue
+                ret = d + dt.timedelta(days=off)
+                try:
+                    offers = search(route, d, ret, cur)
+                except Exception as e:
+                    offers = []
+                    errors.append(f"{route['id']} matrix {d}->{ret}: {type(e).__name__}: {str(e)[:100]}")
+                if offers:
+                    fails_in_row = 0
+                    n_ok += 1
+                    row.append(min(o["price"] for o in offers))
+                    if off == stay:         # feed the weekday / lead-time analysis too
+                        offers.sort(key=lambda o: (o["stops"], o["duration"], o["price"]))
+                        doc["latest"][d.isoformat()] = {"return": ret.isoformat(), "offers": offers[:MAX_OFFERS]}
+                        doc["history"].setdefault(d.isoformat(), {})[today] = row[-1]
+                else:
+                    fails_in_row += 1
+                    row.append(None)
+                time.sleep(random.uniform(1, 2.5))
+            grid[d.isoformat()] = row
+        d += dt.timedelta(days=1)
+    if n_ok:
+        mdir = DATA / "matrix" / route["id"]
+        mdir.mkdir(parents=True, exist_ok=True)
+        (mdir / f"{today}.json").write_text(json.dumps(
+            {"month": mx["month"], "offsets": offs, "currency": cur, "p": grid},
+            separators=(",", ":")))
+        idx_path = mdir / "index.json"
+        idx = json.loads(idx_path.read_text()) if idx_path.exists() else {"month": mx["month"], "snapshots": []}
+        if today not in idx["snapshots"]:
+            idx["snapshots"].append(today)
+        idx_path.write_text(json.dumps(idx))
+    return n_ok
 
 
 def main():
@@ -86,6 +137,11 @@ def main():
             doc["history"].setdefault(key, {})[today] = min(o["price"] for o in offers)
             ok += 1
             time.sleep(random.uniform(2, 5))
+        if route["id"] in (cfg.get("matrix") or {}).get("routes", []):
+            n = run_matrix(route, cfg, cur, doc, today, errors)
+            ok += n
+            if not n:
+                fail += 1
         cutoff = (dt.date.today() - dt.timedelta(days=HISTORY_DAYS)).isoformat()
         for k, v in doc["history"].items():
             doc["history"][k] = {d: p for d, p in v.items() if d >= cutoff}
