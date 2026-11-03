@@ -1,0 +1,1 @@
+run requested 2026-11-04 (diagnose, then full)
