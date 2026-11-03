@@ -1,0 +1,473 @@
+{
+ "when": "2026-11-03T23:25:38+00:00",
+ "results": [
+  {
+   "case": "near one-way YUL-PEK (+45d)",
+   "url": "https://www.google.com/travel/flights/search?tfs=GhoSCjIwMjYtMTItMThqBRIDWVVMcgUSA1BFS0IBAUgBmAEC&hl=en-US&curr=CAD",
+   "status": 200,
+   "length": 2586611,
+   "final_url": "https://www.google.com/travel/flights?tfs=GhoSCjIwMjYtMTItMThqBRIDWVVMcgUSA1BFS0IBAUgBmAEC&hl=en-US&curr=CAD",
+   "has_ds1": true,
+   "hints": [
+    "captcha"
+   ],
+   "title": "Montreal to Beijing | Google Flights",
+   "error_flag": false,
+   "payload_shape": [
+    [
+     null,
+     "list[6]",
+     "int",
+     "str",
+     "str"
+    ],
+    [
+     "list[2]"
+    ],
+    [
+     "list[3]",
+     null,
+     "int",
+     "int",
+     "list[1]"
+    ],
+    [
+     "list[13]",
+     "int",
+     "int",
+     "int",
+     "list[1]"
+    ],
+    null,
+    [
+     "int",
+     "list[2]",
+     "list[2]",
+     "list[2]",
+     "list[2]",
+     "list[2]",
+     "int",
+     null,
+     null,
+     null
+    ],
+    [
+     "list[3]"
+    ],
+    [
+     "list[2]",
+     "list[2]",
+     "list[3]",
+     "list[2]",
+     "list[1]",
+     "list[4]",
+     null,
+     "list[1]"
+    ],
+    null,
+    null
+   ],
+   "n_flights": 13,
+   "sample": [
+    {
+     "price": 2953,
+     "airlines": [
+      "WestJet",
+      "Condor",
+      "Air China"
+     ],
+     "legs": 3
+    },
+    {
+     "price": 3276,
+     "airlines": [
+      "Air Canada",
+      "United"
+     ],
+     "legs": 3
+    },
+    {
+     "price": 3276,
+     "airlines": [
+      "Air Canada",
+      "United"
+     ],
+     "legs": 3
+    }
+   ]
+  },
+  {
+   "case": "one-way YUL-PEK Mar10 any stops",
+   "url": "https://www.google.com/travel/flights/search?tfs=GhoSCjIwMjctMDMtMTBqBRIDWVVMcgUSA1BFS0IBAUgBmAEC&hl=en-US&curr=CAD",
+   "status": 200,
+   "length": 2372105,
+   "final_url": "https://www.google.com/travel/flights?tfs=GhoSCjIwMjctMDMtMTBqBRIDWVVMcgUSA1BFS0IBAUgBmAEC&hl=en-US&curr=CAD",
+   "has_ds1": true,
+   "hints": [
+    "captcha"
+   ],
+   "title": "Montreal to Beijing | Google Flights",
+   "error_flag": false,
+   "payload_shape": [
+    [
+     null,
+     "list[6]",
+     "int",
+     "str",
+     "str"
+    ],
+    [
+     "list[2]"
+    ],
+    [
+     "list[4]",
+     null,
+     "int",
+     "int",
+     "list[1]"
+    ],
+    [
+     "list[6]",
+     "int",
+     "int",
+     "int",
+     "list[1]"
+    ],
+    null,
+    [
+     "int",
+     "list[2]",
+     "list[2]",
+     "list[2]",
+     "list[2]",
+     "list[2]",
+     "int",
+     null,
+     null,
+     null
+    ],
+    null,
+    [
+     "list[2]",
+     "list[2]",
+     "list[3]",
+     "list[2]",
+     "list[1]",
+     "list[4]",
+     null,
+     "list[1]"
+    ],
+    null,
+    null
+   ],
+   "n_flights": 6,
+   "sample": [
+    {
+     "price": 1128,
+     "airlines": [
+      "Air Canada"
+     ],
+     "legs": 2
+    },
+    {
+     "price": 1478,
+     "airlines": [
+      "Air Canada",
+      "Asiana Airlines"
+     ],
+     "legs": 3
+    },
+    {
+     "price": 1704,
+     "airlines": [
+      "Air Canada",
+      "Cathay Pacific"
+     ],
+     "legs": 3
+    }
+   ]
+  },
+  {
+   "case": "one-way YUL-PEK Mar10 <=1 stop",
+   "url": "https://www.google.com/travel/flights/search?tfs=GhwSCjIwMjctMDMtMTAoAWoFEgNZVUxyBRIDUEVLQgEBSAGYAQI=&hl=en-US&curr=CAD",
+   "status": 200,
+   "length": 1945334,
+   "final_url": "https://www.google.com/travel/flights?tfs=GhwSCjIwMjctMDMtMTAoAWoFEgNZVUxyBRIDUEVLQgEBSAGYAQI%3D&hl=en-US&curr=CAD",
+   "has_ds1": true,
+   "hints": [
+    "captcha"
+   ],
+   "title": "Montreal to Beijing | Google Flights",
+   "error_flag": true,
+   "parse_error": "FlightsNotFound: no flights found; received error"
+  },
+  {
+   "case": "round-trip YUL-PEK Mar10/Apr21 any",
+   "url": "https://www.google.com/travel/flights/search?tfs=GhoSCjIwMjctMDMtMTBqBRIDWVVMcgUSA1BFSxoaEgoyMDI3LTA0LTIxagUSA1BFS3IFEgNZVUxCAQFIAZgBAQ==&hl=en-US&curr=CAD",
+   "status": 200,
+   "length": 1981419,
+   "final_url": "https://www.google.com/travel/flights?tfs=GhoSCjIwMjctMDMtMTBqBRIDWVVMcgUSA1BFSxoaEgoyMDI3LTA0LTIxagUSA1BFS3IFEgNZVUxCAQFIAZgBAQ%3D%3D&hl=en-US&curr=CAD",
+   "has_ds1": true,
+   "hints": [
+    "captcha"
+   ],
+   "title": "Montreal to Beijing | Google Flights",
+   "error_flag": false,
+   "payload_shape": [
+    [
+     null,
+     "list[6]",
+     "int",
+     "str",
+     "str"
+    ],
+    [
+     "list[2]",
+     "list[2]"
+    ],
+    null,
+    null,
+    null,
+    null,
+    [
+     "list[5]"
+    ],
+    [
+     null,
+     "list[2]",
+     "list[1]",
+     null,
+     "list[1]",
+     "list[4]",
+     null,
+     "list[1]"
+    ],
+    null,
+    null
+   ],
+   "parse_error": "TypeError: 'NoneType' object is not subscriptable"
+  },
+  {
+   "case": "round-trip YUL-PEK Mar10/Apr21 <=1",
+   "url": "https://www.google.com/travel/flights/search?tfs=GhwSCjIwMjctMDMtMTAoAWoFEgNZVUxyBRIDUEVLGhwSCjIwMjctMDQtMjEoAWoFEgNQRUtyBRIDWVVMQgEBSAGYAQE=&hl=en-US&curr=CAD",
+   "status": 200,
+   "length": 1967626,
+   "final_url": "https://www.google.com/travel/flights?tfs=GhwSCjIwMjctMDMtMTAoAWoFEgNZVUxyBRIDUEVLGhwSCjIwMjctMDQtMjEoAWoFEgNQRUtyBRIDWVVMQgEBSAGYAQE%3D&hl=en-US&curr=CAD",
+   "has_ds1": true,
+   "hints": [
+    "captcha"
+   ],
+   "title": "Montreal to Beijing | Google Flights",
+   "error_flag": false,
+   "payload_shape": [
+    [
+     null,
+     "list[6]",
+     "int",
+     "str",
+     "str"
+    ],
+    [
+     "list[2]",
+     "list[2]"
+    ],
+    null,
+    null,
+    null,
+    null,
+    null,
+    [
+     null,
+     "list[2]",
+     "list[1]",
+     null,
+     "list[1]",
+     "list[4]",
+     null,
+     "list[1]"
+    ],
+    null,
+    null
+   ],
+   "parse_error": "TypeError: 'NoneType' object is not subscriptable"
+  },
+  {
+   "case": "one-way YUL-PVG Mar10",
+   "url": "https://www.google.com/travel/flights/search?tfs=GhoSCjIwMjctMDMtMTBqBRIDWVVMcgUSA1BWR0IBAUgBmAEC&hl=en-US&curr=CAD",
+   "status": 200,
+   "length": 2442384,
+   "final_url": "https://www.google.com/travel/flights?tfs=GhoSCjIwMjctMDMtMTBqBRIDWVVMcgUSA1BWR0IBAUgBmAEC&hl=en-US&curr=CAD",
+   "has_ds1": true,
+   "hints": [
+    "captcha"
+   ],
+   "title": "Montreal to Shanghai | Google Flights",
+   "error_flag": false,
+   "payload_shape": [
+    [
+     null,
+     "list[6]",
+     "int",
+     "str",
+     "str"
+    ],
+    [
+     "list[2]"
+    ],
+    [
+     "list[4]",
+     null,
+     "int",
+     "int",
+     "list[1]"
+    ],
+    [
+     "list[8]",
+     "int",
+     "int",
+     "int",
+     "list[1]"
+    ],
+    null,
+    [
+     "int",
+     "list[2]",
+     "list[2]",
+     "list[2]",
+     "list[2]",
+     "list[2]",
+     "int",
+     null,
+     null,
+     null
+    ],
+    null,
+    [
+     "list[2]",
+     "list[2]",
+     "list[3]",
+     "list[2]",
+     "list[1]",
+     "list[4]",
+     null,
+     "list[1]"
+    ],
+    null,
+    null
+   ],
+   "n_flights": 8,
+   "sample": [
+    {
+     "price": 1223,
+     "airlines": [
+      "Qatar Airways"
+     ],
+     "legs": 2
+    },
+    {
+     "price": 1229,
+     "airlines": [
+      "Air Canada"
+     ],
+     "legs": 2
+    },
+    {
+     "price": 1398,
+     "airlines": [
+      "Qatar Airways"
+     ],
+     "legs": 2
+    }
+   ]
+  },
+  {
+   "case": "one-way YYZ-LHR (control, +45d)",
+   "url": "https://www.google.com/travel/flights/search?tfs=GhoSCjIwMjYtMTItMThqBRIDWVlacgUSA0xIUkIBAUgBmAEC&hl=en-US&curr=CAD",
+   "status": 200,
+   "length": 2276033,
+   "final_url": "https://www.google.com/travel/flights?tfs=GhoSCjIwMjYtMTItMThqBRIDWVlacgUSA0xIUkIBAUgBmAEC&hl=en-US&curr=CAD",
+   "has_ds1": true,
+   "hints": [
+    "captcha"
+   ],
+   "title": "Toronto to London | Google Flights",
+   "error_flag": false,
+   "payload_shape": [
+    [
+     null,
+     "list[6]",
+     "int",
+     "str",
+     "str"
+    ],
+    [
+     "list[2]"
+    ],
+    [
+     "list[3]",
+     null,
+     "int",
+     "int",
+     "list[1]"
+    ],
+    [
+     "list[5]",
+     "int",
+     "int",
+     "int",
+     "list[1]"
+    ],
+    null,
+    [
+     "int",
+     "list[2]",
+     "list[2]",
+     "list[2]",
+     "list[2]",
+     "list[2]",
+     "int",
+     null,
+     null,
+     null
+    ],
+    null,
+    [
+     "list[2]",
+     "list[2]",
+     "list[3]",
+     "list[2]",
+     "list[1]",
+     "list[4]",
+     null,
+     "list[1]"
+    ],
+    null,
+    null
+   ],
+   "n_flights": 5,
+   "sample": [
+    {
+     "price": 831,
+     "airlines": [
+      "Delta"
+     ],
+     "legs": 2
+    },
+    {
+     "price": 928,
+     "airlines": [
+      "Delta"
+     ],
+     "legs": 2
+    },
+    {
+     "price": 1431,
+     "airlines": [
+      "Air Canada"
+     ],
+     "legs": 2
+    }
+   ]
+  }
+ ]
+}
