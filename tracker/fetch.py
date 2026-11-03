@@ -143,7 +143,17 @@ def run_matrix(route, cfg, cur, doc, today, errors):
     return n_ok
 
 
+def preflight():
+    """Fail loudly (red run) if the scraper can't even be imported - not a silent 'all failed'."""
+    try:
+        import fast_flights  # noqa: F401
+    except Exception as e:
+        print(f"FATAL: cannot import fast_flights: {type(e).__name__}: {e}", file=sys.stderr)
+        sys.exit(1)
+
+
 def main():
+    preflight()
     cfg = json.loads((ROOT / "config.json").read_text())
     cur = cfg.get("currency", "CAD")
     DATA.mkdir(parents=True, exist_ok=True)

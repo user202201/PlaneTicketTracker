@@ -90,8 +90,8 @@ canvas{max-height:340px}
 <section id="t-ov" class="tab on">
   <div class="kpis" id="kpis"></div>
   <div class="grid2">
-    <div class="card"><div class="head"><h2>航班</h2>
-      <div class="seg" id="sort"><button data-s="rec" class="on">推荐</button><button data-s="price">最便宜</button><button data-s="dur">最快</button></div></div>
+    <div class="card"><div class="head"><h2>航班（按你选的优先级排序）</h2>
+      <div class="ctrl" id="sortCtl" style="margin:0"></div></div>
       <div id="res"></div></div>
     <div>
       <div class="card" id="sumCard" style="display:none"><h2>智能总结</h2><ul id="sumList"></ul>
@@ -147,17 +147,29 @@ $('tabs').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)
   document.querySelectorAll('#tabs button').forEach(x=>x.classList.toggle('on',x===b));
   document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('on',x.id==='t-'+b.dataset.tab));
   Object.values(charts).forEach(c=>c.resize())});
-$('sort').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;
-  state.sort=b.dataset.s;document.querySelectorAll('#sort button').forEach(x=>x.classList.toggle('on',x===b));renderFlights()});
+const KEYS={stops:'转机次数（少→多）',dur:'总用时（短→长）',price:'价格（低→高）'};
+try{const o=JSON.parse(localStorage.getItem('order'));if(Array.isArray(o)&&o.length==3&&o.every(k=>k in KEYS))state.order=o}catch{}
+state.order=state.order||['stops','dur','price'];
+function buildSort(){
+  const c=$('sortCtl');c.textContent='';
+  ['第一优先','第二优先','第三优先'].forEach((lab,i)=>{
+    const l=mk('label',lab),s=document.createElement('select');
+    for(const[k,t]of Object.entries(KEYS)){const o=mk('option',t);o.value=k;s.appendChild(o)}
+    s.value=state.order[i];
+    s.onchange=()=>{const v=s.value,j=state.order.indexOf(v);          // keep the three criteria unique: swap
+      state.order[j]=state.order[i];state.order[i]=v;
+      try{localStorage.setItem('order',JSON.stringify(state.order))}catch{}
+      buildSort();renderFlights()};
+    l.appendChild(s);c.appendChild(l)})}
+buildSort();
 
 /* ---------- flights + KPIs ---------- */
 const stopColor=n=>n==0?'var(--good)':n==1?'var(--c4)':'var(--bad)';
 function renderFlights(){
   const rows=[...state.rows],box=$('res');box.textContent='';
   if(!rows.length){box.appendChild(mk('p','所选日期范围内没有符合条件的航班。','note'));return}
-  const cmp={rec:(a,b)=>a.stops-b.stops||a.duration-b.duration||a.price-b.price,
-             price:(a,b)=>a.price-b.price||a.stops-b.stops,dur:(a,b)=>a.duration-b.duration||a.price-b.price}[state.sort];
-  rows.sort(cmp);
+  const val={stops:r=>r.stops,dur:r=>r.duration,price:r=>r.price};
+  rows.sort((a,b)=>{for(const k of state.order){const d=val[k](a)-val[k](b);if(d)return d}return 0});
   const minP=Math.min(...rows.map(r=>r.price)),minD=Math.min(...rows.map(r=>r.duration));let gotP=false,gotD=false;
   rows.slice(0,30).forEach((r,i)=>{
     const c=mk('div',null,'fl');c.style.setProperty('--s',stopColor(r.stops));
@@ -166,7 +178,7 @@ function renderFlights(){
     const t=mk('div',r.dep.slice(5,16).replace(' ','  ')+'  →  '+r.arr.slice(5,16).replace(' ','  '),'t');
     if(r.price===minP&&!gotP&&(gotP=true))t.appendChild(Object.assign(mk('span','最低价','badge'),{style:'--b:var(--good)'}));
     if(r.duration===minD&&!gotD&&(gotD=true))t.appendChild(Object.assign(mk('span','最快','badge'),{style:'--b:var(--c7)'}));
-    if(i===0&&state.sort==='rec')t.appendChild(Object.assign(mk('span','推荐','badge'),{style:'--b:var(--c1)'}));
+    if(i===0)t.appendChild(Object.assign(mk('span','首选','badge'),{style:'--b:var(--c1)'}));
     mid.appendChild(t);
     const m=mk('div',null,'m');
     const pill=mk('span',r.stops==0?'直飞':r.stops+' 次转机'+(r.via.length?'·'+r.via.join(','):''),'pill');pill.style.setProperty('--s',stopColor(r.stops));
