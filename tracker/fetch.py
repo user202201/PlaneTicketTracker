@@ -8,15 +8,20 @@ MAX_OFFERS = 12
 HISTORY_DAYS = 800
 
 
-def dates_for(route):
-    c = dt.date.fromisoformat(route["depart"])
-    r = dt.date.fromisoformat(route["return"]) if route.get("return") else None
-    step, flex = route.get("sample_step", 3), route.get("flex_days", 7)
+def dates_for(route, cfg):
+    """All (depart, return) pairs: every window's centre +/- flex, return = depart + stay."""
+    flex = route.get("flex_days", cfg.get("flex_days", 7))
+    step = route.get("sample_step", cfg.get("sample_step", 2))
+    stay = route.get("stay_days", cfg.get("stay_days"))
     today = dt.date.today()
-    for off in range(-flex, flex + 1, step):
-        d = c + dt.timedelta(days=off)
-        if d > today:
-            yield d, (r + dt.timedelta(days=off) if r else None)
+    seen = set()
+    for w in cfg["windows"]:
+        c = dt.date.fromisoformat(w["center"])
+        for off in range(-flex, flex + 1, step):
+            d = c + dt.timedelta(days=off)
+            if d > today and d not in seen:
+                seen.add(d)
+                yield d, (d + dt.timedelta(days=stay) if stay else None)
 
 
 def search(route, dep, ret, currency):
@@ -59,10 +64,10 @@ def main():
     for route in cfg["routes"]:
         path = DATA / f"{route['id']}.json"
         doc = json.loads(path.read_text()) if path.exists() else {"history": {}, "latest": {}}
-        doc["route"] = route
+        doc["route"] = {**route, "windows": cfg["windows"], "stay_days": cfg.get("stay_days")}
         doc["currency"] = cur
         doc["updated"] = now
-        for dep, ret in dates_for(route):
+        for dep, ret in dates_for(route, cfg):
             key = dep.isoformat()
             try:
                 offers = search(route, dep, ret, cur)

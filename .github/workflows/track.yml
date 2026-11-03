@@ -1,8 +1,7 @@
 name: track-prices
 on:
   schedule:
-    - cron: "17 11 * * *"   # daily, 11:17 UTC
-    - cron: "43 23 * * *"   # second daily sample
+    - cron: "17 11 * * *"   # once daily at a fixed time (keeps weekday comparison fair)
   workflow_dispatch:
 permissions:
   contents: write
