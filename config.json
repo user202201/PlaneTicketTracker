@@ -80,5 +80,20 @@
   "routes": [
    "YUL-PEK"
   ]
+ },
+ "pacing": {
+  "batch_size_range": [
+   40,
+   80
+  ],
+  "pause_minutes_range": [
+   1,
+   3
+  ],
+  "query_sleep_seconds_range": [
+   1,
+   3
+  ],
+  "max_runtime_minutes": 200
  }
 }

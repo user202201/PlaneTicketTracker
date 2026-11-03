@@ -8,6 +8,38 @@ MAX_OFFERS = 12
 HISTORY_DAYS = 800
 
 
+PACE = {"left": 0, "deadline": None, "cfg": {}, "scale": 1.0, "batches": 0}
+
+
+def pace_init(cfg):
+    """Human-like pacing: queries in random-sized batches, short random gaps inside a batch,
+    a random multi-minute pause between batches, and a hard time budget."""
+    import os
+    p = {"batch_size_range": [40, 80], "pause_minutes_range": [1, 3],
+         "query_sleep_seconds_range": [1, 3], "max_runtime_minutes": 200}
+    p.update(cfg.get("pacing") or {})
+    PACE.update(cfg=p, left=random.randint(*p["batch_size_range"]), batches=0,
+                scale=float(os.environ.get("PACE_SCALE", "1")),
+                deadline=time.time() + p["max_runtime_minutes"] * 60 * float(os.environ.get("PACE_SCALE", "1")))
+
+
+def expired():
+    return PACE["deadline"] is not None and time.time() > PACE["deadline"]
+
+
+def pace():
+    p, sc = PACE["cfg"], PACE["scale"]
+    PACE["left"] -= 1
+    if PACE["left"] <= 0:
+        PACE["batches"] += 1
+        pause = random.uniform(*p["pause_minutes_range"]) * 60 * sc
+        print(f"[pace] batch {PACE['batches']} done, pausing {pause / 60:.1f} min", flush=True)
+        time.sleep(pause)
+        PACE["left"] = random.randint(*p["batch_size_range"])
+    else:
+        time.sleep(random.uniform(*p["query_sleep_seconds_range"]) * sc)
+
+
 def dates_for(route, cfg):
     mx = cfg.get("matrix") or {}
     skip_months = tuple(mx.get("months", [])) if route["id"] in mx.get("routes", []) else ()
@@ -67,7 +99,11 @@ def run_matrix(route, cfg, cur, doc, today, errors):
         while d.month == dt.date.fromisoformat(mo + "-01").month:
             days.append(d)
             d += dt.timedelta(days=1)
+    random.shuffle(days)            # random order: no sequential scanning pattern
     for d in days:
+        if expired():
+            errors.append(f"{route['id']} matrix: time budget reached, remaining dates skipped")
+            break
         if d > dt.date.today():
             row = []
             for off in offs:
@@ -91,13 +127,13 @@ def run_matrix(route, cfg, cur, doc, today, errors):
                 else:
                     fails_in_row += 1
                     row.append(None)
-                time.sleep(random.uniform(0.5, 1.5))
+                pace()
             grid[d.isoformat()] = row
     if n_ok:
         mdir = DATA / "matrix" / route["id"]
         mdir.mkdir(parents=True, exist_ok=True)
         (mdir / f"{today}.json").write_text(json.dumps(
-            {"months": mx["months"], "offsets": offs, "currency": cur, "p": grid},
+            {"months": mx["months"], "offsets": offs, "currency": cur, "p": dict(sorted(grid.items()))},
             separators=(",", ":")))
         idx_path = mdir / "index.json"
         idx = json.loads(idx_path.read_text()) if idx_path.exists() else {"months": mx["months"], "snapshots": []}
@@ -115,20 +151,26 @@ def main():
     today = dt.date.today().isoformat()
     ok = fail = 0
     errors = []
+    pace_init(cfg)
     for route in cfg["routes"]:
         path = DATA / f"{route['id']}.json"
         doc = json.loads(path.read_text()) if path.exists() else {"history": {}, "latest": {}}
         doc["route"] = {**route, "windows": cfg["windows"], "stay_days": cfg.get("stay_days")}
         doc["currency"] = cur
         doc["updated"] = now
-        for dep, ret in dates_for(route, cfg):
+        pairs = list(dates_for(route, cfg))
+        random.shuffle(pairs)
+        for dep, ret in pairs:
+            if expired():
+                errors.append(f"{route['id']}: time budget reached")
+                break
             key = dep.isoformat()
             try:
                 offers = search(route, dep, ret, cur)
             except Exception as e:  # network block, parse change, no results...
                 fail += 1
                 errors.append(f"{route['id']} {key}: {type(e).__name__}: {str(e)[:120]}")
-                time.sleep(2)
+                pace()
                 continue
             if not offers:
                 fail += 1
@@ -139,7 +181,7 @@ def main():
                                   "offers": offers[:MAX_OFFERS]}
             doc["history"].setdefault(key, {})[today] = min(o["price"] for o in offers)
             ok += 1
-            time.sleep(random.uniform(2, 5))
+            pace()
         if route["id"] in (cfg.get("matrix") or {}).get("routes", []):
             n = run_matrix(route, cfg, cur, doc, today, errors)
             ok += n
