@@ -172,6 +172,7 @@ zh:{title:'机票追踪',settings:'设置',theme:'主题',th_auto:'跟随系统'
  dtd_h:'提前多久买（距出发天数）',dtd_axis:'% 相对均价',dtd_bucket:'{0}–{1} 天前',
  dtd_few:'数据还不够，需要几周后才能看出价格随临近出发的变化。',dtd_ok:'从左（离出发远）到右（临近出发）；上升段就是开始涨价的时期。',
  no_route:'路线 {0} 还没有被追踪。请在 config.json 的 routes 中添加后，下次定时任务会开始记录。',
+ cal_note:'价格矩阵为 Google 日期网格的真实往返价；航班列表中的价格为估算（去程 + 返程单程最低价），仅供参考。',
  est_note:'价格为估算往返价 = 去程单程最低价 + 返程单程最低价（航司的真实往返票价通常会低一些，趋势和对比仍然有效）。',
  mismatch:'注意：该路线追踪的是 {0}、成人{1}、儿童{2}，与你选的不同，价格仅供参考',
  fmin:'{0}小时{1}分',
@@ -203,6 +204,7 @@ en:{title:'Flight Tracker',settings:'Settings',theme:'Theme',th_auto:'Auto (syst
  dtd_h:'How early to buy (days before departure)',dtd_axis:'% vs average',dtd_bucket:'{0}–{1} days out',
  dtd_few:'Not enough data yet; it takes a few weeks to see how prices move toward departure.',dtd_ok:'Left (far from departure) to right (close to it); rising segments are when prices start to climb.',
  no_route:'Route {0} is not tracked yet. Add it to routes in config.json; the next scheduled run will start recording.',
+ cal_note:"The price matrix shows real round-trip prices from Google's date grid; prices in the flight list are estimates (outbound + return one-way), for reference only.",
  est_note:"Prices are an estimated round trip = cheapest outbound one-way + cheapest return one-way (real round-trip fares are usually somewhat lower; trends and comparisons still hold).",
  mismatch:'Note: this route is tracked for {0}, {1} adult(s), {2} child(ren) — different from your selection; prices are indicative.',
  fmin:'{0}h {1}m',
@@ -234,6 +236,7 @@ fr:{title:'Suivi des vols',settings:'Paramètres',theme:'Thème',th_auto:'Auto (
  dtd_h:"Combien de temps à l'avance acheter",dtd_axis:'% vs moyenne',dtd_bucket:'{0}–{1} j avant',
  dtd_few:"Pas assez de données ; il faut quelques semaines pour voir l'évolution à l'approche du départ.",dtd_ok:"De gauche (loin du départ) à droite (proche) ; les segments montants marquent le début de la hausse.",
  no_route:"L'itinéraire {0} n'est pas encore suivi. Ajoutez-le dans routes de config.json ; la prochaine exécution planifiée le suivra.",
+ cal_note:"La matrice des prix affiche les vrais tarifs aller-retour de la grille de dates de Google ; les prix de la liste de vols sont des estimations (aller + retour simples), à titre indicatif.",
  est_note:"Les prix sont un aller-retour estimé = aller simple le moins cher + retour simple le moins cher (les vrais tarifs aller-retour sont généralement un peu plus bas ; les tendances et comparaisons restent valables).",
  mismatch:'Note : cet itinéraire est suivi pour {0}, {1} adulte(s), {2} enfant(s) — différent de votre sélection ; prix indicatifs.',
  fmin:'{0} h {1}',
@@ -361,7 +364,7 @@ async function run(e){
     killCharts('trend','mom','wk','dtd');return}
   $('upd').textContent=t('updated',doc.updated.replace('T',' ').replace('Z',''));
   $('status').textContent=((doc.route.cabin!==$('cab').value||doc.route.adults!=$('ad').value||doc.route.children!=$('ch').value)?
-    t('mismatch',t('c_'+doc.route.cabin),doc.route.adults,doc.route.children)+' ':'')+(doc.route.pricing==='oneway_sum'?t('est_note'):'');
+    t('mismatch',t('c_'+doc.route.cabin),doc.route.adults,doc.route.children)+' ':'')+(doc.route.pricing==='oneway_sum'?t('est_note'):doc.route.pricing==='calendar'?t('cal_note'):'');
   const stay=doc.route.stay_days||42,W=doc.route.windows||[];
   if(!$('dep').dataset.touched&&W.length){$('dep').value=W[0].center;$('ret').value=addDays(W[0].center,stay)}
   const ch=$('chips');ch.textContent='';

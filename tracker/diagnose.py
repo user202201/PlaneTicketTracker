@@ -50,6 +50,10 @@ def run_case(name, legs, trip, stops, seat="economy", cur="CAD"):
             if not r["error_flag"]:
                 payload = json.loads(data)
                 r["payload_shape"] = shape(payload)
+                try:
+                    r["payload5"] = json.dumps(payload[5], ensure_ascii=False)[:3000]   # price-insight block (typical range / level / history?)
+                except Exception:
+                    pass
         try:
             flights = parse(html)
             r["n_flights"] = len(flights)
@@ -62,6 +66,26 @@ def run_case(name, legs, trip, stops, seat="economy", cur="CAD"):
         r["error"] = f"{type(e).__name__}: {e}"
         r["trace"] = traceback.format_exc()[-600:]
     print(json.dumps({k: v for k, v in r.items() if k not in ("trace", "html_head", "payload_shape")}, ensure_ascii=False))
+    return r
+
+
+def calendar_case():
+    """Google date grid (fli): real round-trip prices, <=1 stop, one request for a whole month."""
+    r = {"case": "calendar grid YUL-PEK round-trip Mar 1-31, 42 days, <=1 stop"}
+    try:
+        import sys
+        sys.path.insert(0, str(ROOT / "tracker"))
+        import fetch
+        route = {"origin": "YUL", "dest": "PEK", "max_stops": 1, "cabin": "economy", "adults": 1, "children": 0}
+        fetch.pace = lambda: None
+        res = fetch.calendar_prices(route, dt.date(2027, 3, 1), dt.date(2027, 3, 31), 42, "CAD")
+        r["n_dates"] = len(res)
+        r["sample"] = dict(list(sorted(res.items()))[:6])
+        r["min"] = min(res.values()) if res else None
+    except Exception as e:
+        r["error"] = f"{type(e).__name__}: {e}"
+        r["trace"] = traceback.format_exc()[-800:]
+    print(json.dumps({k: v for k, v in r.items() if k != "trace"}, ensure_ascii=False))
     return r
 
 
@@ -84,6 +108,7 @@ def main():
     for name, legs, trip, stops in cases:
         out["results"].append(run_case(name, legs, trip, stops))
         time.sleep(4)
+    out["results"].append(calendar_case())
     OUT.parent.mkdir(parents=True, exist_ok=True)
     OUT.write_text(json.dumps(out, ensure_ascii=False, indent=1))
 

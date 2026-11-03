@@ -42,7 +42,7 @@ def pace():
 
 def dates_for(route, cfg):
     mx = cfg.get("matrix") or {}
-    skip_months = tuple(mx.get("months", [])) if route["id"] in mx.get("routes", []) else ()
+    skip_months = tuple(mx.get("months", [])) if (route["id"] in mx.get("routes", []) and PRICING["mode"] != "calendar") else ()
     """All (depart, return) pairs: every window's centre +/- flex, return = depart + stay."""
     flex = route.get("flex_days", cfg.get("flex_days", 7))
     step = route.get("sample_step", cfg.get("sample_step", 2))
@@ -58,7 +58,10 @@ def dates_for(route, cfg):
                 yield d, (d + dt.timedelta(days=stay) if stay else None)
 
 
-PRICING = {"mode": "oneway_sum"}   # "oneway_sum" (estimate: outbound + return one-way) or "roundtrip"
+# modes: "calendar"   = matrix from Google's date grid (real round-trip prices); flight lists use one-way sums
+#        "oneway_sum" = everything estimated as outbound + return one-way fares
+#        "roundtrip"  = per-trip round-trip query (not working with the current scraper)
+PRICING = {"mode": "oneway_sum"}
 CACHE = {}                          # (origin, dest, date, cabin, adults, children) -> ("ok", offers) | ("err", msg)
 
 
@@ -140,7 +143,101 @@ def search(route, dep, ret, currency):
     return [{**o, "price": o["price"] + bmin, "est": True} for o in out]
 
 
+def calendar_prices(route, first, last, duration, currency):
+    """Google 'date grid' (GetCalendarGraph): real round-trip price for every departure date in
+    [first, last] with return = departure + duration. Up to 61 days per request; stop filter is sent
+    to Google using its correct enum. Returns {departure_iso: price}."""
+    from fli.models import (Airport, DateSearchFilters, FlightSegment, MaxStops, PassengerInfo,
+                            SeatType, TripType)
+    from fli.search import SearchDates
+    stops = {None: MaxStops.ANY, 0: MaxStops.NON_STOP, 1: MaxStops.ONE_STOP_OR_FEWER,
+             2: MaxStops.TWO_OR_FEWER_STOPS}[route.get("max_stops")]
+    seat = {"economy": SeatType.ECONOMY, "premium-economy": SeatType.PREMIUM_ECONOMY,
+            "business": SeatType.BUSINESS, "first": SeatType.FIRST}[route.get("cabin", "economy")]
+    o, d = Airport[route["origin"]], Airport[route["dest"]]
+    first = max(first, dt.date.today() + dt.timedelta(days=1))
+    if first > last:
+        return {}
+    f = DateSearchFilters(
+        trip_type=TripType.ROUND_TRIP,
+        passenger_info=PassengerInfo(adults=route.get("adults", 1), children=route.get("children", 0)),
+        flight_segments=[
+            FlightSegment(departure_airport=[[o, 0]], arrival_airport=[[d, 0]], travel_date=first.isoformat()),
+            FlightSegment(departure_airport=[[d, 0]], arrival_airport=[[o, 0]],
+                          travel_date=(first + dt.timedelta(days=duration)).isoformat())],
+        stops=stops, seat_type=seat, from_date=first.isoformat(), to_date=last.isoformat(), duration=duration)
+    try:
+        res = SearchDates().search(f, currency=currency)
+    finally:
+        pace()
+    out = {}
+    for r in res or []:
+        out[r.date[0].date().isoformat()] = int(round(r.price))
+    return out
+
+
+def run_matrix_calendar(route, cfg, cur, doc, today, errors):
+    """Whole matrix from ~7 calendar requests per month (one per trip length)."""
+    mx = cfg["matrix"]
+    offs, stay = mx["return_offsets"], cfg.get("stay_days")
+    grid, n_ok, fails = {}, 0, 0
+    for mo in mx["months"]:
+        first = dt.date.fromisoformat(mo + "-01")
+        last = (first.replace(day=28) + dt.timedelta(days=4)).replace(day=1) - dt.timedelta(days=1)
+        cols = {}
+        for off in offs:
+            if expired():
+                errors.append(f"{route['id']} calendar: time budget reached")
+                break
+            try:
+                cols[off] = calendar_prices(route, first, last, off, cur)
+                if cols[off]:
+                    n_ok += 1
+                    fails = 0
+                else:
+                    fails += 1
+            except Exception as e:
+                cols[off] = {}
+                fails += 1
+                errors.append(f"{route['id']} calendar {mo} +{off}d: {type(e).__name__}: {str(e)[:120]}")
+            if fails >= 6 and n_ok == 0:
+                return 0                       # calendar not working at all -> caller falls back
+        day = first
+        while day <= last:
+            k = day.isoformat()
+            row = [cols.get(o, {}).get(k) for o in offs]
+            if any(v is not None for v in row):
+                grid[k] = row
+                if stay in offs and row[offs.index(stay)] is not None:
+                    doc["history"].setdefault(k, {})[today] = row[offs.index(stay)]
+            day += dt.timedelta(days=1)
+    if n_ok:
+        mdir = DATA / "matrix" / route["id"]
+        mdir.mkdir(parents=True, exist_ok=True)
+        (mdir / f"{today}.json").write_text(json.dumps(
+            {"months": mx["months"], "offsets": offs, "currency": cur, "pricing": "calendar",
+             "p": dict(sorted(grid.items()))}, separators=(",", ":")))
+        idx_path = mdir / "index.json"
+        idx = json.loads(idx_path.read_text()) if idx_path.exists() else {"months": mx["months"], "snapshots": []}
+        if today not in idx["snapshots"]:
+            idx["snapshots"].append(today)
+        idx_path.write_text(json.dumps(idx))
+    return n_ok
+
+
 def run_matrix(route, cfg, cur, doc, today, errors):
+    if PRICING["mode"] == "calendar":
+        n = run_matrix_calendar(route, cfg, cur, doc, today, errors)
+        if n:
+            doc["route"]["pricing"] = "calendar"
+            return n
+        errors.append(f"{route['id']}: calendar failed, falling back to one-way estimates")
+        PRICING["mode"] = "oneway_sum"
+        doc["route"]["pricing"] = "oneway_sum"
+    return run_matrix_cells(route, cfg, cur, doc, today, errors)
+
+
+def run_matrix_cells(route, cfg, cur, doc, today, errors):
     """Depart x return price grid for one month. One query per cell; stores min price per cell."""
     mx = cfg["matrix"]
     offs = mx["return_offsets"]
@@ -241,7 +338,8 @@ def main():
             offers.sort(key=lambda o: (o["stops"], o["duration"], o["price"]))
             doc["latest"][key] = {"return": ret.isoformat() if ret else None,
                                   "offers": offers[:MAX_OFFERS]}
-            doc["history"].setdefault(key, {})[today] = min(o["price"] for o in offers)
+            if not (PRICING["mode"] == "calendar" and route["id"] in (cfg.get("matrix") or {}).get("routes", [])):
+                doc["history"].setdefault(key, {})[today] = min(o["price"] for o in offers)
             ok += 1
         if route["id"] in (cfg.get("matrix") or {}).get("routes", []):
             n = run_matrix(route, cfg, cur, doc, today, errors)
