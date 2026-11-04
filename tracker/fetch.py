@@ -613,8 +613,10 @@ def run_matrix_cells(route, cfg, cur, doc, today, errors, flush=None, only=None)
             flush()
 
     def pending():
+        # only exact (list) cells count: calendar columns are one cheap request per month, and a route/month Google has no
+        # grid prices for (e.g. a thin route) would otherwise keep the relay retrying forever
         return sum(1 for d in days for i, off in enumerate(allo)
-                   if valid(d, off, i < nc) and grid[d.isoformat()][i] is None)
+                   if i >= nc and valid(d, off, False) and grid[d.isoformat()][i] is None)
 
     # ---- 1) dense calendar columns first: ONE request per month returns every (departure, return) pair for all stays ----
     if cal_offs and do_cal:
