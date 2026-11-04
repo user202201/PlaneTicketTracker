@@ -1,0 +1,33 @@
+name: time-of-day-probe
+on:
+  schedule:
+    - cron: "7 13 * * *"    # ~8am Montreal (winter)
+    - cron: "7 17 * * *"    # ~noon
+    - cron: "37 21 * * *"   # ~4:30pm
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency: probe
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+        with: { ref: "${{ github.ref_name }}" }
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12", cache: pip, cache-dependency-path: tracker/requirements.txt }
+      - run: pip install -r tracker/requirements.txt
+      - name: Git identity
+        run: |
+          git config user.name "price-tracker-bot"
+          git config user.email "bot@users.noreply.github.com"
+      - name: Small random start delay
+        if: github.event_name == 'schedule'
+        run: sleep $(( RANDOM % 240 ))
+      - run: python tracker/probe.py
+      - name: Save
+        if: always()
+        run: |
+          git add docs/data/tod || true
+          git diff --cached --quiet || (git commit -m "tod probe: $(date -u +%F\ %H:%M)" && git pull --rebase --autostash -X theirs origin "${{ github.ref_name }}" && git push origin HEAD:"${{ github.ref_name }}")

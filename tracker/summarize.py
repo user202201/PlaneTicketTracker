@@ -47,6 +47,9 @@ LANGS = ("zh", "en", "fr")
 MON = {"zh": [f"{i}月" for i in range(1, 13)],
        "en": ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
        "fr": ["janv.", "févr.", "mars", "avr.", "mai", "juin", "juil.", "août", "sept.", "oct.", "nov.", "déc."]}
+SLOT = {"zh": {"am": "早上（约 8 点）", "noon": "中午（约 12 点）", "pm": "下午（约 16 点）"},
+        "en": {"am": "in the morning (~8am)", "noon": "at noon (~12pm)", "pm": "in the afternoon (~4pm)"},
+        "fr": {"am": "le matin (~8 h)", "noon": "à midi (~12 h)", "pm": "l'après-midi (~16 h)"}}
 WDN = {"zh": ["周一", "周二", "周三", "周四", "周五", "周六", "周日"],
        "en": ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
        "fr": ["lun.", "mar.", "mer.", "jeu.", "ven.", "sam.", "dim."]}
@@ -64,7 +67,9 @@ CAT = {
   "below": "{m}：低于观察期均价，高于最低点 {gap}%，可继续观察。",
   "wait": "{m}：高于观察期均价，高于最低点 {gap}%，建议观望。",
   "buywd": "买票星期：{b}查到的价格平均比前后一周均价低 {lo}%，{w}最高（高 {hi}%）。差异在 1–2% 以内时没有实际意义。",
-  "buyneed": "“星期几买票最划算”需要至少 {min} 天数据（目前 {n} 天）。"},
+  "buyneed": "“星期几买票最划算”需要至少 {min} 天数据（目前 {n} 天）。",
+  "todbest": "查询时段：{b}查到的价格平均比同一天三个时段的均价低 {lo}%，{w}最高（高 {hi}%）。差异在 1% 以内时没有实际意义。",
+  "todneed": "“一天中哪个时段买”需要至少 {min} 天的三时段数据（目前 {n} 天）。"},
  "en": {
   "collected": "Collected {n} days of data (latest: {last}).",
   "need": "Buy/wait advice appears after {min} days of data; for now this only describes current prices.",
@@ -78,7 +83,9 @@ CAT = {
   "below": "{m}: below the average over the observed period, {gap}% above the lowest — keep watching.",
   "wait": "{m}: above the observed average, {gap}% above the lowest — suggest waiting.",
   "buywd": "Best day to buy: prices seen on {b} are on average {lo}% below the surrounding week; {w} is the highest ({hi}% above). Differences within 1–2% are not meaningful.",
-  "buyneed": "“Best weekday to buy” needs at least {min} days of data (currently {n})."},
+  "buyneed": "“Best weekday to buy” needs at least {min} days of data (currently {n}).",
+  "todbest": "Time of day: prices seen {b} are on average {lo}% below that day's average across the three slots; {w} is the highest ({hi}% above). Differences within 1% are not meaningful.",
+  "todneed": "“Best time of day to buy” needs at least {min} days of three-slot data (currently {n})."},
  "fr": {
   "collected": "{n} jours de données collectés (dernier : {last}).",
   "need": "Les conseils d'achat/attente apparaissent après {min} jours de données ; pour l'instant, simple description des prix actuels.",
@@ -92,7 +99,9 @@ CAT = {
   "below": "{m} : sous la moyenne observée, {gap} % au-dessus du minimum — continuez à surveiller.",
   "wait": "{m} : au-dessus de la moyenne observée, {gap} % au-dessus du minimum — mieux vaut attendre.",
   "buywd": "Meilleur jour pour acheter : les prix du {b} sont en moyenne {lo} % sous la semaine environnante ; le {w} est le plus élevé ({hi} % au-dessus). Un écart de 1 à 2 % n'est pas significatif.",
-  "buyneed": "« Meilleur jour pour acheter » nécessite au moins {min} jours de données (actuellement {n})."},
+  "buyneed": "« Meilleur jour pour acheter » nécessite au moins {min} jours de données (actuellement {n}).",
+  "todbest": "Moment de la journée : les prix relevés {b} sont en moyenne {lo} % sous la moyenne des trois créneaux du jour ; {w} est le plus élevé ({hi} % au-dessus). Un écart de moins de 1 % n'est pas significatif.",
+  "todneed": "« Meilleur moment de la journée » nécessite au moins {min} jours de données sur les trois créneaux (actuellement {n})."},
 }
 
 
@@ -204,6 +213,26 @@ def summarize(route_id):
                                              "lo": f"{(1 - res[b]) * 100:.1f}", "hi": f"{(res[w] - 1) * 100:.1f}"})
     else:
         say("info", "buyneed", lambda lg: {"min": MIN_DAYS_WEEKDAY, "n": n})
+    # time of day (same cells queried at morning / noon / afternoon by probe.py)
+    tp = DATA / "tod" / f"{route_id}.json"
+    if tp.exists():
+        obs = json.loads(tp.read_text()).get("obs", {})
+        ratios, tdays = {"am": [], "noon": [], "pm": []}, set()
+        for dep, byday in obs.items():
+            for d, v in byday.items():
+                vals = {k: x for k, x in v.items() if x}
+                if len(vals) == 3:
+                    mean = sum(vals.values()) / 3
+                    for k, x in vals.items():
+                        ratios[k].append(x / mean)
+                    tdays.add(d)
+        if len(tdays) >= 14 and all(len(r) >= 30 for r in ratios.values()):
+            res = {k: st.mean(v) for k, v in ratios.items()}
+            b, w = min(res, key=res.get), max(res, key=res.get)
+            say("info", "todbest", lambda lg: {"b": SLOT[lg][b], "w": SLOT[lg][w],
+                                               "lo": f"{(1 - res[b]) * 100:.1f}", "hi": f"{(res[w] - 1) * 100:.1f}"})
+        else:
+            say("info", "todneed", lambda lg: {"min": 14, "n": len(tdays)})
     return {"days": n, "latest": last, "bullets": out}
 
 

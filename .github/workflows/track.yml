@@ -3,7 +3,8 @@ on:
   push:
     paths: [".github/run-trigger.txt"]   # touch this file to start a normal run
   schedule:
-    - cron: "7 */3 * * *"   # watchdog: picks up if the relay broke; exits in seconds when nothing is left
+    - cron: "7 14 * * *"    # daily kickoff ~9am Montreal: the day's collection runs as a relay from here
+    - cron: "37 17,20,23 * * *"   # watchdog: picks up if the relay broke; exits in seconds when nothing is left
   workflow_dispatch:
     inputs:
       mode:
