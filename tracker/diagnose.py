@@ -474,10 +474,92 @@ def calendar_range_probe():
     return r
 
 
+def span_probe():
+    """(a) Is the stay-length limit really a limit on (departure-range + stay)? Try short departure ranges with long stays.
+    (b) Price basis: the user's trip Mar10->Apr22 with point of sale = Canada, listing every itinerary."""
+    import urllib.parse
+    r = {"case": "span probe + Canadian point of sale", "steps": []}
+    try:
+        from fli.models import (Airport, DateSearchFilters, FlightSearchFilters, FlightSegment, MaxStops,
+                                PassengerInfo, SeatType, TripType)
+        from fli.search import SearchDates, SearchFlights
+        from fli.search._urls import with_locale_params
+        from fli.search._wire import parse_first_wrb_payload
+        pax = PassengerInfo(adults=1)
+        Y, P = Airport.YUL, Airport.PEK
+
+        def seg(a, b, date):
+            return FlightSegment(departure_airport=[[a, 0]], arrival_airport=[[b, 0]], travel_date=date)
+
+        client = SearchDates().client
+
+        def cal(first, last, dmin, dmax, country=None):
+            base = DateSearchFilters(trip_type=TripType.ROUND_TRIP, passenger_info=pax,
+                                     flight_segments=[seg(Y, P, first), seg(P, Y, (dt.date.fromisoformat(first) + dt.timedelta(days=dmin)).isoformat())],
+                                     stops=MaxStops.ONE_STOP_OR_FEWER, seat_type=SeatType.ECONOMY,
+                                     from_date=first, to_date=last, duration=dmin)
+            raw = base.format()
+            raw[-1] = [dmin, dmax]
+            enc = urllib.parse.quote(json.dumps([None, json.dumps(raw, separators=(",", ":"))], separators=(",", ":")))
+            url = with_locale_params(SearchDates.BASE_URL, "CAD", None, country)
+            resp = client.post(url=url, data=f"f.req={enc}", impersonate="chrome", allow_redirects=True)
+            rows = []
+            try:
+                data = parse_first_wrb_payload(resp.text)
+                for it in (data[-1] if data else []) or []:
+                    try:
+                        rows.append((it[0], it[1], it[2][0][1]))
+                    except Exception:
+                        pass
+            except Exception:
+                pass
+            return rows
+
+        tests = [("dep 2027-03-10..03-10 (1 day), stay 43", "2027-03-10", "2027-03-10", 43, 43),
+                 ("dep 03-10..03-16 (7 d), stay 38-46", "2027-03-10", "2027-03-16", 38, 46),
+                 ("dep 03-10..03-23 (14 d), stay 38-46", "2027-03-10", "2027-03-23", 38, 46),
+                 ("dep 03-10..03-30 (21 d), stay 38-46", "2027-03-10", "2027-03-30", 38, 46),
+                 ("dep 03-10..03-16 (7 d), stay 42-42", "2027-03-10", "2027-03-16", 42, 42)]
+        for name, a, b, lo, hi in tests:
+            rows = cal(a, b, lo, hi)
+            r["steps"].append({"cal": name, "n_rows": len(rows), "distinct_deps": len({x[0] for x in rows}),
+                               "mar10": [x for x in rows if x[0] == "2027-03-10"][:12]})
+            time.sleep(2.5)
+        # same trip through the calendar with Canadian point of sale
+        rows = cal("2027-03-10", "2027-03-10", 43, 43, country="CA")
+        r["steps"].append({"cal CA pos Mar10->Apr22": rows[:3]})
+        time.sleep(2.5)
+
+        # list for the user's trip: default vs country=CA; print every itinerary
+        sf = SearchFlights()
+        f = FlightSearchFilters(trip_type=TripType.ROUND_TRIP, passenger_info=pax,
+                                flight_segments=[seg(Y, P, "2027-03-10"), seg(P, Y, "2027-04-22")],
+                                stops=MaxStops.ONE_STOP_OR_FEWER, seat_type=SeatType.ECONOMY)
+        for label, country in (("default", None), ("country=CA", "CA")):
+            res = None
+            for _ in range(2):
+                try:
+                    res = sf._fetch_flights(f, currency="CAD", language=None, country=country, capture_session=False)
+                except Exception:
+                    res = None
+                if res:
+                    break
+                time.sleep(4)
+            r["steps"].append({"list": label, "n": len(res or []),
+                               "all": [[x.price, [getattr(l.airline, "value", "?") for l in x.legs], [l.arrival_airport.name for l in x.legs[:-1]],
+                                        x.legs[0].departure_datetime.strftime("%H:%M")] for x in sorted([y for y in (res or []) if y.price], key=lambda y: y.price)][:12]})
+            time.sleep(3)
+    except Exception as e:
+        r["error"] = f"{type(e).__name__}: {e}"
+        r["trace"] = traceback.format_exc()[-600:]
+    print(json.dumps({k: v for k, v in r.items() if k != "trace"}, ensure_ascii=False)[:900])
+    return r
+
+
 def main():
     import sys
     if "--all" not in sys.argv:         # default: light run (calendar probe only) so the runner's request budget isn't burned
-        out = {"when": dt.datetime.now(dt.timezone.utc).isoformat(timespec="seconds"), "results": [calendar_range_probe()]}
+        out = {"when": dt.datetime.now(dt.timezone.utc).isoformat(timespec="seconds"), "results": [span_probe()]}
         OUT.parent.mkdir(parents=True, exist_ok=True)
         OUT.write_text(json.dumps(out, ensure_ascii=False, indent=1))
         return

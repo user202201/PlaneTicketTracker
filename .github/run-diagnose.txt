@@ -1,1 +1,1 @@
-diagnose round 7: user's trip + stay-length range + grid endpoint
+diagnose round 8: span probe + CA point of sale
