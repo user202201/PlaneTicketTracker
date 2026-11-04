@@ -210,6 +210,68 @@ def list_case():
     return r
 
 
+def list_probe():
+    """Why does the list endpoint sometimes answer with an error? Try several date pairs / stop filters,
+    shared vs fresh client, with a few spaced attempts each, recording what comes back."""
+    out = []
+    try:
+        from fli.models import (Airport, FlightSearchFilters, FlightSegment, MaxStops, PassengerInfo, SeatType, TripType)
+        from fli.search import SearchFlights
+        from fli.search._urls import with_locale_params
+    except Exception as e:
+        return [{"case": "probe import", "error": str(e)}]
+    o, d_ = Airport.YUL, Airport.PEK
+    shared = SearchFlights()
+
+    def mk(dep, ret, stops):
+        segs = [FlightSegment(departure_airport=[[o, 0]], arrival_airport=[[d_, 0]], travel_date=dep)]
+        if ret:
+            segs.append(FlightSegment(departure_airport=[[d_, 0]], arrival_airport=[[o, 0]], travel_date=ret))
+        return FlightSearchFilters(trip_type=TripType.ROUND_TRIP if ret else TripType.ONE_WAY,
+                                   passenger_info=PassengerInfo(adults=1), flight_segments=segs,
+                                   stops=stops, seat_type=SeatType.ECONOMY)
+
+    cases = [
+        ("Mar3/Apr16 <=1", "2027-03-03", "2027-04-16", MaxStops.ONE_STOP_OR_FEWER, False),
+        ("Mar3/Apr16 ANY", "2027-03-03", "2027-04-16", MaxStops.ANY, False),
+        ("Mar3/Apr16 <=1 FRESH client", "2027-03-03", "2027-04-16", MaxStops.ONE_STOP_OR_FEWER, True),
+        ("Mar10/Apr21 <=1", "2027-03-10", "2027-04-21", MaxStops.ONE_STOP_OR_FEWER, False),
+        ("Mar3/Apr15 <=1", "2027-03-03", "2027-04-15", MaxStops.ONE_STOP_OR_FEWER, False),
+        ("Mar4/Apr17 <=1", "2027-03-04", "2027-04-17", MaxStops.ONE_STOP_OR_FEWER, False),
+        ("Mar10/Apr09 30d <=1", "2027-03-10", "2027-04-09", MaxStops.ONE_STOP_OR_FEWER, False),
+        ("Dec1/Dec15 <=1 (near)", "2026-12-01", "2026-12-15", MaxStops.ONE_STOP_OR_FEWER, False),
+        ("OW Mar3 <=1", "2027-03-03", None, MaxStops.ONE_STOP_OR_FEWER, False),
+    ]
+    for name, dep, ret, stops, fresh in cases:
+        r = {"case": "probe: " + name, "attempts": []}
+        sf = SearchFlights() if fresh else shared
+        f = mk(dep, ret, stops)
+        for i in range(3):
+            a = {}
+            try:
+                t0 = time.time()
+                url = with_locale_params(sf.BASE_URL, "CAD", None, None)
+                resp = sf.client.post(url=url, data=f"f.req={f.encode()}", impersonate="chrome", allow_redirects=True)
+                a["http"] = resp.status_code
+                a["len"] = len(resp.text)
+                a["errtype"] = "ErrorResponse" in resp.text[:600]
+                res = sf._fetch_flights(f, currency="CAD", language=None, country=None, capture_session=False)
+                a["n"] = len(res or [])
+                if res:
+                    a["min"] = min(x.price for x in res if x.price is not None)
+                a["s"] = round(time.time() - t0, 1)
+            except Exception as e:
+                a["err"] = f"{type(e).__name__}: {e}"[:160]
+            r["attempts"].append(a)
+            if a.get("n"):
+                break
+            time.sleep(6)
+        print(json.dumps(r, ensure_ascii=False)[:300])
+        out.append(r)
+        time.sleep(3)
+    return out
+
+
 def main():
     d = dt.date.today()
     near = (d + dt.timedelta(days=45)).isoformat()
@@ -230,6 +292,7 @@ def main():
         out["results"].append(run_case(name, legs, trip, stops))
         time.sleep(4)
     out["results"].append(list_case())
+    out["results"].extend(list_probe())
     out["results"].append(calendar_case())
     out["results"].extend(fli_cases())
     OUT.parent.mkdir(parents=True, exist_ok=True)
