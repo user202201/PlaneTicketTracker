@@ -568,6 +568,8 @@ async function loadMatrix(id){
   fill($('mxMonth'),months.map(m=>[m,mlabel(m)]));
   if(!$('mxMonth').dataset.set){$('mxMonth').dataset.set=1;$('mxMin').value=cur0.offsets[0];$('mxMax').value=cur0.offsets[cur0.offsets.length-1];
     if(snaps.length>1)$('mxCmp').value=snaps[Math.min(7,snaps.length-1)]}
+  const wantM=$('dep').value.slice(0,7);
+  if(wantM!==state.lastDepMonth){state.lastDepMonth=wantM;if(months.includes(wantM))$('mxMonth').value=wantM}
   const mm=months.map(m=>{const v=Object.entries(cur0.p).filter(([k])=>k.startsWith(m)).map(([,r])=>r.filter(x=>x!=null)).filter(r=>r.length).map(r=>Math.min(...r));
     return{m,avg:v.length?Math.round(v.reduce((a,b)=>a+b)/v.length):null,min:v.length?Math.min(...v):null}});
   draw('mom',{type:'bar',data:{labels:mm.map(x=>mlabel(x.m)),datasets:[
@@ -603,7 +605,12 @@ async function loadMatrix(id){
         tr.appendChild(td)});tb.appendChild(tr)}
     $('mxNote').textContent=t('mx_click')+' '+t('mx_note',cur.currency)+(cur.pricing==='oneway_sum'?' '+t('est_note'):'')+(cmp?t('mx_note_cmp',$('mxCmp').value):'');
   };
-  $('mxSnap').onchange=$('mxCmp').onchange=$('mxMonth').onchange=$('mxMin').oninput=$('mxMax').oninput=draw_;
+  $('mxSnap').onchange=$('mxCmp').onchange=$('mxMin').oninput=$('mxMax').oninput=draw_;
+  $('mxMonth').onchange=()=>{
+    const m=$('mxMonth').value,W=(state.doc.route.windows||[]).find(x=>x.center.slice(0,7)===m);
+    if(W&&$('dep').value.slice(0,7)!==m){const stay=state.doc.route.stay_days||42;
+      $('dep').value=W.center;$('dep').dataset.touched=1;$('ret').value=addDays(W.center,stay);run()}
+    else{state.lastDepMonth=$('dep').value.slice(0,7);draw_()}};
   draw_();
 }
 
