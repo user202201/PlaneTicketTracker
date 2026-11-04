@@ -63,6 +63,7 @@ def dates_for(route, cfg):
 #        "oneway_sum" = everything estimated as outbound + return one-way fares
 #        "roundtrip"  = per-trip round-trip query (not working with the current scraper)
 PRICING = {"mode": "oneway_sum"}
+EXPAND = {"returns": True}          # fetch the return leg for the cheapest outbound of each date pair
 CACHE = {}                          # (origin, dest, date, cabin, adults, children) -> ("ok", offers) | ("err", msg)
 
 
@@ -168,36 +169,78 @@ def fli_list(route, dep, ret, currency):
         time.sleep(random.uniform(3, 6) * PACE["scale"])
     if not res:
         raise RuntimeError(f"no result after 3 attempts ({type(last).__name__ + ': ' + str(last)[:100] if last else 'empty/error response'})")
-    return _fli_offers(res)
+    pairs = _fli_offers(res)
+    offers = [p[0] for p in pairs]
+    if ret and EXPAND["returns"] and pairs:
+        try:                                    # full round trip for the cheapest outbound: also fetch its return leg
+            rr = _fli_return(route, f, pairs[0][1], currency)
+            if rr:
+                pairs[0][0]["ret"] = rr
+        except Exception:
+            pass
+    return offers
+
+
+def _itin(x):
+    """One itinerary (FlightResult) as a compact dict, incl. per-leg details."""
+    legs = x.legs
+    airlines = []
+    for l in legs:
+        n = getattr(l.airline, "value", str(l.airline))
+        if n not in airlines:
+            airlines.append(n)
+    return {
+        "airlines": airlines, "stops": x.stops, "duration": x.duration,
+        "via": [l.arrival_airport.name for l in legs[:-1]],
+        "dep": legs[0].departure_datetime.strftime("%Y-%m-%d %H:%M"),
+        "arr": legs[-1].arrival_datetime.strftime("%Y-%m-%d %H:%M"),
+        "lay": [getattr(v, "duration", None) for v in (x.layovers or [])],
+        "legs": [{"a": l.departure_airport.name, "an": l.departure_airport_name or l.departure_airport.value,
+                  "b": l.arrival_airport.name, "bn": l.arrival_airport_name or l.arrival_airport.value,
+                  "dep": l.departure_datetime.strftime("%Y-%m-%dT%H:%M:%S"),
+                  "arr": l.arrival_datetime.strftime("%Y-%m-%dT%H:%M:%S"),
+                  "min": l.duration, "al": getattr(l.airline, "value", str(l.airline)),
+                  "no": l.flight_number, "ac": l.aircraft} for l in legs],
+    }
 
 
 def _fli_offers(res):
+    """-> list of (offer_dict, FlightResult) sorted by price."""
     out = []
     for x in res:
         if x.price is None or not x.legs:
             continue
-        legs = x.legs
-        airlines = []
-        for l in legs:
-            n = getattr(l.airline, "value", str(l.airline))
-            if n not in airlines:
-                airlines.append(n)
-        lay = [getattr(v, "duration", None) for v in (x.layovers or [])]
-        out.append({
-            "price": int(round(x.price)), "airlines": airlines, "stops": x.stops, "duration": x.duration,
-            "via": [l.arrival_airport.name for l in legs[:-1]],
-            "dep": legs[0].departure_datetime.strftime("%Y-%m-%d %H:%M"),
-            "arr": legs[-1].arrival_datetime.strftime("%Y-%m-%d %H:%M"),
-            "lay": lay,
-            "legs": [{"a": l.departure_airport.name, "an": l.departure_airport_name or l.departure_airport.value,
-                      "b": l.arrival_airport.name, "bn": l.arrival_airport_name or l.arrival_airport.value,
-                      "dep": l.departure_datetime.strftime("%Y-%m-%dT%H:%M:%S"),
-                      "arr": l.arrival_datetime.strftime("%Y-%m-%dT%H:%M:%S"),
-                      "min": l.duration, "al": getattr(l.airline, "value", str(l.airline)),
-                      "no": l.flight_number, "ac": l.aircraft} for l in legs],
-        })
-    out.sort(key=lambda o: o["price"])
+        o = _itin(x)
+        o["price"] = int(round(x.price))
+        out.append((o, x))
+    out.sort(key=lambda p: p[0]["price"])
     return out
+
+
+def _fli_return(route, f_out, outbound_fr, currency):
+    """Return-leg options for a chosen outbound (one extra request); cheapest option as an itinerary dict."""
+    from copy import deepcopy
+    f2 = deepcopy(f_out)
+    f2.flight_segments[0].selected_flight = outbound_fr
+    res, last = None, None
+    for attempt in range(3):
+        try:
+            res = _sf()._fetch_flights(f2, currency=currency, language=None, country=None, capture_session=False)
+        except Exception as e:
+            last, res = e, None
+        finally:
+            pace()
+        if res:
+            break
+        time.sleep(random.uniform(3, 6) * PACE["scale"])
+    if not res:
+        return None
+    best = min((x for x in res if x.price is not None and x.legs), key=lambda x: x.price, default=None)
+    if best is None:
+        return None
+    r = _itin(best)
+    r["total"] = int(round(best.price))
+    return r
 
 
 def search(route, dep, ret, currency):
@@ -399,6 +442,7 @@ def main():
     errors = []
     pace_init(cfg)
     PRICING["mode"] = cfg.get("pricing", "oneway_sum")
+    EXPAND["returns"] = bool(cfg.get("expand_returns", True))
     for route in cfg["routes"]:
         path = DATA / f"{route['id']}.json"
         doc = json.loads(path.read_text()) if path.exists() else {"history": {}, "latest": {}}

@@ -61,6 +61,8 @@ main{padding:16px 0 40px}
 .flw.open .fl{border-radius:12px 12px 0 0;border-bottom-color:transparent}
 .det{display:none;border:1px solid var(--line);border-top:0;border-radius:0 0 12px 12px;padding:14px 18px;background:var(--card)}
 .flw.open .det{display:block}
+.m2{font-size:13px;margin-top:6px;padding-top:6px;border-top:1px dashed var(--line);display:flex;gap:10px;flex-wrap:wrap;align-items:baseline;color:var(--mut)}
+.m2 b{color:var(--fg);font-size:15px;font-variant-numeric:tabular-nums}
 .chev{display:block;font-size:12px;color:var(--mut);margin-top:2px;transition:transform .15s}
 .flw.open .chev{transform:rotate(180deg)}
 .leg{display:grid;grid-template-columns:78px 1fr;gap:6px 12px;margin-bottom:2px}
@@ -199,7 +201,7 @@ zh:{title:'机票追踪',settings:'设置',theme:'主题',th_auto:'跟随系统'
  tab_ov:'总览',tab_mx:'价格矩阵',tab_se:'走势与淡旺季',tab_tm:'买票时机',
  flights_h:'航班',prio:['第一优先','第二优先','第三优先'],
  k_stops:'转机次数（少→多）',k_dur:'总用时（短→长）',k_price:'价格（低→高）',
- rank_h:'排序偏好（综合最优）',rank_hint:'综合成本 = 价格 + 用时 × 时间价值 + 转机数 × 转机折算。把时间看得越值钱，越偏向快的航班。',cell_title:'{0} 出发 · {1} 返程 · {2} 天',cell_none:'这个组合暂无航班详情（可能是历史快照，或数据尚未更新）。可以直接用下面的按钮去查询：',cell_old:'当前查看的是历史快照，只保留了价格，没有保存航班详情，下面是最新一次的数据（如有）。',mx_click:'点击任意格子查看该组合的航班详情和预订链接。',sort_l:'排序方式',m_best:'综合最优',m_price:'最便宜',m_fast:'最快',m_stops:'转机最少',w_time:'时间价值（每小时）',w_stop:'每次转机折算',best_note:'综合成本 = 价格 + 用时（小时）× 每小时时间价值 + 转机次数 × 每次转机折算，越低越好。',b_best:'综合最优',cost_l:'综合成本',d_sum:'{0} 出发 · {1} 返程 · 往返总价（每人）',d_est:'估算价',d_out:'去程行程',d_lay:'在 {0} 转机，等待 {1}',d_ac:'机型 {0}',d_noleg:'这条数据暂无航段详情，下次更新后会显示。',d_noret:'这里只显示去程航段；返程航班请在预订页面选择。',d_book:'查看 / 预订：',d_g:'Google 航班',d_k:'Kayak',d_s:'Skyscanner',d_nextday:'+{0} 天',nonstop:'直飞',nstops:'{0} 次转机',b_price:'最低价',b_fast:'最快',b_first:'首选',dep_day:'出发日 {0}',
+ rank_h:'排序偏好（综合最优）',rank_hint:'综合成本 = 价格 + 用时 × 时间价值 + 转机数 × 转机折算。把时间看得越值钱，越偏向快的航班。',cell_title:'{0} 出发 · {1} 返程 · {2} 天',cell_none:'这个组合暂无航班详情（可能是历史快照，或数据尚未更新）。可以直接用下面的按钮去查询：',cell_old:'当前查看的是历史快照，只保留了价格，没有保存航班详情，下面是最新一次的数据（如有）。',mx_click:'点击任意格子查看该组合的航班详情和预订链接。',lbl_out:'去程',lbl_ret:'返程',d_ret:'返程行程',ret_none:'返程航班详情暂未保存（价格已含返程）；请点下面的按钮在预订页面选择具体航班。',ret_short:'返程详情见预订页面',sort_l:'排序方式',m_best:'综合最优',m_price:'最便宜',m_fast:'最快',m_stops:'转机最少',w_time:'时间价值（每小时）',w_stop:'每次转机折算',best_note:'综合成本 = 价格 + 用时（小时）× 每小时时间价值 + 转机次数 × 每次转机折算，越低越好。',b_best:'综合最优',cost_l:'综合成本',d_sum:'{0} 出发 · {1} 返程 · 往返总价（每人）',d_est:'估算价',d_out:'去程行程',d_lay:'在 {0} 转机，等待 {1}',d_ac:'机型 {0}',d_noleg:'这条数据暂无航段详情，下次更新后会显示。',d_noret:'这里只显示去程航段；返程航班请在预订页面选择。',d_book:'查看 / 预订：',d_g:'Google 航班',d_k:'Kayak',d_s:'Skyscanner',d_nextday:'+{0} 天',nonstop:'直飞',nstops:'{0} 次转机',b_price:'最低价',b_fast:'最快',b_first:'首选',dep_day:'出发日 {0}',
  no_flights:'所选日期范围内没有符合条件的航班。',
  kpi_low:'当前最低价',kpi_low_sub:'{0} 出发 · {1}',kpi_none:'无符合条件的航班',kpi_fast:'最短用时',
  kpi_wow:'近 7 天变化',kpi_wow_wait:'数据积累中',kpi_wow_need:'需要至少 8 天记录',kpi_wow_sub:'最低价，对比 7 天前',
@@ -231,7 +233,7 @@ en:{title:'Flight Tracker',settings:'Settings',theme:'Theme',th_auto:'Auto (syst
  tab_ov:'Overview',tab_mx:'Price matrix',tab_se:'Trends & seasons',tab_tm:'When to buy',
  flights_h:'Flights',prio:['First priority','Second priority','Third priority'],
  k_stops:'Stops (fewest first)',k_dur:'Duration (shortest first)',k_price:'Price (lowest first)',
- rank_h:'Ranking preferences (best overall)',rank_hint:'Overall cost = price + duration × value of time + stops × cost per stop. The more you value time, the more faster flights are favoured.',cell_title:'Depart {0} · return {1} · {2} days',cell_none:'No flight details for this combination yet (it may be an older snapshot, or not updated yet). Use the buttons below to search directly:',cell_old:'You are viewing an older snapshot that only kept prices; the flights below are from the latest update (if any).',mx_click:'Click any cell to see the flights and booking links for that combination.',sort_l:'Sort by',m_best:'Best overall',m_price:'Cheapest',m_fast:'Fastest',m_stops:'Fewest stops',w_time:'Value of time (per hour)',w_stop:'Cost per stop',best_note:'Overall cost = price + duration (hours) × value of time + stops × cost per stop; lower is better.',b_best:'Best overall',cost_l:'Overall cost',d_sum:'Depart {0} · return {1} · round-trip total (per person)',d_est:'estimate',d_out:'Outbound itinerary',d_lay:'Layover in {0}, wait {1}',d_ac:'Aircraft {0}',d_noleg:'No segment details for this entry yet; they appear after the next update.',d_noret:'Only the outbound segments are shown; choose the return flight on the booking page.',d_book:'View / book:',d_g:'Google Flights',d_k:'Kayak',d_s:'Skyscanner',d_nextday:'+{0} d',nonstop:'Nonstop',nstops:'{0} stop(s)',b_price:'Lowest price',b_fast:'Fastest',b_first:'Top pick',dep_day:'Departs {0}',
+ rank_h:'Ranking preferences (best overall)',rank_hint:'Overall cost = price + duration × value of time + stops × cost per stop. The more you value time, the more faster flights are favoured.',cell_title:'Depart {0} · return {1} · {2} days',cell_none:'No flight details for this combination yet (it may be an older snapshot, or not updated yet). Use the buttons below to search directly:',cell_old:'You are viewing an older snapshot that only kept prices; the flights below are from the latest update (if any).',mx_click:'Click any cell to see the flights and booking links for that combination.',lbl_out:'Outbound',lbl_ret:'Return',d_ret:'Return itinerary',ret_none:'Return flight details are not saved yet (the price already includes the return); use the buttons below to pick the exact flights on the booking page.',ret_short:'Return details on booking page',sort_l:'Sort by',m_best:'Best overall',m_price:'Cheapest',m_fast:'Fastest',m_stops:'Fewest stops',w_time:'Value of time (per hour)',w_stop:'Cost per stop',best_note:'Overall cost = price + duration (hours) × value of time + stops × cost per stop; lower is better.',b_best:'Best overall',cost_l:'Overall cost',d_sum:'Depart {0} · return {1} · round-trip total (per person)',d_est:'estimate',d_out:'Outbound itinerary',d_lay:'Layover in {0}, wait {1}',d_ac:'Aircraft {0}',d_noleg:'No segment details for this entry yet; they appear after the next update.',d_noret:'Only the outbound segments are shown; choose the return flight on the booking page.',d_book:'View / book:',d_g:'Google Flights',d_k:'Kayak',d_s:'Skyscanner',d_nextday:'+{0} d',nonstop:'Nonstop',nstops:'{0} stop(s)',b_price:'Lowest price',b_fast:'Fastest',b_first:'Top pick',dep_day:'Departs {0}',
  no_flights:'No matching flights in the selected date range.',
  kpi_low:'Lowest price now',kpi_low_sub:'Departs {0} · {1}',kpi_none:'No matching flights',kpi_fast:'Shortest trip',
  kpi_wow:'Change in 7 days',kpi_wow_wait:'Collecting data',kpi_wow_need:'Needs at least 8 days',kpi_wow_sub:'Lowest price vs 7 days ago',
@@ -263,7 +265,7 @@ fr:{title:'Suivi des vols',settings:'Paramètres',theme:'Thème',th_auto:'Auto (
  tab_ov:'Aperçu',tab_mx:'Matrice des prix',tab_se:'Tendances et saisons',tab_tm:'Quand acheter',
  flights_h:'Vols',prio:['1re priorité','2e priorité','3e priorité'],
  k_stops:'Escales (moins d\'abord)',k_dur:'Durée (la plus courte)',k_price:'Prix (le plus bas)',
- rank_h:'Préférences de classement (meilleur global)',rank_hint:'Coût global = prix + durée × valeur du temps + escales × coût par escale. Plus vous valorisez le temps, plus les vols rapides sont favorisés.',cell_title:'Départ {0} · retour {1} · {2} jours',cell_none:"Pas encore de détails de vols pour cette combinaison (instantané ancien ou données non mises à jour). Utilisez les boutons ci-dessous pour chercher directement :",cell_old:"Vous consultez un ancien instantané qui n'a conservé que les prix ; les vols ci-dessous proviennent de la dernière mise à jour (le cas échéant).",mx_click:'Cliquez sur une case pour voir les vols et les liens de réservation de cette combinaison.',sort_l:'Trier par',m_best:'Meilleur global',m_price:'Moins cher',m_fast:'Plus rapide',m_stops:'Moins d\'escales',w_time:'Valeur du temps (par heure)',w_stop:'Coût par escale',best_note:'Coût global = prix + durée (heures) × valeur du temps + escales × coût par escale ; plus bas = mieux.',b_best:'Meilleur global',cost_l:'Coût global',d_sum:'Départ {0} · retour {1} · total aller-retour (par personne)',d_est:'estimation',d_out:'Itinéraire aller',d_lay:'Escale à {0}, attente {1}',d_ac:'Appareil {0}',d_noleg:'Pas encore de détails de segments pour cette entrée ; ils apparaîtront à la prochaine mise à jour.',d_noret:"Seuls les segments aller sont affichés ; choisissez le vol retour sur la page de réservation.",d_book:'Voir / réserver :',d_g:'Google Vols',d_k:'Kayak',d_s:'Skyscanner',d_nextday:'+{0} j',nonstop:'Direct',nstops:'{0} escale(s)',b_price:'Prix mini',b_fast:'Plus rapide',b_first:'Premier choix',dep_day:'Départ {0}',
+ rank_h:'Préférences de classement (meilleur global)',rank_hint:'Coût global = prix + durée × valeur du temps + escales × coût par escale. Plus vous valorisez le temps, plus les vols rapides sont favorisés.',cell_title:'Départ {0} · retour {1} · {2} jours',cell_none:"Pas encore de détails de vols pour cette combinaison (instantané ancien ou données non mises à jour). Utilisez les boutons ci-dessous pour chercher directement :",cell_old:"Vous consultez un ancien instantané qui n'a conservé que les prix ; les vols ci-dessous proviennent de la dernière mise à jour (le cas échéant).",mx_click:'Cliquez sur une case pour voir les vols et les liens de réservation de cette combinaison.',lbl_out:'Aller',lbl_ret:'Retour',d_ret:'Itinéraire retour',ret_none:"Les détails du vol retour ne sont pas encore enregistrés (le prix inclut déjà le retour) ; utilisez les boutons ci-dessous pour choisir les vols exacts sur la page de réservation.",ret_short:'Retour : voir la page de réservation',sort_l:'Trier par',m_best:'Meilleur global',m_price:'Moins cher',m_fast:'Plus rapide',m_stops:'Moins d\'escales',w_time:'Valeur du temps (par heure)',w_stop:'Coût par escale',best_note:'Coût global = prix + durée (heures) × valeur du temps + escales × coût par escale ; plus bas = mieux.',b_best:'Meilleur global',cost_l:'Coût global',d_sum:'Départ {0} · retour {1} · total aller-retour (par personne)',d_est:'estimation',d_out:'Itinéraire aller',d_lay:'Escale à {0}, attente {1}',d_ac:'Appareil {0}',d_noleg:'Pas encore de détails de segments pour cette entrée ; ils apparaîtront à la prochaine mise à jour.',d_noret:"Seuls les segments aller sont affichés ; choisissez le vol retour sur la page de réservation.",d_book:'Voir / réserver :',d_g:'Google Vols',d_k:'Kayak',d_s:'Skyscanner',d_nextday:'+{0} j',nonstop:'Direct',nstops:'{0} escale(s)',b_price:'Prix mini',b_fast:'Plus rapide',b_first:'Premier choix',dep_day:'Départ {0}',
  no_flights:'Aucun vol correspondant dans la période choisie.',
  kpi_low:'Prix le plus bas',kpi_low_sub:'Départ {0} · {1}',kpi_none:'Aucun vol correspondant',kpi_fast:'Trajet le plus court',
  kpi_wow:'Variation sur 7 jours',kpi_wow_wait:'Collecte en cours',kpi_wow_need:'Au moins 8 jours requis',kpi_wow_sub:'Prix mini vs il y a 7 jours',
@@ -388,30 +390,34 @@ function bookLinks(o,dep,ret){
   const s=`https://www.skyscanner.ca/transport/flights/${from.toLowerCase()}/${to.toLowerCase()}/${yymmdd(dep)}/${ret?yymmdd(ret)+'/':''}?adultsv2=${ad}&cabinclass=${sc}`;
   return[[t('d_g'),g,''],[t('d_k'),k,'k'],[t('d_s'),s,'s']];
 }
-function detail(r){
-  const d=mk('div',null,'det');
-  const est=r.est?' ('+t('d_est')+')':'';
-  d.appendChild(mk('div',t('d_sum',r.k,r.ret||'–')+' : '+r.price+' '+state.doc.currency+est,'dsum'));
-  d.appendChild(mk('h2',t('d_out')));
-  const legs=r.legs||[];
-  const TL=timeline(r,false);d.appendChild(TL.el);
-  const lg=mk('div',null,'lgd');Object.entries(TL.colors).forEach(([al,c])=>{const s=mk('span',al);s.style.setProperty('--a','var('+c+')');lg.appendChild(s)});d.appendChild(lg);
-  if(!legs.length){d.appendChild(mk('p',t('d_noleg'),'note'))}
+function legList(d,it){
+  const legs=it.legs||[];
+  if(!legs.length){d.appendChild(mk('p',t('d_noleg'),'note'));return}
   legs.forEach((l,i)=>{
-    if(i>0){const w=legs[i-1],lay=(r.lay&&r.lay[i-1]!=null)?r.lay[i-1]:null;
+    if(i>0){const lay=(it.lay&&it.lay[i-1]!=null)?it.lay[i-1]:null;
       d.appendChild(mk('div',t('d_lay',l.a+(l.an?' '+l.an:''),lay!=null?fmtMin(lay):'–'),'lay'))}
-    const row=mk('div',null,'leg');
-    const day=x=>x.slice(0,10),hm=x=>x.slice(11,16);
+    const row=mk('div',null,'leg'),day=x=>x.slice(0,10),hm=x=>x.slice(11,16);
     const nd=Math.round((new Date(day(l.arr))-new Date(day(l.dep)))/864e5);
     row.appendChild(mk('div',hm(l.dep),'tm'));
     const ap=mk('div',null,'ap');ap.appendChild(document.createTextNode(l.a+(l.an?' · '+l.an:'')));
-    const sub=mk('div',[l.al,l.no].filter(Boolean).join(' ')+(l.ac?' · '+t('d_ac',l.ac):'')+(l.min?' · '+fmtMin(l.min):''),'sub');ap.appendChild(sub);row.appendChild(ap);
+    ap.appendChild(mk('div',[l.al,l.no].filter(Boolean).join(' ')+(l.ac?' · '+t('d_ac',l.ac):'')+(l.min?' · '+fmtMin(l.min):''),'sub'));row.appendChild(ap);
     row.appendChild(mk('div',hm(l.arr)+(nd>0?' '+t('d_nextday',nd):''),'tm'));
     row.appendChild(mk('div',l.b+(l.bn?' · '+l.bn:'')));
-    d.appendChild(row)});
-  d.appendChild(mk('p',t('d_noret'),'note'));
+    d.appendChild(row)})}
+function itinSection(d,title,it){
+  d.appendChild(mk('h2',title));
+  const TL=timeline(it,false);d.appendChild(TL.el);
+  const lg=mk('div',null,'lgd');Object.entries(TL.colors).forEach(([al,c])=>{const s=mk('span',al);s.style.setProperty('--a','var('+c+')');lg.appendChild(s)});d.appendChild(lg);
+  legList(d,it)}
+function detail(r){
+  const d=mk('div',null,'det');
+  d.appendChild(mk('div',t('d_sum',r.k,r.retDate||'–')+' : '+r.price+' '+state.doc.currency+(r.est?' ('+t('d_est')+')':''),'dsum'));
+  itinSection(d,t('d_out')+' · '+r.k,r);
+  const bi=r.ret&&typeof r.ret==='object'?r.ret:null;           // r.ret = return itinerary (object); r.retDate = return date
+  if(bi&&bi.legs)itinSection(d,t('d_ret')+' · '+(r.retDate||''),bi);
+  else{d.appendChild(mk('h2',t('d_ret')+' · '+(r.retDate||'')));d.appendChild(mk('p',t('ret_none'),'note'))}
   const bt=mk('div',null,'btns');bt.appendChild(mk('span',t('d_book'),'note'));
-  bookLinks(r,r.k,r.ret).forEach(([n,u,c])=>{const a=mk('a',n,c);a.href=u;a.target='_blank';a.rel='noopener noreferrer';bt.appendChild(a)});
+  bookLinks(r,r.k,r.retDate).forEach(([n,u,c])=>{const a=mk('a',n,c);a.href=u;a.target='_blank';a.rel='noopener noreferrer';bt.appendChild(a)});
   d.appendChild(bt);return d}
 
 /* ================= flights + KPIs ================= */
@@ -431,7 +437,7 @@ function renderRows(box,rowsIn){
     const c=mk('div',null,'fl');c.style.setProperty('--s',stopColor(r.stops));
     c.appendChild(mk('div',null,'bar'));
     const mid=mk('div');
-    const tt=mk('div',r.dep.slice(5,16).replace(' ','  ')+'  →  '+r.arr.slice(5,16).replace(' ','  '),'t');
+    const tt=mk('div',t('lbl_out')+'  '+r.dep.slice(5,16).replace(' ','  ')+'  →  '+r.arr.slice(5,16).replace(' ','  '),'t');
     const badge=(txt,col)=>{const b=mk('span',txt,'badge');b.style.setProperty('--b',col);tt.appendChild(b)};
     if(i===0)badge(sortCfg.mode==='best'?t('b_best'):t('b_first'),'var(--c1)');
     if(r.price===minP&&!gotP){gotP=true;badge(t('b_price'),'var(--good)')}
@@ -442,7 +448,14 @@ function renderRows(box,rowsIn){
     m.appendChild(pill);m.appendChild(mk('span',fmtMin(r.duration)));m.appendChild(mk('span',r.airlines.join(' / ')));
     m.appendChild(mk('span',t('dep_day',r.k)));
     if(sortCfg.mode==='best')m.appendChild(mk('span',t('cost_l')+' '+Math.round(cost(r))));
-    mid.appendChild(m);mid.appendChild(timeline(r,true).el);c.appendChild(mid);
+    mid.appendChild(m);
+    const hmRange=(x,y)=>x.slice(5,16).replace(' ','  ')+'  →  '+y.slice(5,16).replace(' ','  ');
+    const bi=r.ret&&typeof r.ret==='object'?r.ret:null;
+    const l2=mk('div',null,'m2');
+    if(bi){l2.appendChild(mk('b',t('lbl_ret')+'  '+hmRange(bi.dep,bi.arr)));
+      l2.appendChild(mk('span',(bi.stops==0?t('nonstop'):t('nstops',bi.stops)+(bi.via.length?'·'+bi.via.join(','):''))+' · '+fmtMin(bi.duration)+' · '+bi.airlines.join(' / ')))}
+    else l2.appendChild(mk('span',t('ret_short')));
+    mid.appendChild(l2);c.appendChild(mid);
     const p=mk('div',String(r.price),'p');p.appendChild(mk('small',state.doc.currency));p.appendChild(mk('span','▾','chev'));c.appendChild(p);
     const wr=mk('div',null,'flw');wr.appendChild(c);wr.appendChild(detail(r));
     c.onclick=()=>wr.classList.toggle('open');box.appendChild(wr)})
@@ -506,7 +519,7 @@ async function run(e){
   const dep=$('dep').value,flex=7;
   const near=Object.keys(doc.latest).sort().filter(k=>!dep||Math.abs((new Date(k)-new Date(dep))/864e5)<=flex);
   const rows=[];
-  for(const k of near){const L=doc.latest[k];for(const of of L.offers)if(of.stops<=stops)rows.push({k,ret:L.return,...of})}
+  for(const k of near){const L=doc.latest[k];for(const of of L.offers)if(of.stops<=stops)rows.push({k,retDate:L.return,...of})}
   state.rows=rows;renderKpis(doc,rows,near);renderFlights();
   const days=[...new Set(near.flatMap(k=>Object.keys(doc.history[k]||{})))].sort();
   const pal=['--c1','--c2','--c3','--c7','--c5','--c4','--c8'].map(css);
@@ -608,7 +621,7 @@ async function openCell(dep,off,isLatest){
   const data=await cellOffers(id),cell=data&&data[dep]&&data[dep][String(off)];
   if(!isLatest)body.appendChild(mk('p',t('cell_old'),'note'));
   const stops=+$('st').value;
-  const rows=cell?cell.offers.filter(o=>o.stops<=stops).map(o=>({k:dep,ret:cell.ret,...o})):[];
+  const rows=cell?cell.offers.filter(o=>o.stops<=stops).map(o=>({k:dep,retDate:cell.ret,...o})):[];
   if(rows.length){const box=mk('div');body.appendChild(box);renderRows(box,rows);return}
   body.appendChild(mk('p',t('cell_none'),'note'));
   const bt=mk('div',null,'btns');
