@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-03T23:58:13Z",
+ "updated": "2026-11-04T00:23:39Z",
  "routes": {
   "YUL-PEK": {
    "days": 1,
@@ -16,19 +16,15 @@
      },
      {
       "c": "info",
-      "t": "各月当前平均最低价（低→高）：3月 2966, 4月 3094, 8月 3345, 6月 3589, 7月 3709 CAD"
+      "t": "各月当前平均最低价（低→高）：4月 1917, 3月 1940, 6月 2562 CAD"
      },
      {
       "c": "good",
-      "t": "当前最便宜的组合：03-04 出发 / 04-18 返程 2636 CAD; 03-07 出发 / 04-18 返程 2656 CAD; 03-08 出发 / 04-18 返程 2656 CAD"
+      "t": "当前最便宜的组合：03-24 出发 / 05-04 返程 1811 CAD; 03-25 出发 / 05-04 返程 1811 CAD; 03-26 出发 / 05-04 返程 1811 CAD"
      },
      {
       "c": "info",
-      "t": "出发星期：周六出发平均比当月均价低 4.3%，周五出发最贵（高 2.1%）。"
-     },
-     {
-      "c": "info",
-      "t": "停留天数：在 39–45 天中，停留 45 天平均最便宜（比同一出发日的最低价高 5.0%）。"
+      "t": "停留天数：在 39–45 天中，停留 39 天平均最便宜（比同一出发日的最低价高 0.0%）。"
      },
      {
       "c": "info",
@@ -46,19 +42,15 @@
      },
      {
       "c": "info",
-      "t": "Current average lowest price by month (low→high): Mar 2966, Apr 3094, Aug 3345, Jun 3589, Jul 3709 CAD"
+      "t": "Current average lowest price by month (low→high): Apr 1917, Mar 1940, Jun 2562 CAD"
      },
      {
       "c": "good",
-      "t": "Cheapest combinations now: depart 03-04 / return 04-18 2636 CAD; depart 03-07 / return 04-18 2656 CAD; depart 03-08 / return 04-18 2656 CAD"
+      "t": "Cheapest combinations now: depart 03-24 / return 05-04 1811 CAD; depart 03-25 / return 05-04 1811 CAD; depart 03-26 / return 05-04 1811 CAD"
      },
      {
       "c": "info",
-      "t": "Departure weekday: leaving on Sat is on average 4.3% below the monthly average; Fri is the most expensive (2.1% above)."
-     },
-     {
-      "c": "info",
-      "t": "Trip length: within 39–45 days, 45 days is cheapest on average (5.0% above the cheapest for the same departure date)."
+      "t": "Trip length: within 39–45 days, 39 days is cheapest on average (0.0% above the cheapest for the same departure date)."
      },
      {
       "c": "info",
@@ -76,19 +68,15 @@
      },
      {
       "c": "info",
-      "t": "Prix minimum moyen actuel par mois (bas→haut) : mars 2966, avr. 3094, août 3345, juin 3589, juil. 3709 CAD"
+      "t": "Prix minimum moyen actuel par mois (bas→haut) : avr. 1917, mars 1940, juin 2562 CAD"
      },
      {
       "c": "good",
-      "t": "Combinaisons les moins chères : départ 03-04 / retour 04-18 2636 CAD; départ 03-07 / retour 04-18 2656 CAD; départ 03-08 / retour 04-18 2656 CAD"
+      "t": "Combinaisons les moins chères : départ 03-24 / retour 05-04 1811 CAD; départ 03-25 / retour 05-04 1811 CAD; départ 03-26 / retour 05-04 1811 CAD"
      },
      {
       "c": "info",
-      "t": "Jour de départ : partir le sam. coûte en moyenne 4.3 % de moins que la moyenne du mois ; le ven. est le plus cher (2.1 % au-dessus)."
-     },
-     {
-      "c": "info",
-      "t": "Durée du séjour : entre 39 et 45 jours, 45 jours est le moins cher en moyenne (5.0 % au-dessus du minimum pour le même départ)."
+      "t": "Durée du séjour : entre 39 et 45 jours, 39 jours est le moins cher en moyenne (0.0 % au-dessus du minimum pour le même départ)."
      },
      {
       "c": "info",
