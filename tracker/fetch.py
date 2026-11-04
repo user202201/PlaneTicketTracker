@@ -58,7 +58,8 @@ def dates_for(route, cfg):
                 yield d, (d + dt.timedelta(days=stay) if stay else None)
 
 
-# modes: "calendar"   = matrix from Google's date grid (real round-trip prices); flight lists use one-way sums
+# modes: "list"       = real round-trip list from Google (one request per date pair; default)
+#        "calendar"      = matrix from Google's date grid (real round-trip prices); flight lists use one-way sums
 #        "oneway_sum" = everything estimated as outbound + return one-way fares
 #        "roundtrip"  = per-trip round-trip query (not working with the current scraper)
 PRICING = {"mode": "oneway_sum"}
@@ -127,9 +128,82 @@ def _ok_stops(route, offers):
     return [o for o in offers if ms is None or o["stops"] <= ms]
 
 
+_SF = {}
+
+
+def _sf():
+    if "sf" not in _SF:
+        from fli.search import SearchFlights
+        _SF["sf"] = SearchFlights()
+    return _SF["sf"]
+
+
+def fli_list(route, dep, ret, currency):
+    """Real Google result list (what the Flights page shows): for a round trip each row is an outbound
+    itinerary priced as the full round trip. Stops are filtered by Google (correct enum); transient
+    error responses are retried."""
+    from fli.models import (Airport, FlightSearchFilters, FlightSegment, MaxStops, PassengerInfo,
+                            SeatType, TripType)
+    o, d = Airport[route["origin"]], Airport[route["dest"]]
+    stops = {None: MaxStops.ANY, 0: MaxStops.NON_STOP, 1: MaxStops.ONE_STOP_OR_FEWER,
+             2: MaxStops.TWO_OR_FEWER_STOPS}[route.get("max_stops")]
+    seat = {"economy": SeatType.ECONOMY, "premium-economy": SeatType.PREMIUM_ECONOMY,
+            "business": SeatType.BUSINESS, "first": SeatType.FIRST}[route.get("cabin", "economy")]
+    segs = [FlightSegment(departure_airport=[[o, 0]], arrival_airport=[[d, 0]], travel_date=dep.isoformat())]
+    if ret:
+        segs.append(FlightSegment(departure_airport=[[d, 0]], arrival_airport=[[o, 0]], travel_date=ret.isoformat()))
+    f = FlightSearchFilters(trip_type=TripType.ROUND_TRIP if ret else TripType.ONE_WAY,
+                            passenger_info=PassengerInfo(adults=route.get("adults", 1), children=route.get("children", 0)),
+                            flight_segments=segs, stops=stops, seat_type=seat)
+    res, last = None, None
+    for attempt in range(3):
+        try:
+            res = _sf()._fetch_flights(f, currency=currency, language=None, country=None, capture_session=False)
+        except Exception as e:
+            last, res = e, None
+        finally:
+            pace()
+        if res:
+            break
+        time.sleep(random.uniform(3, 6) * PACE["scale"])
+    if not res:
+        raise RuntimeError(f"no result after 3 attempts ({type(last).__name__ + ': ' + str(last)[:100] if last else 'empty/error response'})")
+    return _fli_offers(res)
+
+
+def _fli_offers(res):
+    out = []
+    for x in res:
+        if x.price is None or not x.legs:
+            continue
+        legs = x.legs
+        airlines = []
+        for l in legs:
+            n = getattr(l.airline, "value", str(l.airline))
+            if n not in airlines:
+                airlines.append(n)
+        lay = [getattr(v, "duration", None) for v in (x.layovers or [])]
+        out.append({
+            "price": int(round(x.price)), "airlines": airlines, "stops": x.stops, "duration": x.duration,
+            "via": [l.arrival_airport.name for l in legs[:-1]],
+            "dep": legs[0].departure_datetime.strftime("%Y-%m-%d %H:%M"),
+            "arr": legs[-1].arrival_datetime.strftime("%Y-%m-%d %H:%M"),
+            "lay": lay,
+            "legs": [{"a": l.departure_airport.name, "an": l.departure_airport_name or l.departure_airport.value,
+                      "b": l.arrival_airport.name, "bn": l.arrival_airport_name or l.arrival_airport.value,
+                      "dep": l.departure_datetime.strftime("%Y-%m-%dT%H:%M:%S"),
+                      "arr": l.arrival_datetime.strftime("%Y-%m-%dT%H:%M:%S"),
+                      "min": l.duration, "al": getattr(l.airline, "value", str(l.airline)),
+                      "no": l.flight_number, "ac": l.aircraft} for l in legs],
+        })
+    out.sort(key=lambda o: o["price"])
+    return out
+
+
 def search(route, dep, ret, currency):
-    """Offers for a trip. oneway_sum: price = outbound fare + cheapest return fare (an estimate;
-    the airline's real round-trip fare is usually somewhat lower)."""
+    """Offers for a trip. "list": real Google round-trip prices (default). oneway_sum: legacy estimate."""
+    if PRICING["mode"] == "list":
+        return _ok_stops(route, fli_list(route, dep, ret, currency))
     if PRICING["mode"] == "roundtrip" and ret:
         legs = [(dep, route["origin"], route["dest"]), (ret, route["dest"], route["origin"])]
         return _ok_stops(route, _net(route, legs, "round-trip", currency))

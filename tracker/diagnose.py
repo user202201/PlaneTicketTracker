@@ -189,6 +189,27 @@ def fli_cases():
     return out
 
 
+def list_case():
+    """The exact trip the user checked on Google Flights: Mar 3 -> Apr 16, <=1 stop (Google showed CA$1,899)."""
+    r = {"case": "list-mode check YUL-PEK 2027-03-03/2027-04-16 <=1 stop (Google page: 1899)"}
+    try:
+        import sys
+        sys.path.insert(0, str(ROOT / "tracker"))
+        import fetch
+        fetch.pace = lambda: None
+        route = {"origin": "YUL", "dest": "PEK", "max_stops": 1, "cabin": "economy", "adults": 1, "children": 0}
+        offers = fetch.fli_list(route, dt.date(2027, 3, 3), dt.date(2027, 4, 16), "CAD")
+        r["n"] = len(offers)
+        r["cheapest"] = [{"price": o["price"], "airlines": o["airlines"], "stops": o["stops"], "dur": o["duration"],
+                          "via": o["via"], "lay": o["lay"], "legs": [(l["al"] + " " + str(l["no"]), l["a"] + ">" + l["b"], l["dep"][11:16], l["arr"][11:16]) for l in o["legs"]]}
+                         for o in offers[:3]]
+    except Exception as e:
+        r["error"] = f"{type(e).__name__}: {e}"
+        r["trace"] = traceback.format_exc()[-700:]
+    print(json.dumps({k: v for k, v in r.items() if k != "trace"}, ensure_ascii=False)[:400])
+    return r
+
+
 def main():
     d = dt.date.today()
     near = (d + dt.timedelta(days=45)).isoformat()
@@ -208,6 +229,7 @@ def main():
     for name, legs, trip, stops in cases:
         out["results"].append(run_case(name, legs, trip, stops))
         time.sleep(4)
+    out["results"].append(list_case())
     out["results"].append(calendar_case())
     out["results"].extend(fli_cases())
     OUT.parent.mkdir(parents=True, exist_ok=True)

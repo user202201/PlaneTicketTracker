@@ -69,13 +69,9 @@
    "2027-08"
   ],
   "return_offsets": [
-   39,
    40,
-   41,
    42,
-   43,
-   44,
-   45
+   44
   ],
   "routes": [
    "YUL-PEK"
@@ -96,5 +92,5 @@
   ],
   "max_runtime_minutes": 200
  },
- "pricing": "calendar"
+ "pricing": "list"
 }
