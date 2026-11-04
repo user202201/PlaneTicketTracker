@@ -311,12 +311,23 @@ def run_matrix(route, cfg, cur, doc, today, errors):
     return run_matrix_cells(route, cfg, cur, doc, today, errors)
 
 
+def _pick(offers, n=4):
+    """Cheapest n offers plus the fastest one (keeps the file small but still useful)."""
+    by_price = sorted(offers, key=lambda o: o["price"])
+    keep = by_price[:n]
+    fastest = min(offers, key=lambda o: (o["duration"], o["price"]))
+    if fastest not in keep:
+        keep.append(fastest)
+    return keep
+
+
 def run_matrix_cells(route, cfg, cur, doc, today, errors):
     """Depart x return price grid for one month. One query per cell; stores min price per cell."""
     mx = cfg["matrix"]
     offs = mx["return_offsets"]
     stay = cfg.get("stay_days")
     grid, fails_in_row, n_ok = {}, 0, 0
+    cells = {}                      # dep -> {offset: {ret, offers}} (latest day only; powers click-through)
     days = []
     for mo in mx["months"]:
         d = dt.date.fromisoformat(mo + "-01")
@@ -344,9 +355,9 @@ def run_matrix_cells(route, cfg, cur, doc, today, errors):
                     fails_in_row = 0
                     n_ok += 1
                     row.append(min(o["price"] for o in offers))
+                    cells.setdefault(d.isoformat(), {})[str(off)] = {"ret": ret.isoformat(), "offers": _pick(offers)}
                     if off == stay:         # feed the weekday / lead-time analysis too
-                        offers.sort(key=lambda o: (o["stops"], o["duration"], o["price"]))
-                        doc["latest"][d.isoformat()] = {"return": ret.isoformat(), "offers": offers[:MAX_OFFERS]}
+                        doc["latest"][d.isoformat()] = {"return": ret.isoformat(), "offers": sorted(offers, key=lambda o: o["price"])[:MAX_OFFERS]}
                         doc["history"].setdefault(d.isoformat(), {})[today] = row[-1]
                 else:
                     fails_in_row += 1
@@ -363,6 +374,8 @@ def run_matrix_cells(route, cfg, cur, doc, today, errors):
         if today not in idx["snapshots"]:
             idx["snapshots"].append(today)
         idx_path.write_text(json.dumps(idx))
+        if cells:
+            (mdir / "offers.json").write_text(json.dumps(dict(sorted(cells.items())), separators=(",", ":"), ensure_ascii=False))
     return n_ok
 
 
@@ -409,7 +422,7 @@ def main():
                 fail += 1
                 errors.append(f"{route['id']} {key}: no offers")
                 continue
-            offers.sort(key=lambda o: (o["stops"], o["duration"], o["price"]))
+            offers.sort(key=lambda o: o["price"])
             doc["latest"][key] = {"return": ret.isoformat() if ret else None,
                                   "offers": offers[:MAX_OFFERS]}
             if not (PRICING["mode"] == "calendar" and route["id"] in (cfg.get("matrix") or {}).get("routes", [])):
