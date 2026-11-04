@@ -26,6 +26,7 @@ def pace_init(cfg):
 
 
 CHK = {"last": time.time()}
+PENDING = {"n": 0}                  # tasks still missing for today when this run ends (drives the relay)
 
 
 def git_push(msg):
@@ -499,6 +500,9 @@ def run_matrix_cells(route, cfg, cur, doc, today, errors, flush=None):
         if flush:
             flush()
 
+    def pending():
+        return sum(1 for d in days for i, off in enumerate(offs) if valid(d, off) and grid[d.isoformat()][i] is None)
+
     order = sorted(range(len(offs)), key=lambda i: (offs[i] != stay, i))
     for i in order:
         off = offs[i]
@@ -508,6 +512,7 @@ def run_matrix_cells(route, cfg, cur, doc, today, errors, flush=None):
             if expired():
                 errors.append(f"{route['id']} matrix: stopped for this run (request quota / time budget / throttling); the next run resumes")
                 save_all()
+                PENDING["n"] += pending()
                 return n_prev + stat["new"]
             k, ret = d.isoformat(), d + dt.timedelta(days=off)
             try:
@@ -524,6 +529,7 @@ def run_matrix_cells(route, cfg, cur, doc, today, errors, flush=None):
                     doc["history"].setdefault(k, {})[today] = grid[k][i]
             checkpoint(save_all)
     save_all()
+    PENDING["n"] += pending()
     return n_prev + stat["new"]
 
 
@@ -589,6 +595,8 @@ def main():
                 doc["history"].setdefault(key, {})[today] = min(o["price"] for o in offers)
             ok += 1
             checkpoint(save_doc)
+        PENDING["n"] += sum(1 for dep, ret in pairs
+                            if not (doc["history"].get(dep.isoformat(), {}).get(today) is not None and dep.isoformat() in doc["latest"]))
         if route["id"] in (cfg.get("matrix") or {}).get("routes", []):
             n = run_matrix(route, cfg, cur, doc, today, errors, flush=save_doc)
             ok += n
@@ -598,6 +606,16 @@ def main():
         checkpoint(save_doc, force=True)
     (DATA / "status.json").write_text(json.dumps(
         {"updated": now, "ok": ok, "failed": fail, "errors": errors[:30]}, indent=1))
+    prev = {}
+    try:
+        prev = json.loads((DATA / "progress.json").read_text())
+    except Exception:
+        pass
+    runs_today = (prev.get("runs_today", 0) + 1) if prev.get("date") == today else 1
+    stop = "done" if PENDING["n"] == 0 else ("throttled" if NET["stop"] else "quota")
+    (DATA / "progress.json").write_text(json.dumps(
+        {"date": today, "pending": PENDING["n"], "updated": now, "ok": ok, "requests": PACE["count"],
+         "stop": stop, "runs_today": runs_today}, indent=1))
     print(f"ok={ok} failed={fail} requests={PACE['count']} quota={PACE['quota']}")
     for e in errors[:10]:
         print(" ", e)

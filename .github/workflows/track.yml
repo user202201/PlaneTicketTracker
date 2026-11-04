@@ -3,7 +3,7 @@ on:
   push:
     paths: [".github/run-trigger.txt"]   # touch this file to start a normal run
   schedule:
-    - cron: "7 * * * *"   # hourly: each run does a small random-size batch and resumes the day's missing cells
+    - cron: "7 */3 * * *"   # watchdog: picks up if the relay broke; exits in seconds when nothing is left
   workflow_dispatch:
     inputs:
       mode:
@@ -11,8 +11,12 @@ on:
         type: choice
         options: [full, diagnose]
         default: full
+      delay:
+        description: "minutes to wait before starting (used by the relay)"
+        default: "0"
 permissions:
   contents: write
+  actions: write
 concurrency: track
 jobs:
   track:
@@ -28,6 +32,9 @@ jobs:
         run: |
           git config user.name "price-tracker-bot"
           git config user.email "bot@users.noreply.github.com"
+      - name: Relay delay
+        if: github.event_name == 'workflow_dispatch' && inputs.delay != '0' && inputs.delay != ''
+        run: sleep $(( ${{ inputs.delay }} * 60 ))
       - name: Random start delay (scheduled runs only)
         if: github.event_name == 'schedule'
         run: sleep $(( (RANDOM % 600) + 30 ))
@@ -62,3 +69,15 @@ jobs:
           git config user.email "bot@users.noreply.github.com"
           git add docs/data
           git diff --cached --quiet || (git commit -m "data: $(date -u +%F\ %H:%M)" && git pull --rebase -X theirs && git push)
+      - name: Relay - start the next batch if work remains today
+        if: always() && inputs.mode != 'diagnose'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          D=$(python tracker/next_run.py || true)
+          if [ -n "$D" ]; then
+            echo "work remains -> next batch in ${D} min"
+            gh workflow run track.yml --ref "${{ github.ref_name }}" -f mode=full -f delay="$D"
+          else
+            echo "nothing more to do today (or watchdog will retry)"
+          fi
