@@ -68,6 +68,24 @@ main{padding:16px 0 40px}
 .btns a{text-decoration:none;font-size:13px;font-weight:600;padding:7px 14px;border-radius:8px;color:#fff;background:var(--c1)}
 .btns a.k{background:var(--c2)}.btns a.s{background:var(--c7)}
 .dsum{font-size:13px;color:var(--mut);margin-bottom:10px}
+.tl{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:14px;align-items:center;margin:10px 0 4px}
+.tl .end{text-align:center;min-width:54px}.tl .end b{display:block;font-size:22px;line-height:1.1;font-variant-numeric:tabular-nums}
+.tl .end span{font-size:12px;color:var(--mut)}.tl .end i{font-style:normal;font-size:11px;color:var(--warn);font-weight:600;margin-left:3px;vertical-align:top}
+.tl .mid{min-width:0}.tl .cap{text-align:center;font-size:13px;font-weight:600;margin-bottom:2px}
+.trk{display:flex;align-items:center;height:46px;position:relative}
+.trk .sg{position:relative;height:100%;display:flex;align-items:center;min-width:46px}
+.trk .sg::before{content:"";display:block;width:100%;height:7px;border-radius:4px;background:var(--a)}
+.trk .sg em{position:absolute;top:2px;left:0;right:0;text-align:center;font-style:normal;font-size:11px;color:var(--mut);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.trk .ly{position:relative;height:100%;display:flex;align-items:center;min-width:64px}
+.trk .ly::before{content:"";display:block;width:100%;border-top:2px dotted var(--mut)}
+.trk .ly .nd{position:absolute;left:50%;top:50%;width:13px;height:13px;margin:-7px 0 0 -7px;border-radius:50%;border:3px solid var(--warn);background:var(--card)}
+.trk .ly .nl{position:absolute;left:50%;top:calc(50% + 10px);transform:translateX(-50%);text-align:center;font-size:11px;line-height:1.25;white-space:nowrap}
+.trk .ly .nl b{display:block;font-size:12px}.trk .ly .nl span{color:var(--warn);font-weight:600}
+.tl.c{margin:8px 0 16px;gap:10px}.tl.c .end b{font-size:15px}.tl.c .end{min-width:40px}.tl.c .trk{height:34px}.tl.c .trk .sg::before{height:5px}
+.tl.c .trk .sg em{display:none}.tl.c .trk .sg{min-width:30px}.tl.c .trk .ly{min-width:50px}.tl.c .trk .ly .nl{font-size:10px}.tl.c .trk .ly .nl b{font-size:11px}
+.tl.c .cap{display:none}
+.lgd{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--mut);margin:6px 0 10px}
+.lgd span::before{content:"";display:inline-block;width:14px;height:6px;border-radius:3px;background:var(--a);margin-right:6px;vertical-align:middle}
 .fl{display:grid;grid-template-columns:6px minmax(0,1fr) auto;gap:14px;align-items:center;padding:12px 14px 12px 0;cursor:pointer;border:1px solid var(--line);border-radius:12px;background:var(--soft);overflow:hidden}
 .fl .bar{align-self:stretch;background:var(--s)}
 .fl .t{font-size:18px;font-weight:700;font-variant-numeric:tabular-nums}
@@ -310,6 +328,40 @@ function buildSort(){
       w.appendChild(i);c.appendChild(w)})}
 }
 
+/* ================= visual timeline ================= */
+const AIRC=['--c1','--c2','--c3','--c7','--c5','--c4'];
+const shortMin=m=>m==null?'':Math.floor(m/60)+'h'+String(m%60).padStart(2,'0');
+function timeline(r,compact){
+  const R=state.doc.route,legs=r.legs&&r.legs.length?r.legs:null;
+  const colors={};let ci=0;
+  const col=al=>{if(!(al in colors))colors[al]=AIRC[ci++%AIRC.length];return 'var('+colors[al]+')'};
+  const hm=x=>x.slice(11,16),day=x=>x.slice(0,10);
+  const tl=mk('div',null,'tl'+(compact?' c':''));
+  let depT,depA,arrT,arrA,plus=0,segs=[];
+  if(legs){
+    depT=hm(legs[0].dep);depA=legs[0].a;const L=legs[legs.length-1];arrT=hm(L.arr);arrA=L.b;
+    plus=Math.round((new Date(day(L.arr))-new Date(day(legs[0].dep)))/864e5);
+    legs.forEach((l,i)=>{segs.push({k:'sg',w:l.min||60,al:l.al,no:[l.al,l.no].filter(Boolean).join(' ')});
+      if(i<legs.length-1)segs.push({k:'ly',w:(r.lay&&r.lay[i]!=null)?r.lay[i]:90,code:l.b,min:(r.lay&&r.lay[i]!=null)?r.lay[i]:null})});
+  }else{      // older data without segment details: draw nodes at the connection airports
+    depT=hm(r.dep);arrT=hm(r.arr);depA=R.origin;arrA=R.dest;
+    plus=Math.round((new Date(day(r.arr))-new Date(day(r.dep)))/864e5);
+    const via=r.via||[];for(let i=0;i<=via.length;i++){segs.push({k:'sg',w:1000,al:r.airlines[Math.min(i,r.airlines.length-1)]||'?',no:''});
+      if(i<via.length)segs.push({k:'ly',w:200,code:via[i],min:null})}
+  }
+  const end=(tm,ap,pl)=>{const e=mk('div',null,'end');const b=mk('b',tm);if(pl>0)b.appendChild(mk('i','+'+pl));e.appendChild(b);e.appendChild(mk('span',ap));return e};
+  tl.appendChild(end(depT,depA,0));
+  const mid=mk('div',null,'mid');
+  mid.appendChild(mk('div',(r.stops==0?t('nonstop'):t('nstops',r.stops))+' · '+fmtMin(r.duration),'cap'));
+  const trk=mk('div',null,'trk');
+  segs.forEach(s=>{const d=mk('div',null,s.k);d.style.flex=s.w+' 1 0';
+    if(s.k==='sg'){d.style.setProperty('--a',col(s.al));if(s.no)d.appendChild(mk('em',s.no));d.title=s.no||s.al}
+    else{d.appendChild(mk('div',null,'nd'));const nl=mk('div',null,'nl');nl.appendChild(mk('b',s.code));if(s.min!=null)nl.appendChild(mk('span',shortMin(s.min)));d.appendChild(nl)}
+    trk.appendChild(d)});
+  mid.appendChild(trk);tl.appendChild(mid);tl.appendChild(end(arrT,arrA,plus));
+  return {el:tl,colors};
+}
+
 /* ================= flight detail + booking links ================= */
 const yymmdd=d=>d.slice(2,4)+d.slice(5,7)+d.slice(8,10);
 function bookLinks(o,dep,ret){
@@ -329,6 +381,8 @@ function detail(r){
   d.appendChild(mk('div',t('d_sum',r.k,r.ret||'–')+' : '+r.price+' '+state.doc.currency+est,'dsum'));
   d.appendChild(mk('h2',t('d_out')));
   const legs=r.legs||[];
+  const TL=timeline(r,false);d.appendChild(TL.el);
+  const lg=mk('div',null,'lgd');Object.entries(TL.colors).forEach(([al,c])=>{const s=mk('span',al);s.style.setProperty('--a','var('+c+')');lg.appendChild(s)});d.appendChild(lg);
   if(!legs.length){d.appendChild(mk('p',t('d_noleg'),'note'))}
   legs.forEach((l,i)=>{
     if(i>0){const w=legs[i-1],lay=(r.lay&&r.lay[i-1]!=null)?r.lay[i-1]:null;
@@ -374,7 +428,7 @@ function renderFlights(){
     m.appendChild(pill);m.appendChild(mk('span',fmtMin(r.duration)));m.appendChild(mk('span',r.airlines.join(' / ')));
     m.appendChild(mk('span',t('dep_day',r.k)));
     if(sortCfg.mode==='best')m.appendChild(mk('span',t('cost_l')+' '+Math.round(cost(r))));
-    mid.appendChild(m);c.appendChild(mid);
+    mid.appendChild(m);mid.appendChild(timeline(r,true).el);c.appendChild(mid);
     const p=mk('div',String(r.price),'p');p.appendChild(mk('small',state.doc.currency));p.appendChild(mk('span','▾','chev'));c.appendChild(p);
     const wr=mk('div',null,'flw');wr.appendChild(c);wr.appendChild(detail(r));
     c.onclick=()=>wr.classList.toggle('open');box.appendChild(wr)})
