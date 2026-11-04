@@ -82,9 +82,9 @@ td.cell{cursor:pointer}td.cell:hover{outline:2px solid var(--c1);outline-offset:
 .gt b{font-variant-numeric:tabular-nums}.gt .r{display:flex;gap:10px;align-items:center}
 .gt a{text-decoration:none;font-size:13px;font-weight:600;padding:5px 12px;border-radius:8px;color:#fff;background:var(--c1)}
 .gt label{font-size:13px;color:var(--mut);display:flex;gap:5px;align-items:center;cursor:pointer}
-.top{display:grid;grid-template-columns:26px minmax(0,1fr) auto;gap:10px;align-items:center;padding:8px 10px;margin:6px 0;border:1px solid var(--line);border-radius:10px;background:var(--soft);cursor:pointer}
-.top:hover{outline:2px solid var(--c1);outline-offset:-2px}.top .n{font-weight:700;color:var(--mut);text-align:center}
-.top .p{font-weight:700;font-size:17px;font-variant-numeric:tabular-nums;text-align:right}.top small{display:block;color:var(--mut);font-size:12px}
+.toprow{display:grid;grid-template-columns:26px minmax(0,1fr) auto;gap:10px;align-items:center;padding:8px 10px;margin:6px 0;border:1px solid var(--line);border-radius:10px;background:var(--soft);cursor:pointer}
+.toprow:hover{outline:2px solid var(--c1);outline-offset:-2px}.toprow .n{font-weight:700;color:var(--mut);text-align:center}
+.toprow .p{font-weight:700;font-size:17px;font-variant-numeric:tabular-nums;text-align:right}.toprow small{display:block;color:var(--mut);font-size:12px}
 .tag{display:inline-block;font-size:11px;padding:0 7px;border-radius:999px;margin-left:6px;background:color-mix(in srgb,var(--c7) 20%,transparent);color:var(--c7)}
 .tag.ex{background:color-mix(in srgb,var(--c3) 22%,transparent);color:var(--good)}
 .dsum{font-size:13px;color:var(--mut);margin-bottom:10px}
@@ -692,7 +692,7 @@ function renderTop(cur,id,latest){
     if(!best[dep]||v<best[dep].price)best[dep]={dep,off:cur.offsets[i],price:v,cal:CAL.includes(cur.offsets[i])}});
   const rows=Object.values(best).sort((a,b)=>a.price-b.price||a.dep.localeCompare(b.dep)).slice(0,10);
   $('topCard').style.display=rows.length?'':'none';
-  rows.forEach((r,i)=>{const el=mk('div',null,'top');el.appendChild(mk('div',String(i+1),'n'));
+  rows.forEach((r,i)=>{const el=mk('div',null,'toprow');el.appendChild(mk('div',String(i+1),'n'));
     const mid=mk('div');mid.appendChild(mk('b',r.dep.slice(5)+' '+WDAY(dow(r.dep))+'  →  '+addDays(r.dep,r.off).slice(5)+' '+WDAY(dow(addDays(r.dep,r.off)))));
     mid.appendChild(mk('span',t('col_'+(r.cal?'cal':'exact')),'tag'+(r.cal?'':' ex')));
     mid.appendChild(mk('small',t('mx_days',r.off)));el.appendChild(mid);
