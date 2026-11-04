@@ -1,1 +1,1 @@
-run requested 2026-11-04 14:55 (dense calendar column + sparse exact)
+run requested 2026-11-04 15:06 (5 dense return-date columns)

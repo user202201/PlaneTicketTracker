@@ -381,6 +381,49 @@ def calendar_prices(route, first, last, duration, currency):
     return out
 
 
+def calendar_range(route, first, last, dmin, dmax, currency):
+    """Google date grid with a RANGE of stay lengths: one request -> price for every (departure, return) pair with
+    dmin <= stay <= dmax (works up to ~32 days). Returns {(dep_iso, ret_iso): price}."""
+    import urllib.parse
+    from fli.models import (Airport, DateSearchFilters, FlightSegment, MaxStops, PassengerInfo, SeatType, TripType)
+    from fli.search import SearchDates
+    from fli.search._urls import with_locale_params
+    from fli.search._wire import parse_first_wrb_payload
+    stops = {None: MaxStops.ANY, 0: MaxStops.NON_STOP, 1: MaxStops.ONE_STOP_OR_FEWER,
+             2: MaxStops.TWO_OR_FEWER_STOPS}[route.get("max_stops")]
+    seat = {"economy": SeatType.ECONOMY, "premium-economy": SeatType.PREMIUM_ECONOMY,
+            "business": SeatType.BUSINESS, "first": SeatType.FIRST}[route.get("cabin", "economy")]
+    o, d = Airport[route["origin"]], Airport[route["dest"]]
+    first = max(first, dt.date.today() + dt.timedelta(days=1))
+    if first > last:
+        return {}
+    base = DateSearchFilters(
+        trip_type=TripType.ROUND_TRIP,
+        passenger_info=PassengerInfo(adults=route.get("adults", 1), children=route.get("children", 0)),
+        flight_segments=[FlightSegment(departure_airport=[[o, 0]], arrival_airport=[[d, 0]], travel_date=first.isoformat()),
+                         FlightSegment(departure_airport=[[d, 0]], arrival_airport=[[o, 0]],
+                                       travel_date=(first + dt.timedelta(days=dmin)).isoformat())],
+        stops=stops, seat_type=seat, from_date=first.isoformat(), to_date=last.isoformat(), duration=dmin)
+    raw = base.format()
+    raw[-1] = [dmin, dmax]                                   # stay-length range instead of a single value
+    enc = urllib.parse.quote(json.dumps([None, json.dumps(raw, separators=(",", ":"))], separators=(",", ":")))
+    sd = SearchDates()
+    url = with_locale_params(SearchDates.BASE_URL, currency, None, None)
+    try:
+        resp = sd.client.post(url=url, data=f"f.req={enc}", impersonate="chrome", allow_redirects=True)
+        resp.raise_for_status()
+        data = parse_first_wrb_payload(resp.text)
+    finally:
+        pace()
+    out = {}
+    for it in (data[-1] if data else []) or []:
+        try:
+            out[(it[0], it[1])] = int(round(float(it[2][0][1])))
+        except Exception:
+            pass
+    return out
+
+
 def run_matrix_calendar(route, cfg, cur, doc, today, errors):
     """Whole matrix from ~7 calendar requests per month (one per trip length)."""
     mx = cfg["matrix"]
@@ -540,26 +583,31 @@ def run_matrix_cells(route, cfg, cur, doc, today, errors, flush=None):
         return sum(1 for d in days for i, off in enumerate(allo)
                    if valid(d, off, i < nc) and grid[d.isoformat()][i] is None)
 
-    # ---- 1) dense calendar columns first: one request per (month, stay) ----
-    for ci, off in enumerate(cal_offs):
+    # ---- 1) dense calendar columns first: ONE request per month returns every (departure, return) pair for all stays ----
+    if cal_offs:
+        lo, hi = min(cal_offs), max(cal_offs)
         for sp in month_specs(mx):
-            mdays = [d for d in days if d.strftime("%Y-%m") == sp["month"] and valid(d, off, True)
-                     and grid[d.isoformat()][ci] is None]
+            mdays = [d for d in days if d.strftime("%Y-%m") == sp["month"]
+                     and any(valid(d, off, True) and grid[d.isoformat()][ci] is None for ci, off in enumerate(cal_offs))]
             if not mdays:
                 continue
             if expired():
                 break
             try:
-                res = calendar_prices(route, min(mdays), max(mdays), off, cur)
+                res = calendar_range(route, min(mdays), max(mdays), lo, hi, cur)
             except Exception as e:
-                errors.append(f"{route['id']} calendar {sp['month']} +{off}d: {type(e).__name__}: {str(e)[:100]}")
+                errors.append(f"{route['id']} calendar {sp['month']} {lo}-{hi}d: {type(e).__name__}: {str(e)[:100]}")
                 continue
             for d in mdays:
-                price = res.get(d.isoformat())
-                if price:
-                    grid[d.isoformat()][ci] = price
-                    stat["new"] += 1
-                    doc["history"].setdefault(d.isoformat(), {})[today] = price     # dense daily series
+                row, k = grid[d.isoformat()], d.isoformat()
+                for ci, off in enumerate(cal_offs):
+                    price = res.get((k, (d + dt.timedelta(days=off)).isoformat()))
+                    if price and valid(d, off, True) and row[ci] is None:
+                        row[ci] = price
+                        stat["new"] += 1
+                got = [v for v in row[:nc] if v is not None]
+                if got:
+                    doc["history"].setdefault(k, {})[today] = min(got)          # dense daily series (cheapest return)
         save_all()
 
     # ---- 2) exact list columns (sampled dates), the 'stay' column first ----

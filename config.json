@@ -94,6 +94,10 @@
   ],
   "date_step": 3,
   "calendar_offsets": [
+   28,
+   29,
+   30,
+   31,
    32
   ],
   "list_routes": [
