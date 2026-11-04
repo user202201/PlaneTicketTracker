@@ -23,6 +23,35 @@ def pace_init(cfg):
                 deadline=time.time() + p["max_runtime_minutes"] * 60 * float(os.environ.get("PACE_SCALE", "1")))
 
 
+CHK = {"last": time.time()}
+
+
+def git_push(msg):
+    """Commit and push docs/data from inside the run (CI only), so results show up while the run continues."""
+    import os, subprocess
+    if not os.environ.get("GITHUB_ACTIONS"):
+        return
+
+    def run(*a):
+        return subprocess.run(a, capture_output=True, text=True)
+    run("git", "add", "docs/data")
+    if run("git", "diff", "--cached", "--quiet").returncode == 0:
+        return
+    run("git", "commit", "-m", msg)
+    br = os.environ.get("GITHUB_REF_NAME", "")
+    run("git", "pull", "--rebase", "--autostash", "-X", "theirs", "origin", br)
+    r = run("git", "push", "origin", "HEAD:" + br)
+    print("[checkpoint]", "pushed" if r.returncode == 0 else "push failed: " + r.stderr[:160], flush=True)
+
+
+def checkpoint(save, force=False):
+    """Every ~15 min (or when forced): write files and push them."""
+    if force or time.time() - CHK["last"] >= 15 * 60 * PACE["scale"]:
+        save()
+        git_push("data: checkpoint")
+        CHK["last"] = time.time()
+
+
 NET = {"fails": 0, "pauses": 0, "stop": False}
 
 
@@ -379,7 +408,7 @@ def run_matrix_calendar(route, cfg, cur, doc, today, errors):
     return n_ok
 
 
-def run_matrix(route, cfg, cur, doc, today, errors):
+def run_matrix(route, cfg, cur, doc, today, errors, flush=None):
     if PRICING["mode"] == "calendar":
         n = run_matrix_calendar(route, cfg, cur, doc, today, errors)
         if n:
@@ -388,7 +417,7 @@ def run_matrix(route, cfg, cur, doc, today, errors):
         errors.append(f"{route['id']}: calendar failed, falling back to one-way estimates")
         PRICING["mode"] = "oneway_sum"
         doc["route"]["pricing"] = "oneway_sum"
-    return run_matrix_cells(route, cfg, cur, doc, today, errors)
+    return run_matrix_cells(route, cfg, cur, doc, today, errors, flush)
 
 
 def _pick(offers, n=4):
@@ -401,9 +430,10 @@ def _pick(offers, n=4):
     return keep
 
 
-def run_matrix_cells(route, cfg, cur, doc, today, errors):
+def run_matrix_cells(route, cfg, cur, doc, today, errors, flush=None):
     """Depart x return price grid. One list query per cell (return leg only for the 'stay' column).
-    Resumable: cells already stored for today are kept, so later runs only fill what is missing."""
+    Priority: the 'stay' column for every date first (page is useful early), then the other columns.
+    Resumable: cells already stored for today are kept; progress is committed every ~15 min."""
     mx = cfg["matrix"]
     offs = mx["return_offsets"]
     stay = cfg.get("stay_days")
@@ -421,60 +451,76 @@ def run_matrix_cells(route, cfg, cur, doc, today, errors):
                 cells = {k: v for k, v in po.items() if k != "_date"}
     except Exception:
         grid, cells = {}, {}
-    n_ok = sum(1 for r in grid.values() for v in r if v is not None)
-    new_ok = 0
+    n_prev = sum(1 for r in grid.values() for v in r if v is not None)
+    stat = {"new": 0}
+    td = dt.date.today()
     days, rby = [], {}
     for sp in month_specs(mx):
         first = dt.date.fromisoformat(sp["month"] + "-01")
         d = first.replace(day=sp["from_day"])
         while d.month == first.month:
-            days.append(d)
-            rby[d] = dt.date.fromisoformat(sp["return_by"]) if sp["return_by"] else None
+            if d > td:
+                days.append(d)
+                rby[d] = dt.date.fromisoformat(sp["return_by"]) if sp["return_by"] else None
             d += dt.timedelta(days=1)
-    random.shuffle(days)            # random order: no sequential scanning pattern
-    for d in days:
-        if expired():
-            errors.append(f"{route['id']} matrix: stopped early (time budget or throttling); next run resumes")
-            break
-        if d <= dt.date.today():
-            continue
-        k = d.isoformat()
-        row = grid.get(k) or [None] * len(offs)
-        for i, off in enumerate(offs):
-            if row[i] is not None or expired():
-                continue
-            ret = d + dt.timedelta(days=off)
-            if rby.get(d) and ret > rby[d]:
-                continue                # return after the allowed date for this month
-            if ret > dt.date.today() + dt.timedelta(days=HORIZON["days"]):
-                continue                # not on sale yet: skipped silently, picked up automatically later
-            try:
-                offers = search(route, d, ret, cur, expand=(off == stay))
-            except Exception as e:
-                errors.append(f"{route['id']} matrix {d}->{ret}: {type(e).__name__}: {str(e)[:100]}")
-                continue
-            if offers:
-                new_ok += 1
-                row[i] = min(o["price"] for o in offers)
-                cells.setdefault(k, {})[str(off)] = {"ret": ret.isoformat(), "offers": _pick(offers)}
-                if off == stay:         # feed the weekday / lead-time analysis too
-                    doc["latest"][k] = {"return": ret.isoformat(), "offers": sorted(offers, key=lambda o: o["price"])[:MAX_OFFERS]}
-                    doc["history"].setdefault(k, {})[today] = row[i]
-        grid[k] = row
-    if n_ok + new_ok:
+
+    def valid(d, off):
+        ret = d + dt.timedelta(days=off)
+        if rby.get(d) and ret > rby[d]:
+            return False                # after the allowed return date for this month
+        return ret <= td + dt.timedelta(days=HORIZON["days"])   # else: not on sale yet (skipped silently)
+
+    for d in days:                      # rows exist for every date that has at least one valid combination
+        if any(valid(d, off) for off in offs):
+            grid.setdefault(d.isoformat(), [None] * len(offs))
+
+    def write_files():
+        if n_prev + stat["new"] == 0:
+            return
         mdir.mkdir(parents=True, exist_ok=True)
         snap_path.write_text(json.dumps(
-            {"months": [sp["month"] for sp in month_specs(mx)], "offsets": offs, "currency": cur, "pricing": PRICING["mode"], "p": dict(sorted(grid.items()))},
-            separators=(",", ":")))
+            {"months": [sp["month"] for sp in month_specs(mx)], "offsets": offs, "currency": cur,
+             "pricing": PRICING["mode"], "p": dict(sorted(grid.items()))}, separators=(",", ":")))
         idx_path = mdir / "index.json"
         idx = json.loads(idx_path.read_text()) if idx_path.exists() else {"snapshots": []}
         idx["months"] = [sp["month"] for sp in month_specs(mx)]
         if today not in idx["snapshots"]:
             idx["snapshots"].append(today)
         idx_path.write_text(json.dumps(idx))
-        out = {"_date": today, **dict(sorted(cells.items()))}
-        offers_path.write_text(json.dumps(out, separators=(",", ":"), ensure_ascii=False))
-    return n_ok + new_ok
+        offers_path.write_text(json.dumps({"_date": today, **dict(sorted(cells.items()))},
+                                          separators=(",", ":"), ensure_ascii=False))
+
+    def save_all():
+        write_files()
+        if flush:
+            flush()
+
+    order = sorted(range(len(offs)), key=lambda i: (offs[i] != stay, i))
+    for i in order:
+        off = offs[i]
+        todo = [d for d in days if valid(d, off) and grid[d.isoformat()][i] is None]
+        random.shuffle(todo)            # random order: no sequential scanning pattern
+        for d in todo:
+            if expired():
+                errors.append(f"{route['id']} matrix: stopped early (time budget or throttling); next run resumes")
+                save_all()
+                return n_prev + stat["new"]
+            k, ret = d.isoformat(), d + dt.timedelta(days=off)
+            try:
+                offers = search(route, d, ret, cur, expand=(off == stay))
+            except Exception as e:
+                errors.append(f"{route['id']} matrix {d}->{ret}: {type(e).__name__}: {str(e)[:100]}")
+                continue
+            if offers:
+                stat["new"] += 1
+                grid[k][i] = min(o["price"] for o in offers)
+                cells.setdefault(k, {})[str(off)] = {"ret": ret.isoformat(), "offers": _pick(offers)}
+                if off == stay:         # feeds overview list + weekday / lead-time analysis
+                    doc["latest"][k] = {"return": ret.isoformat(), "offers": sorted(offers, key=lambda o: o["price"])[:MAX_OFFERS]}
+                    doc["history"].setdefault(k, {})[today] = grid[k][i]
+            checkpoint(save_all)
+    save_all()
+    return n_prev + stat["new"]
 
 
 def preflight():
@@ -505,6 +551,12 @@ def main():
         doc["route"] = {**route, "windows": cfg["windows"], "stay_days": cfg.get("stay_days"), "pricing": PRICING["mode"]}
         doc["currency"] = cur
         doc["updated"] = now
+        def save_doc(doc=doc, path=path):
+            cutoff = (dt.date.today() - dt.timedelta(days=HISTORY_DAYS)).isoformat()
+            for k, v in doc["history"].items():
+                doc["history"][k] = {d: p for d, p in v.items() if d >= cutoff}
+            path.write_text(json.dumps(doc, ensure_ascii=False, separators=(",", ":")))
+
         pairs = list(dates_for(route, cfg))
         random.shuffle(pairs)
         for dep, ret in pairs:
@@ -528,15 +580,14 @@ def main():
             if not (PRICING["mode"] == "calendar" and route["id"] in (cfg.get("matrix") or {}).get("routes", [])):
                 doc["history"].setdefault(key, {})[today] = min(o["price"] for o in offers)
             ok += 1
+            checkpoint(save_doc)
         if route["id"] in (cfg.get("matrix") or {}).get("routes", []):
-            n = run_matrix(route, cfg, cur, doc, today, errors)
+            n = run_matrix(route, cfg, cur, doc, today, errors, flush=save_doc)
             ok += n
             if not n:
                 fail += 1
-        cutoff = (dt.date.today() - dt.timedelta(days=HISTORY_DAYS)).isoformat()
-        for k, v in doc["history"].items():
-            doc["history"][k] = {d: p for d, p in v.items() if d >= cutoff}
-        path.write_text(json.dumps(doc, ensure_ascii=False, separators=(",", ":")))
+        save_doc()
+        checkpoint(save_doc, force=True)
     (DATA / "status.json").write_text(json.dumps(
         {"updated": now, "ok": ok, "failed": fail, "errors": errors[:30]}, indent=1))
     print(f"ok={ok} failed={fail}")

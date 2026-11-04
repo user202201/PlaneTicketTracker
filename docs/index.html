@@ -221,7 +221,7 @@ zh:{title:'机票追踪',settings:'设置',theme:'主题',th_auto:'跟随系统'
  wk_ok:'基于 {0} 条记录（查询日按 UTC 计）。绿=比均价便宜，红=更贵。差异通常只有几个百分点。',
  dtd_h:'提前多久买（距出发天数）',dtd_axis:'% 相对均价',dtd_bucket:'{0}–{1} 天前',
  dtd_few:'数据还不够，需要几周后才能看出价格随临近出发的变化。',dtd_ok:'从左（离出发远）到右（临近出发）；上升段就是开始涨价的时期。',
- no_route:'路线 {0} 还没有被追踪。请在 config.json 的 routes 中添加后，下次定时任务会开始记录。',
+ no_route:'路线 {0} 暂时没有数据：如果是新加的路线，请在 config.json 的 routes 中添加；如果已经配置，说明第一次抓取还在进行（约 1 小时出第一批结果，之后每 15 分钟更新一次，每 4 小时自动补全）。',
  cal_note:'价格矩阵为 Google 日期网格的真实往返价；航班列表中的价格为估算（去程 + 返程单程最低价），仅供参考。',
  est_note:'价格为估算往返价 = 去程单程最低价 + 返程单程最低价（航司的真实往返票价通常会低一些，趋势和对比仍然有效）。',
  mismatch:'注意：该路线追踪的是 {0}、成人{1}、儿童{2}，与你选的不同，价格仅供参考',
@@ -253,7 +253,7 @@ en:{title:'Flight Tracker',settings:'Settings',theme:'Theme',th_auto:'Auto (syst
  wk_ok:'Based on {0} records (query day in UTC). Green = cheaper than average, red = pricier. Differences are usually just a few percent.',
  dtd_h:'How early to buy (days before departure)',dtd_axis:'% vs average',dtd_bucket:'{0}–{1} days out',
  dtd_few:'Not enough data yet; it takes a few weeks to see how prices move toward departure.',dtd_ok:'Left (far from departure) to right (close to it); rising segments are when prices start to climb.',
- no_route:'Route {0} is not tracked yet. Add it to routes in config.json; the next scheduled run will start recording.',
+ no_route:'No data for route {0} yet: if it is new, add it to routes in config.json; if it is already configured, the first collection is still running (first results in about an hour, then updates every 15 minutes; filled in every 4 hours).',
  cal_note:"The price matrix shows real round-trip prices from Google's date grid; prices in the flight list are estimates (outbound + return one-way), for reference only.",
  est_note:"Prices are an estimated round trip = cheapest outbound one-way + cheapest return one-way (real round-trip fares are usually somewhat lower; trends and comparisons still hold).",
  mismatch:'Note: this route is tracked for {0}, {1} adult(s), {2} child(ren) — different from your selection; prices are indicative.',
@@ -285,7 +285,7 @@ fr:{title:'Suivi des vols',settings:'Paramètres',theme:'Thème',th_auto:'Auto (
  wk_ok:"Basé sur {0} relevés (jour en UTC). Vert = moins cher que la moyenne, rouge = plus cher. L'écart n'est généralement que de quelques pour cent.",
  dtd_h:"Combien de temps à l'avance acheter",dtd_axis:'% vs moyenne',dtd_bucket:'{0}–{1} j avant',
  dtd_few:"Pas assez de données ; il faut quelques semaines pour voir l'évolution à l'approche du départ.",dtd_ok:"De gauche (loin du départ) à droite (proche) ; les segments montants marquent le début de la hausse.",
- no_route:"L'itinéraire {0} n'est pas encore suivi. Ajoutez-le dans routes de config.json ; la prochaine exécution planifiée le suivra.",
+ no_route:"Pas encore de données pour l'itinéraire {0} : s'il est nouveau, ajoutez-le dans routes de config.json ; s'il est déjà configuré, la première collecte est en cours (premiers résultats dans environ une heure, puis mise à jour toutes les 15 minutes).",
  cal_note:"La matrice des prix affiche les vrais tarifs aller-retour de la grille de dates de Google ; les prix de la liste de vols sont des estimations (aller + retour simples), à titre indicatif.",
  est_note:"Les prix sont un aller-retour estimé = aller simple le moins cher + retour simple le moins cher (les vrais tarifs aller-retour sont généralement un peu plus bas ; les tendances et comparaisons restent valables).",
  mismatch:'Note : cet itinéraire est suivi pour {0}, {1} adulte(s), {2} enfant(s) — différent de votre sélection ; prix indicatifs.',
@@ -315,7 +315,11 @@ function mk(tag,txt,cls){const e=document.createElement(tag);if(txt!=null)e.text
 function draw(id,cfg){Chart.defaults.color=css('--mut');Chart.defaults.borderColor=css('--grid');
   charts[id]&&charts[id].destroy();charts[id]=new Chart($(id),cfg)}
 const killCharts=(...ids)=>ids.forEach(i=>{charts[i]&&charts[i].destroy();delete charts[i]});
-const alpha=(c,a)=>`color-mix(in srgb, ${c} ${a}%, transparent)`;
+const alpha=(c,a)=>`color-mix(in srgb, ${c} ${a}%, transparent)`;      // DOM only
+function cv(c,a){            // canvas-safe rgba from a css colour/variable
+  if(c.startsWith('var('))c=css(c.slice(4,-1).trim());
+  const m=/^#([0-9a-f]{6})$/i.exec(c.trim());if(!m)return c;
+  const n=parseInt(m[1],16);return `rgba(${n>>16},${(n>>8)&255},${n&255},${a})`}
 
 /* ================= settings / tabs ================= */
 $('gear').onclick=e=>{e.stopPropagation();$('setPanel').classList.toggle('open')};
@@ -497,7 +501,7 @@ async function run(e){
         const m=+dep.slice(5,7)-1;(by[m]=by[m]||[]).push(h[ds[ds.length-1]])}
       for(const m in by)meas[m]=Math.round(by[m].reduce((a,b)=>a+b)/by[m].length)}
     draw('sea',{type:'bar',data:{labels:I18N[LANG].mon,datasets:[
-      {label:t('sea_est'),data:est,backgroundColor:est.map(v=>alpha(lvl(v),55)),borderRadius:4},
+      {label:t('sea_est'),data:est,backgroundColor:est.map(v=>cv(lvl(v),.55)),borderRadius:4},
       {label:t('sea_meas'),data:meas,backgroundColor:css('--c1'),borderRadius:4}]},
       options:{plugins:{legend:{position:'bottom'}},scales:{y:{title:{display:true,text:seas.currency}}}}});
     $('seaNote').textContent=t('sea_note');
@@ -548,7 +552,7 @@ function analyze(doc){
   $('wkNote').textContent=n<28?t('wk_few',n):t('wk_ok',n);
   const ks=[...dt.keys()].sort((a,b)=>b-a);
   draw('dtd',{type:'line',data:{labels:ks.map(k=>t('dtd_bucket',k,k+13)),datasets:[{data:ks.map(k=>pct(dt.get(k))),
-    borderColor:css('--c2'),backgroundColor:alpha(css('--c2'),22),fill:true,tension:.25,pointRadius:3,borderWidth:2}]},
+    borderColor:css('--c2'),backgroundColor:cv(css('--c2'),.22),fill:true,tension:.25,pointRadius:3,borderWidth:2}]},
     options:{plugins:{legend:{display:false}},scales:{y:{title:{display:true,text:t('dtd_axis')}}}}});
   $('dtdNote').textContent=ks.length<3?t('dtd_few'):t('dtd_ok');
 }
