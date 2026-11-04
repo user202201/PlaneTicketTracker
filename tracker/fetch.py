@@ -620,7 +620,8 @@ def main():
     for route in routes:
         path = DATA / f"{route['id']}.json"
         doc = json.loads(path.read_text()) if path.exists() else {"history": {}, "latest": {}}
-        doc["route"] = {**route, "windows": cfg["windows"], "stay_days": cfg.get("stay_days"), "pricing": PRICING["mode"]}
+        doc["route"] = {**route, "windows": cfg["windows"], "stay_days": cfg.get("stay_days"), "pricing": PRICING["mode"],
+                       "months": (cfg.get("matrix") or {}).get("months", [])}
         doc["currency"] = cur
         doc["updated"] = now
         doc["latest"] = {k: v for k, v in doc.get("latest", {}).items() if k > today}   # departed dates: details are useless
