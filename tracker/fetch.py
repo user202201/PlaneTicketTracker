@@ -58,6 +58,10 @@ def checkpoint(save, force=False):
 NET = {"fails": 0, "pauses": 0, "stop": False}
 
 
+def time_up():
+    return PACE["deadline"] is not None and time.time() > PACE["deadline"]
+
+
 def expired():
     return (NET["stop"] or (PACE["quota"] is not None and PACE["count"] >= PACE["quota"])
             or (PACE["deadline"] is not None and time.time() > PACE["deadline"]))
@@ -474,7 +478,7 @@ def run_matrix_calendar(route, cfg, cur, doc, today, errors):
     return n_ok
 
 
-def run_matrix(route, cfg, cur, doc, today, errors, flush=None):
+def run_matrix(route, cfg, cur, doc, today, errors, flush=None, only=None):
     if PRICING["mode"] == "calendar":
         n = run_matrix_calendar(route, cfg, cur, doc, today, errors)
         if n:
@@ -483,7 +487,7 @@ def run_matrix(route, cfg, cur, doc, today, errors, flush=None):
         errors.append(f"{route['id']}: calendar failed, falling back to one-way estimates")
         PRICING["mode"] = "oneway_sum"
         doc["route"]["pricing"] = "oneway_sum"
-    return run_matrix_cells(route, cfg, cur, doc, today, errors, flush)
+    return run_matrix_cells(route, cfg, cur, doc, today, errors, flush, only)
 
 
 def _pick(offers, n=3):
@@ -496,12 +500,13 @@ def _pick(offers, n=3):
     return keep
 
 
-def run_matrix_cells(route, cfg, cur, doc, today, errors, flush=None):
+def run_matrix_cells(route, cfg, cur, doc, today, errors, flush=None, only=None):
     """Depart x stay price grid.
     - calendar columns (e.g. 32 days): Google's date grid, ONE request per month, dense (every date) and rarely throttled;
     - list columns (e.g. 42 days): exact prices from the result list, sampled dates only, with flight details.
     Resumable: cells already stored for today are kept; progress is committed periodically."""
     mx = cfg["matrix"]
+    do_cal, do_list = only in (None, "cal"), only in (None, "list")
     cal_offs = list(mx.get("calendar_offsets", []))
     list_on = route["id"] in mx.get("list_routes", mx.get("routes", []))
     list_offs = list(mx["return_offsets"]) if list_on else []
@@ -584,14 +589,14 @@ def run_matrix_cells(route, cfg, cur, doc, today, errors, flush=None):
                    if valid(d, off, i < nc) and grid[d.isoformat()][i] is None)
 
     # ---- 1) dense calendar columns first: ONE request per month returns every (departure, return) pair for all stays ----
-    if cal_offs:
+    if cal_offs and do_cal:
         lo, hi = min(cal_offs), max(cal_offs)
         for sp in month_specs(mx):
             mdays = [d for d in days if d.strftime("%Y-%m") == sp["month"]
                      and any(valid(d, off, True) and grid[d.isoformat()][ci] is None for ci, off in enumerate(cal_offs))]
             if not mdays:
                 continue
-            if expired():
+            if time_up():
                 break
             try:
                 res = calendar_range(route, min(mdays), max(mdays), lo, hi, cur)
@@ -611,6 +616,9 @@ def run_matrix_cells(route, cfg, cur, doc, today, errors, flush=None):
         save_all()
 
     # ---- 2) exact list columns (sampled dates), the 'stay' column first ----
+    if only == "cal":
+        save_all()
+        return stat["new"]
     order = sorted(range(len(list_offs)), key=lambda j: (list_offs[j] != stay, j))
     for j in order:
         off, i = list_offs[j], nc + j
@@ -665,20 +673,38 @@ def main():
     HORIZON["days"] = int(cfg.get("booking_horizon_days", 330))
     routes = list(cfg["routes"])
     random.shuffle(routes)          # each run starts with a random route, so all routes make progress
-    for route in routes:
+    mxc = cfg.get("matrix") or {}
+
+    def prep(route):
         path = DATA / f"{route['id']}.json"
         doc = json.loads(path.read_text()) if path.exists() else {"history": {}, "latest": {}}
         doc["route"] = {**route, "windows": cfg["windows"], "stay_days": cfg.get("stay_days"), "pricing": PRICING["mode"],
-                       "months": (cfg.get("matrix") or {}).get("months", [])}
+                        "months": mxc.get("months", [])}
         doc["currency"] = cur
         doc["updated"] = now
         doc["latest"] = {k: v for k, v in doc.get("latest", {}).items() if k > today}   # departed dates: details are useless
-        def save_doc(doc=doc, path=path):
+
+        def save_doc():
             _save_airports()
             cutoff = (dt.date.today() - dt.timedelta(days=HISTORY_DAYS)).isoformat()
             for k, v in doc["history"].items():
                 doc["history"][k] = {d: p for d, p in v.items() if d >= cutoff}
             path.write_text(json.dumps(doc, ensure_ascii=False, separators=(",", ":")))
+        return doc, save_doc
+
+    # pass 1: dense calendar columns for every matrix route. Cheap and rarely throttled, so it runs FIRST and is
+    # not affected when the flight-list endpoint turns out to be blocked for this runner.
+    if mxc.get("calendar_offsets"):
+        for route in routes:
+            if route["id"] in mxc.get("routes", []):
+                doc, save_doc = prep(route)
+                ok += run_matrix(route, cfg, cur, doc, today, errors, flush=save_doc, only="cal")
+                save_doc()
+        git_push("data: calendar columns")
+        CHK["last"] = time.time()
+
+    for route in routes:
+        doc, save_doc = prep(route)
 
         pairs = list(dates_for(route, cfg))
         random.shuffle(pairs)
@@ -712,7 +738,7 @@ def main():
         PENDING["n"] += sum(1 for dep, ret in pairs
                             if not (doc["history"].get(dep.isoformat(), {}).get(today) is not None and dep.isoformat() in doc["latest"]))
         if route["id"] in (cfg.get("matrix") or {}).get("routes", []):
-            n = run_matrix(route, cfg, cur, doc, today, errors, flush=save_doc)
+            n = run_matrix(route, cfg, cur, doc, today, errors, flush=save_doc, only="list")
             ok += n
             if not n:
                 fail += 1
