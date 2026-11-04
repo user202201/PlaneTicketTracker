@@ -6,24 +6,28 @@
  "sample_step": 2,
  "windows": [
   {
-   "label": "3月",
    "center": "2027-03-10"
   },
   {
-   "label": "4月",
    "center": "2027-04-10"
   },
   {
-   "label": "6月",
-   "center": "2027-06-10"
+   "center": "2027-05-10"
   },
   {
-   "label": "7月",
-   "center": "2027-07-10"
+   "center": "2027-06-25",
+   "return_by": "2027-09-15"
   },
   {
-   "label": "8月",
-   "center": "2027-08-10"
+   "center": "2027-07-10",
+   "return_by": "2027-09-15"
+  },
+  {
+   "center": "2027-08-02",
+   "return_by": "2027-09-15"
+  },
+  {
+   "center": "2027-10-10"
   }
  ],
  "alert": {
@@ -64,9 +68,21 @@
   "months": [
    "2027-03",
    "2027-04",
-   "2027-06",
-   "2027-07",
-   "2027-08"
+   "2027-05",
+   {
+    "month": "2027-06",
+    "from_day": 18,
+    "return_by": "2027-09-15"
+   },
+   {
+    "month": "2027-07",
+    "return_by": "2027-09-15"
+   },
+   {
+    "month": "2027-08",
+    "return_by": "2027-09-15"
+   },
+   "2027-10"
   ],
   "return_offsets": [
    40,
@@ -92,5 +108,6 @@
   ],
   "max_runtime_minutes": 170
  },
- "pricing": "list"
+ "pricing": "list",
+ "booking_horizon_days": 330
 }

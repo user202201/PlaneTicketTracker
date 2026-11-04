@@ -58,9 +58,18 @@ def pace():
         time.sleep(random.uniform(*p["query_sleep_seconds_range"]) * sc)
 
 
+def month_specs(mx):
+    """Matrix months may be plain 'YYYY-MM' or {'month','from_day','return_by'}."""
+    out = []
+    for m in mx.get("months", []):
+        out.append({"month": m, "from_day": 1, "return_by": None} if isinstance(m, str)
+                   else {"month": m["month"], "from_day": m.get("from_day", 1), "return_by": m.get("return_by")})
+    return out
+
+
 def dates_for(route, cfg):
     mx = cfg.get("matrix") or {}
-    skip_months = tuple(mx.get("months", [])) if (route["id"] in mx.get("routes", []) and PRICING["mode"] != "calendar") else ()
+    skip_months = tuple(sp["month"] for sp in month_specs(mx)) if (route["id"] in mx.get("routes", []) and PRICING["mode"] != "calendar") else ()
     """All (depart, return) pairs: every window's centre +/- flex, return = depart + stay."""
     flex = route.get("flex_days", cfg.get("flex_days", 7))
     step = route.get("sample_step", cfg.get("sample_step", 2))
@@ -69,8 +78,13 @@ def dates_for(route, cfg):
     seen = set()
     for w in cfg["windows"]:
         c = dt.date.fromisoformat(w["center"])
+        rb = dt.date.fromisoformat(w["return_by"]) if w.get("return_by") else None
         for off in range(-flex, flex + 1, step):
             d = c + dt.timedelta(days=off)
+            if rb and stay and d + dt.timedelta(days=stay) > rb:
+                continue
+            if stay and d + dt.timedelta(days=stay) > today + dt.timedelta(days=HORIZON["days"]):
+                continue            # not on sale yet
             if d > today and d not in seen and not d.isoformat().startswith(skip_months):
                 seen.add(d)
                 yield d, (d + dt.timedelta(days=stay) if stay else None)
@@ -81,6 +95,7 @@ def dates_for(route, cfg):
 #        "oneway_sum" = everything estimated as outbound + return one-way fares
 #        "roundtrip"  = per-trip round-trip query (not working with the current scraper)
 PRICING = {"mode": "oneway_sum"}
+HORIZON = {"days": 330}           # airlines sell roughly 330 days ahead; later dates have no prices (not a failure)
 EXPAND = {"returns": True}          # fetch the return leg for the cheapest outbound of each date pair
 CACHE = {}                          # (origin, dest, date, cabin, adults, children) -> ("ok", offers) | ("err", msg)
 
@@ -319,7 +334,7 @@ def run_matrix_calendar(route, cfg, cur, doc, today, errors):
     mx = cfg["matrix"]
     offs, stay = mx["return_offsets"], cfg.get("stay_days")
     grid, n_ok, fails = {}, 0, 0
-    for mo in mx["months"]:
+    for mo in [sp["month"] for sp in month_specs(mx)]:
         first = dt.date.fromisoformat(mo + "-01")
         last = (first.replace(day=28) + dt.timedelta(days=4)).replace(day=1) - dt.timedelta(days=1)
         cols = {}
@@ -353,10 +368,11 @@ def run_matrix_calendar(route, cfg, cur, doc, today, errors):
         mdir = DATA / "matrix" / route["id"]
         mdir.mkdir(parents=True, exist_ok=True)
         (mdir / f"{today}.json").write_text(json.dumps(
-            {"months": mx["months"], "offsets": offs, "currency": cur, "pricing": "calendar",
+            {"months": [sp["month"] for sp in month_specs(mx)], "offsets": offs, "currency": cur, "pricing": "calendar",
              "p": dict(sorted(grid.items()))}, separators=(",", ":")))
         idx_path = mdir / "index.json"
-        idx = json.loads(idx_path.read_text()) if idx_path.exists() else {"months": mx["months"], "snapshots": []}
+        idx = json.loads(idx_path.read_text()) if idx_path.exists() else {"snapshots": []}
+        idx["months"] = [sp["month"] for sp in month_specs(mx)]
         if today not in idx["snapshots"]:
             idx["snapshots"].append(today)
         idx_path.write_text(json.dumps(idx))
@@ -407,11 +423,13 @@ def run_matrix_cells(route, cfg, cur, doc, today, errors):
         grid, cells = {}, {}
     n_ok = sum(1 for r in grid.values() for v in r if v is not None)
     new_ok = 0
-    days = []
-    for mo in mx["months"]:
-        d = dt.date.fromisoformat(mo + "-01")
-        while d.month == dt.date.fromisoformat(mo + "-01").month:
+    days, rby = [], {}
+    for sp in month_specs(mx):
+        first = dt.date.fromisoformat(sp["month"] + "-01")
+        d = first.replace(day=sp["from_day"])
+        while d.month == first.month:
             days.append(d)
+            rby[d] = dt.date.fromisoformat(sp["return_by"]) if sp["return_by"] else None
             d += dt.timedelta(days=1)
     random.shuffle(days)            # random order: no sequential scanning pattern
     for d in days:
@@ -426,6 +444,10 @@ def run_matrix_cells(route, cfg, cur, doc, today, errors):
             if row[i] is not None or expired():
                 continue
             ret = d + dt.timedelta(days=off)
+            if rby.get(d) and ret > rby[d]:
+                continue                # return after the allowed date for this month
+            if ret > dt.date.today() + dt.timedelta(days=HORIZON["days"]):
+                continue                # not on sale yet: skipped silently, picked up automatically later
             try:
                 offers = search(route, d, ret, cur, expand=(off == stay))
             except Exception as e:
@@ -442,10 +464,11 @@ def run_matrix_cells(route, cfg, cur, doc, today, errors):
     if n_ok + new_ok:
         mdir.mkdir(parents=True, exist_ok=True)
         snap_path.write_text(json.dumps(
-            {"months": mx["months"], "offsets": offs, "currency": cur, "pricing": PRICING["mode"], "p": dict(sorted(grid.items()))},
+            {"months": [sp["month"] for sp in month_specs(mx)], "offsets": offs, "currency": cur, "pricing": PRICING["mode"], "p": dict(sorted(grid.items()))},
             separators=(",", ":")))
         idx_path = mdir / "index.json"
-        idx = json.loads(idx_path.read_text()) if idx_path.exists() else {"months": mx["months"], "snapshots": []}
+        idx = json.loads(idx_path.read_text()) if idx_path.exists() else {"snapshots": []}
+        idx["months"] = [sp["month"] for sp in month_specs(mx)]
         if today not in idx["snapshots"]:
             idx["snapshots"].append(today)
         idx_path.write_text(json.dumps(idx))
@@ -475,6 +498,7 @@ def main():
     pace_init(cfg)
     PRICING["mode"] = cfg.get("pricing", "oneway_sum")
     EXPAND["returns"] = bool(cfg.get("expand_returns", True))
+    HORIZON["days"] = int(cfg.get("booking_horizon_days", 330))
     for route in cfg["routes"]:
         path = DATA / f"{route['id']}.json"
         doc = json.loads(path.read_text()) if path.exists() else {"history": {}, "latest": {}}
