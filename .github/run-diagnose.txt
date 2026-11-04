@@ -1,1 +1,1 @@
-diagnose round 6b: compare calendar 32d vs exact 42d (fixed)
+diagnose round 7: user's trip + stay-length range + grid endpoint

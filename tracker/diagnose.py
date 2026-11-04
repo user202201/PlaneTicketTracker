@@ -391,10 +391,93 @@ def calendar_compare():
     return r
 
 
+def calendar_range_probe():
+    """(1) Does our list pipeline find the user's Google result (Mar10 -> Apr22, <=1 stop, ~CA$1,641)?
+    (2) Does the round-trip calendar accept a RANGE of stay lengths (one request -> many return dates)?
+    (3) Does an undocumented 'GetCalendarGrid' endpoint answer the same payload?"""
+    import urllib.parse
+    r = {"case": "range probe: user's trip + stay-length range + calendar grid endpoint", "steps": []}
+    try:
+        from fli.models import (Airport, DateSearchFilters, FlightSearchFilters, FlightSegment, MaxStops,
+                                PassengerInfo, SeatType, TripType)
+        from fli.search import SearchDates, SearchFlights
+        from fli.search._urls import with_locale_params
+        from fli.search._wire import parse_first_wrb_payload
+        pax = PassengerInfo(adults=1)
+        Y, P = Airport.YUL, Airport.PEK
+
+        def seg(a, b, date):
+            return FlightSegment(departure_airport=[[a, 0]], arrival_airport=[[b, 0]], travel_date=date)
+
+        # (1) list lookup for the user's exact trip
+        sf = SearchFlights()
+        for dep, ret in (("2027-03-10", "2027-04-22"), ("2027-03-10", "2027-04-21")):
+            f = FlightSearchFilters(trip_type=TripType.ROUND_TRIP, passenger_info=pax, flight_segments=[seg(Y, P, dep), seg(P, Y, ret)],
+                                    stops=MaxStops.ONE_STOP_OR_FEWER, seat_type=SeatType.ECONOMY)
+            res = None
+            for _ in range(2):
+                try:
+                    res = sf._fetch_flights(f, currency="CAD", language=None, country=None, capture_session=False)
+                except Exception as e:
+                    res = None
+                if res:
+                    break
+                time.sleep(4)
+            r["steps"].append({"list": f"{dep}->{ret}", "n": len(res or []),
+                               "cheapest": sorted(x.price for x in (res or []) if x.price)[:4],
+                               "first": [[getattr(l.airline, 'value', '?'), l.flight_number, l.departure_airport.name, l.arrival_airport.name] for l in ((sorted([x for x in res if x.price], key=lambda x: x.price)[0].legs) if res else [])]})
+            time.sleep(3)
+
+        # (2) calendar with a RANGE of stay lengths, and (3) the GetCalendarGrid endpoint
+        base = DateSearchFilters(trip_type=TripType.ROUND_TRIP, passenger_info=pax,
+                                 flight_segments=[seg(Y, P, "2027-03-01"), seg(P, Y, "2027-04-12")],
+                                 stops=MaxStops.ONE_STOP_OR_FEWER, seat_type=SeatType.ECONOMY,
+                                 from_date="2027-03-01", to_date="2027-03-31", duration=42)
+        client = SearchDates().client
+
+        def post(endpoint, dmin, dmax):
+            raw = base.format()
+            raw[-1] = [dmin, dmax]
+            enc = urllib.parse.quote(json.dumps([None, json.dumps(raw, separators=(",", ":"))], separators=(",", ":")))
+            url = with_locale_params(SearchDates.BASE_URL.replace("GetCalendarGraph", endpoint), "CAD", None, None)
+            resp = client.post(url=url, data=f"f.req={enc}", impersonate="chrome", allow_redirects=True)
+            out = {"endpoint": endpoint, "range": [dmin, dmax], "http": resp.status_code, "len": len(resp.text)}
+            try:
+                data = parse_first_wrb_payload(resp.text)
+                items = data[-1] if data else None
+                rows = []
+                for it in items or []:
+                    try:
+                        rows.append((it[0], it[1], it[2][0][1]))
+                    except Exception:
+                        pass
+                out["n_rows"] = len(rows)
+                out["distinct_deps"] = len({x[0] for x in rows})
+                out["mar10"] = [x for x in rows if x[0] == "2027-03-10"][:12]
+                out["sample"] = rows[:6]
+            except Exception as e:
+                out["parse_error"] = f"{type(e).__name__}: {e}"[:120]
+                out["head"] = resp.text[:200]
+            return out
+
+        for endpoint, lo, hi in (("GetCalendarGraph", 42, 42), ("GetCalendarGraph", 38, 46), ("GetCalendarGraph", 28, 32),
+                                 ("GetCalendarGrid", 42, 42), ("GetCalendarGrid", 38, 46)):
+            try:
+                r["steps"].append(post(endpoint, lo, hi))
+            except Exception as e:
+                r["steps"].append({"endpoint": endpoint, "range": [lo, hi], "error": f"{type(e).__name__}: {e}"[:140]})
+            time.sleep(3)
+    except Exception as e:
+        r["error"] = f"{type(e).__name__}: {e}"
+        r["trace"] = traceback.format_exc()[-600:]
+    print(json.dumps({k: v for k, v in r.items() if k != "trace"}, ensure_ascii=False)[:900])
+    return r
+
+
 def main():
     import sys
     if "--all" not in sys.argv:         # default: light run (calendar probe only) so the runner's request budget isn't burned
-        out = {"when": dt.datetime.now(dt.timezone.utc).isoformat(timespec="seconds"), "results": [calendar_compare()]}
+        out = {"when": dt.datetime.now(dt.timezone.utc).isoformat(timespec="seconds"), "results": [calendar_range_probe()]}
         OUT.parent.mkdir(parents=True, exist_ok=True)
         OUT.write_text(json.dumps(out, ensure_ascii=False, indent=1))
         return
