@@ -3,7 +3,7 @@
  "default_route": "YUL-PEK",
  "stay_days": 42,
  "flex_days": 7,
- "sample_step": 2,
+ "sample_step": 4,
  "windows": [
   {
    "center": "2027-03-10"
@@ -85,13 +85,12 @@
    "2027-10"
   ],
   "return_offsets": [
-   40,
-   42,
-   44
+   42
   ],
   "routes": [
    "YUL-PEK"
-  ]
+  ],
+  "date_step": 3
  },
  "pacing": {
   "batch_size_range": [
@@ -120,6 +119,7 @@
   "routes": [
    "YUL-PEK"
   ],
-  "every": 4
- }
+  "every": 15
+ },
+ "expand_within_pct": 8
 }

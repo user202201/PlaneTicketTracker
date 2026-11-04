@@ -67,10 +67,10 @@ def guard():
     """Google throttles bursts. After 3 failed lookups in a row: wait 8 min once or twice, then give up for
     this run (partial data is saved; the next scheduled run resumes with a fresh runner/IP)."""
     if NET["fails"] >= 3:
-        if NET["pauses"] < 2:
+        if NET["pauses"] < 1:
             NET["pauses"] += 1
             NET["fails"] = 0
-            print(f"[guard] looks throttled, pausing 8 min (pause {NET['pauses']}/2)", flush=True)
+            print(f"[guard] looks throttled, pausing 8 min (pause {NET['pauses']}/1)", flush=True)
             time.sleep(480 * PACE["scale"])
         else:
             NET["stop"] = True
@@ -242,7 +242,8 @@ def fli_list(route, dep, ret, currency, expand=True):
     NET["fails"] = 0
     pairs = _fli_offers(res)
     offers = [p[0] for p in pairs]
-    if ret and expand and EXPAND["returns"] and pairs:
+    do_expand = expand(offers[0]["price"]) if (callable(expand) and offers) else bool(expand)
+    if ret and do_expand and EXPAND["returns"] and pairs:
         try:                                    # full round trip for the cheapest outbound: also fetch its return leg
             rr = _fli_return(route, f, pairs[0][1], currency)
             if rr:
@@ -486,7 +487,16 @@ def run_matrix_cells(route, cfg, cur, doc, today, errors, flush=None):
                 rby[d] = dt.date.fromisoformat(sp["return_by"]) if sp["return_by"] else None
             d += dt.timedelta(days=1)
 
+    step = int(mx.get("date_step", 1))
+    pct = cfg.get("expand_within_pct", 100)
+
+    def want_expand(price):
+        prices = [v for r in grid.values() for v in r if v is not None]
+        return (not prices) or price <= min(prices) * (1 + pct / 100)
+
     def valid(d, off):
+        if step > 1 and d.toordinal() % step != 0:
+            return False                # sampled dates only (same dates every day -> clean time series)
         ret = d + dt.timedelta(days=off)
         if rby.get(d) and ret > rby[d]:
             return False                # after the allowed return date for this month
@@ -533,7 +543,7 @@ def run_matrix_cells(route, cfg, cur, doc, today, errors, flush=None):
                 return n_prev + stat["new"]
             k, ret = d.isoformat(), d + dt.timedelta(days=off)
             try:
-                offers = search(route, d, ret, cur, expand=(off == stay))
+                offers = search(route, d, ret, cur, expand=(want_expand if off == stay else False))
             except Exception as e:
                 errors.append(f"{route['id']} matrix {d}->{ret}: {type(e).__name__}: {str(e)[:100]}")
                 continue
@@ -597,8 +607,11 @@ def main():
             key = dep.isoformat()
             if doc["history"].get(key, {}).get(today) is not None and key in doc["latest"]:
                 continue                # already collected today by an earlier run
+            def want(price, doc=doc):
+                pr = [v.get(today) for v in doc["history"].values() if v.get(today) is not None]
+                return (not pr) or price <= min(pr) * (1 + cfg.get("expand_within_pct", 100) / 100)
             try:
-                offers = search(route, dep, ret, cur)
+                offers = search(route, dep, ret, cur, expand=want)
             except Exception as e:  # network block, parse change, no results...
                 fail += 1
                 errors.append(f"{route['id']} {key}: {type(e).__name__}: {str(e)[:120]}")

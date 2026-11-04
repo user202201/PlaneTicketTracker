@@ -36,6 +36,16 @@
 | 想看 Google 实际返回了什么 | — | Actions → diagnose → Run workflow，结果写入 `docs/data/diagnose.json` |
 | 页面样式 / 图表异常 | 浏览器缓存 | 强制刷新（Ctrl+Shift+R） |
 
+## 三点五、为什么抓取规模不大（重要）
+
+Google 对 GitHub 服务器的容忍度很低：**每台服务器大约只放行 5~10 次请求，随后临时拦截**。所以抓取按这个额度设计：
+- 只追踪 42 天停留，出发日每 3 天取一个（`matrix.date_step`），上海、郑州每个月只取 4 个日期（`sample_step`）。
+- 返程详情只对价格接近当天最低的格子再查（`expand_within_pct`）。
+- 一天约 130 次请求，由接力机制分到约 13 台服务器上完成；被拦截时换服务器、拉长等待重试。
+- 想要更密的矩阵，可以在自己家里的电脑上运行同一套代码（家庭网络通常不被拦），结果同样提交到 GitHub。
+
+**最稳的提醒方式是 Google 自带的“跟踪票价”**：页面总览里的「Google 价格追踪」卡片会列出每个月最便宜的一组日期，点按钮打开 Google，再打开「跟踪票价」开关即可，价格变化时 Google 直接发邮件到你的 Gmail，完全不依赖本项目的抓取。
+
 ## 四、邮件降价提醒（可选，默认关闭）
 
 Settings → Secrets and variables → Actions，新增：`SMTP_USER`（Gmail 地址）、`SMTP_PASS`（Gmail 应用专用密码）、`ALERT_TO`（收件地址）。在 `config.json` 的 `alert` 里设 `below_price` 或 `pct_below_avg`。
