@@ -335,10 +335,65 @@ def calendar_probe():
     return r
 
 
+def calendar_compare():
+    """How close is the dense 32-day round-trip calendar to the exact 42-day list prices we already collected?"""
+    import glob, statistics as stt
+    r = {"case": "calendar(32d) vs exact list price (42d)", "rows": []}
+    try:
+        from fli.models import (Airport, DateSearchFilters, FlightSegment, MaxStops, PassengerInfo, SeatType, TripType)
+        from fli.search import SearchDates
+        exact = []                                               # (route, dep, price)
+        for f in sorted(glob.glob(str(DATA / "matrix" / "YUL-PEK" / "20*.json")))[-1:]:
+            m = json.loads(pathlib.Path(f).read_text())
+            i = m["offsets"].index(42) if 42 in m["offsets"] else None
+            if i is not None:
+                exact += [("PEK", k, v[i]) for k, v in m["p"].items() if v[i] is not None]
+        for rid, code in (("YUL-PEK", "PEK"), ("YUL-PVG", "PVG")):
+            p = DATA / f"{rid}.json"
+            if p.exists():
+                doc = json.loads(p.read_text())
+                exact += [(code, k, min(o["price"] for o in v["offers"])) for k, v in doc["latest"].items() if v.get("offers")]
+        seen, cache = set(), {}
+        for code, dep, price in exact:
+            if (code, dep) in seen:
+                continue
+            seen.add((code, dep))
+            ym = dep[:7]
+            if (code, ym) not in cache:
+                first = dt.date.fromisoformat(ym + "-01")
+                last = (first.replace(day=28) + dt.timedelta(days=4)).replace(day=1) - dt.timedelta(days=1)
+                first = max(first, dt.date.today() + dt.timedelta(days=1))
+                pax = PassengerInfo(adults=1)
+                A, B = Airport.YUL, Airport[code]
+                f = DateSearchFilters(trip_type=TripType.ROUND_TRIP, passenger_info=pax,
+                                      flight_segments=[FlightSegment(departure_airport=[[A, 0]], arrival_airport=[[B, 0]], travel_date=first.isoformat()),
+                                                       FlightSegment(departure_airport=[[B, 0]], arrival_airport=[[A, 0]], travel_date=(first + dt.timedelta(days=32)).isoformat())],
+                                      stops=MaxStops.ONE_STOP_OR_FEWER, seat_type=SeatType.ECONOMY,
+                                      from_date=first.isoformat(), to_date=last.isoformat(), duration=32)
+                try:
+                    res = SearchDates().search(f, currency="CAD") or []
+                except Exception:
+                    res = []
+                cache[(code, ym)] = {x.date[0].date().isoformat(): x.price for x in res}
+                time.sleep(2)
+            cal = cache[(code, ym)].get(dep)
+            r["rows"].append({"route": code, "dep": dep, "exact42": price, "cal32": cal,
+                              "ratio": round(price / cal, 3) if cal else None})
+        rat = [x["ratio"] for x in r["rows"] if x["ratio"]]
+        if rat:
+            r["median_ratio_exact_over_cal"] = round(stt.median(rat), 3)
+            r["min"], r["max"] = min(rat), max(rat)
+    except Exception as e:
+        r["error"] = f"{type(e).__name__}: {e}"
+        r["trace"] = traceback.format_exc()[-500:]
+    print(json.dumps({k: v for k, v in r.items() if k != "trace"}, ensure_ascii=False)[:700])
+    return r
+
+
 def main():
     import sys
     if "--all" not in sys.argv:         # default: light run (calendar probe only) so the runner's request budget isn't burned
-        out = {"when": dt.datetime.now(dt.timezone.utc).isoformat(timespec="seconds"), "results": [calendar_probe()]}
+        out = {"when": dt.datetime.now(dt.timezone.utc).isoformat(timespec="seconds"), "results": [calendar_compare()]}
         OUT.parent.mkdir(parents=True, exist_ok=True)
         OUT.write_text(json.dumps(out, ensure_ascii=False, indent=1))
         return

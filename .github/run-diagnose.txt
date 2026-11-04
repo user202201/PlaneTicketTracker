@@ -1,1 +1,1 @@
-diagnose round 5: calendar probe $(date)
+diagnose round 6: compare calendar 32d vs exact 42d
