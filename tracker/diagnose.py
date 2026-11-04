@@ -272,7 +272,76 @@ def list_probe():
     return out
 
 
+def calendar_probe():
+    """Can dense one-way calendars + real round-trip samples rebuild a dense matrix for ANY stay length?
+    Compares sum(outbound one-way, return one-way) with the real round-trip calendar (30-day stays)."""
+    import statistics as stt
+    r = {"case": "calendar probe: one-way sums vs real round-trip", "steps": []}
+    try:
+        from fli.models import (Airport, DateSearchFilters, FlightSegment, MaxStops, PassengerInfo, SeatType, TripType)
+        from fli.search import SearchDates
+        pax = PassengerInfo(adults=1)
+        Y, P = Airport.YUL, Airport.PEK
+
+        def seg(a, b, date):
+            return FlightSegment(departure_airport=[[a, 0]], arrival_airport=[[b, 0]], travel_date=date)
+
+        def cal(a, b, first, last, dur=None):
+            segs = [seg(a, b, first)]
+            if dur:
+                segs.append(seg(b, a, (dt.date.fromisoformat(first) + dt.timedelta(days=dur)).isoformat()))
+            f = DateSearchFilters(trip_type=TripType.ROUND_TRIP if dur else TripType.ONE_WAY, passenger_info=pax,
+                                  flight_segments=segs, stops=MaxStops.ONE_STOP_OR_FEWER, seat_type=SeatType.ECONOMY,
+                                  from_date=first, to_date=last, duration=dur)
+            res = SearchDates().search(f, currency="CAD") or []
+            return {x.date[0].date().isoformat(): x.price for x in res}
+
+        t0 = time.time()
+        out = cal(Y, P, "2027-03-01", "2027-03-31")
+        time.sleep(3)
+        back = cal(P, Y, "2027-03-25", "2027-05-10")            # <=61 days
+        time.sleep(3)
+        rt30 = cal(Y, P, "2027-03-01", "2027-03-31", 30)
+        r["n_out"], r["n_back"], r["n_rt30"] = len(out), len(back), len(rt30)
+        ratios = []
+        for d, p in rt30.items():
+            ret = (dt.date.fromisoformat(d) + dt.timedelta(days=30)).isoformat()
+            if d in out and ret in back:
+                ratios.append((out[d] + back[ret]) / p)
+        if ratios:
+            r["ratio_sum_over_rt30"] = {"n": len(ratios), "median": round(stt.median(ratios), 3),
+                                        "min": round(min(ratios), 3), "max": round(max(ratios), 3)}
+        r["sample"] = {d: [out.get(d), rt30.get(d)] for d in sorted(rt30)[:5]}
+        r["seconds"] = round(time.time() - t0, 1)
+        # stay-length threshold for the round-trip calendar
+        for dur in (32, 33, 34):
+            time.sleep(3)
+            r["steps"].append({"rt_dur": dur, "n_dates": len(cal(Y, P, "2027-03-01", "2027-03-31", dur))})
+        # throughput: many calendar calls in a row (is this endpoint throttled like the list endpoint?)
+        ok = 0
+        for i in range(12):
+            try:
+                x = cal(Y, P, f"2027-0{3 + i % 3}-01", f"2027-0{3 + i % 3}-28", 28 + i % 3)
+                ok += 1 if x else 0
+            except Exception as e:
+                r["steps"].append({"burst_err": str(e)[:80]})
+                break
+            time.sleep(1.5)
+        r["burst_ok_of_12"] = ok
+    except Exception as e:
+        r["error"] = f"{type(e).__name__}: {e}"
+        r["trace"] = traceback.format_exc()[-600:]
+    print(json.dumps({k: v for k, v in r.items() if k != "trace"}, ensure_ascii=False)[:600])
+    return r
+
+
 def main():
+    import sys
+    if "--all" not in sys.argv:         # default: light run (calendar probe only) so the runner's request budget isn't burned
+        out = {"when": dt.datetime.now(dt.timezone.utc).isoformat(timespec="seconds"), "results": [calendar_probe()]}
+        OUT.parent.mkdir(parents=True, exist_ok=True)
+        OUT.write_text(json.dumps(out, ensure_ascii=False, indent=1))
+        return
     d = dt.date.today()
     near = (d + dt.timedelta(days=45)).isoformat()
     mar, apr = "2027-03-10", "2027-04-21"
@@ -291,8 +360,6 @@ def main():
     for name, legs, trip, stops in cases:
         out["results"].append(run_case(name, legs, trip, stops))
         time.sleep(4)
-    out["results"].append(list_case())
-    out["results"].extend(list_probe())
     out["results"].append(calendar_case())
     out["results"].extend(fli_cases())
     OUT.parent.mkdir(parents=True, exist_ok=True)
