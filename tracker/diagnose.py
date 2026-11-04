@@ -3,7 +3,8 @@ so we can tell 'blocked' from 'wrong query' from 'no inventory'. Writes docs/dat
 import json, pathlib, datetime as dt, time, traceback
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
-OUT = ROOT / "docs" / "data" / "diagnose.json"
+DATA = ROOT / "docs" / "data"
+OUT = DATA / "diagnose.json"
 
 
 def shape(x, depth=0):
