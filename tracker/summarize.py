@@ -102,7 +102,11 @@ def summarize(route_id):
         return None
     data, offs, cur = loaded
     days = sorted(data)
-    last = days[-1]
+    cov = {d: sum(1 for r in data[d].values() for v in r if v is not None) for d in days}
+    best = max(cov.values()) if cov else 0
+    ok_days = [d for d in days if cov[d] >= 0.7 * best]     # a snapshot still being filled today is not "current"
+    last = ok_days[-1] if ok_days else days[-1]
+    days = [d for d in days if d <= last]
     p = data[last]
     n = len(days)
     out = {lg: [] for lg in LANGS}

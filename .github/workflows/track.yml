@@ -3,7 +3,7 @@ on:
   push:
     paths: [".github/run-trigger.txt"]   # touch this file to start a normal run
   schedule:
-    - cron: "17 */4 * * *"   # every 4 h: each run resumes the day's missing cells (Google throttles bursts)
+    - cron: "7 * * * *"   # hourly: each run does a small random-size batch and resumes the day's missing cells
   workflow_dispatch:
     inputs:
       mode:
@@ -17,7 +17,7 @@ concurrency: track
 jobs:
   track:
     runs-on: ubuntu-latest
-    timeout-minutes: 200
+    timeout-minutes: 100
     steps:
       - uses: actions/checkout@v4
         with: { ref: "${{ github.ref_name }}" }   # always the branch tip (earlier runs may have committed data meanwhile)
@@ -28,6 +28,9 @@ jobs:
         run: |
           git config user.name "price-tracker-bot"
           git config user.email "bot@users.noreply.github.com"
+      - name: Random start delay (scheduled runs only)
+        if: github.event_name == 'schedule'
+        run: sleep $(( (RANDOM % 600) + 30 ))
       - name: Diagnose (1 min)
         if: inputs.mode == 'diagnose'
         continue-on-error: true

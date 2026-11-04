@@ -8,7 +8,7 @@ MAX_OFFERS = 12
 HISTORY_DAYS = 800
 
 
-PACE = {"left": 0, "deadline": None, "cfg": {}, "scale": 1.0, "batches": 0}
+PACE = {"left": 0, "deadline": None, "cfg": {}, "scale": 1.0, "batches": 0, "count": 0, "quota": None}
 
 
 def pace_init(cfg):
@@ -18,7 +18,9 @@ def pace_init(cfg):
     p = {"batch_size_range": [40, 80], "pause_minutes_range": [1, 3],
          "query_sleep_seconds_range": [1, 3], "max_runtime_minutes": 200}
     p.update(cfg.get("pacing") or {})
-    PACE.update(cfg=p, left=random.randint(*p["batch_size_range"]), batches=0,
+    q = (cfg.get("schedule") or {}).get("quota_range")
+    PACE.update(cfg=p, left=random.randint(*p["batch_size_range"]), batches=0, count=0,
+                quota=random.randint(*q) if q else None,
                 scale=float(os.environ.get("PACE_SCALE", "1")),
                 deadline=time.time() + p["max_runtime_minutes"] * 60 * float(os.environ.get("PACE_SCALE", "1")))
 
@@ -56,7 +58,8 @@ NET = {"fails": 0, "pauses": 0, "stop": False}
 
 
 def expired():
-    return NET["stop"] or (PACE["deadline"] is not None and time.time() > PACE["deadline"])
+    return (NET["stop"] or (PACE["quota"] is not None and PACE["count"] >= PACE["quota"])
+            or (PACE["deadline"] is not None and time.time() > PACE["deadline"]))
 
 
 def guard():
@@ -76,6 +79,7 @@ def guard():
 
 def pace():
     p, sc = PACE["cfg"], PACE["scale"]
+    PACE["count"] += 1
     PACE["left"] -= 1
     if PACE["left"] <= 0:
         PACE["batches"] += 1
@@ -502,7 +506,7 @@ def run_matrix_cells(route, cfg, cur, doc, today, errors, flush=None):
         random.shuffle(todo)            # random order: no sequential scanning pattern
         for d in todo:
             if expired():
-                errors.append(f"{route['id']} matrix: stopped early (time budget or throttling); next run resumes")
+                errors.append(f"{route['id']} matrix: stopped for this run (request quota / time budget / throttling); the next run resumes")
                 save_all()
                 return n_prev + stat["new"]
             k, ret = d.isoformat(), d + dt.timedelta(days=off)
@@ -545,7 +549,9 @@ def main():
     PRICING["mode"] = cfg.get("pricing", "oneway_sum")
     EXPAND["returns"] = bool(cfg.get("expand_returns", True))
     HORIZON["days"] = int(cfg.get("booking_horizon_days", 330))
-    for route in cfg["routes"]:
+    routes = list(cfg["routes"])
+    random.shuffle(routes)          # each run starts with a random route, so all routes make progress
+    for route in routes:
         path = DATA / f"{route['id']}.json"
         doc = json.loads(path.read_text()) if path.exists() else {"history": {}, "latest": {}}
         doc["route"] = {**route, "windows": cfg["windows"], "stay_days": cfg.get("stay_days"), "pricing": PRICING["mode"]}
@@ -564,6 +570,8 @@ def main():
                 errors.append(f"{route['id']}: time budget reached")
                 break
             key = dep.isoformat()
+            if doc["history"].get(key, {}).get(today) is not None and key in doc["latest"]:
+                continue                # already collected today by an earlier run
             try:
                 offers = search(route, dep, ret, cur)
             except Exception as e:  # network block, parse change, no results...
@@ -590,7 +598,7 @@ def main():
         checkpoint(save_doc, force=True)
     (DATA / "status.json").write_text(json.dumps(
         {"updated": now, "ok": ok, "failed": fail, "errors": errors[:30]}, indent=1))
-    print(f"ok={ok} failed={fail}")
+    print(f"ok={ok} failed={fail} requests={PACE['count']} quota={PACE['quota']}")
     for e in errors[:10]:
         print(" ", e)
     # exit 0 so data is committed; alert.py reports total failure

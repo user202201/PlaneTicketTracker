@@ -106,8 +106,14 @@
    6,
    12
   ],
-  "max_runtime_minutes": 170
+  "max_runtime_minutes": 75
  },
  "pricing": "list",
- "booking_horizon_days": 330
+ "booking_horizon_days": 330,
+ "schedule": {
+  "quota_range": [
+   50,
+   100
+  ]
+ }
 }
