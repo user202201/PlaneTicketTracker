@@ -89,6 +89,75 @@ def calendar_case():
     return r
 
 
+def fli_cases():
+    """Real round-trip outbound list (what Google's page shows) + date-grid density experiments."""
+    out = []
+    try:
+        from fli.models import (Airport, DateSearchFilters, FlightSearchFilters, FlightSegment, MaxStops,
+                                PassengerInfo, SeatType, TripType)
+        from fli.search import SearchDates, SearchFlights
+    except Exception as e:
+        return [{"case": "fli import", "error": f"{type(e).__name__}: {e}"}]
+    o, d_ = Airport.YUL, Airport.PEK
+    pax = PassengerInfo(adults=1)
+
+    def seg(a, b, date):
+        return FlightSegment(departure_airport=[[a, 0]], arrival_airport=[[b, 0]], travel_date=date)
+
+    # A) round-trip outbound list, <=1 stop, real round-trip prices + leg details
+    r = {"case": "fli round-trip list YUL-PEK Mar10/Apr21 <=1 stop"}
+    try:
+        t0 = time.time()
+        f = FlightSearchFilters(trip_type=TripType.ROUND_TRIP, passenger_info=pax,
+                                flight_segments=[seg(o, d_, "2027-03-10"), seg(d_, o, "2027-04-21")],
+                                stops=MaxStops.ONE_STOP_OR_FEWER, seat_type=SeatType.ECONOMY)
+        res = SearchFlights()._fetch_flights(f, currency="CAD", language=None, country=None, capture_session=False)
+        r["seconds"] = round(time.time() - t0, 1)
+        r["n"] = len(res or [])
+        r["items"] = [{"price": x.price, "currency": x.currency, "stops": x.stops, "duration": x.duration,
+                       "layovers": [getattr(l, "duration", None) for l in (x.layovers or [])],
+                       "legs": [{"airline": getattr(l.airline, "value", str(l.airline)), "no": l.flight_number,
+                                 "from": getattr(l.departure_airport, "name", str(l.departure_airport)),
+                                 "to": getattr(l.arrival_airport, "name", str(l.arrival_airport)),
+                                 "dep": l.departure_datetime.isoformat(), "arr": l.arrival_datetime.isoformat(),
+                                 "min": l.duration, "aircraft": l.aircraft} for l in x.legs]}
+                      for x in (res or [])[:4]]
+    except Exception as e:
+        r["error"] = f"{type(e).__name__}: {e}"
+        r["trace"] = traceback.format_exc()[-700:]
+    out.append(r)
+    time.sleep(3)
+
+    # B) date-grid density experiments
+    def grid(name, trip, stops, first, last, dur):
+        r = {"case": "grid: " + name}
+        try:
+            segs = [seg(o, d_, first)]
+            if trip == TripType.ROUND_TRIP:
+                import datetime as _d
+                segs.append(seg(d_, o, (_d.date.fromisoformat(first) + _d.timedelta(days=dur)).isoformat()))
+            f = DateSearchFilters(trip_type=trip, passenger_info=pax, flight_segments=segs, stops=stops,
+                                  seat_type=SeatType.ECONOMY, from_date=first, to_date=last,
+                                  duration=dur if trip == TripType.ROUND_TRIP else None)
+            res = SearchDates().search(f, currency="CAD") or []
+            r["n_dates"] = len(res)
+            r["sample"] = [[x.date[0].date().isoformat(), x.price] for x in res[:8]]
+        except Exception as e:
+            r["error"] = f"{type(e).__name__}: {e}"
+        print(json.dumps(r, ensure_ascii=False)[:300])
+        out.append(r)
+        time.sleep(3)
+
+    RT, OW = TripType.ROUND_TRIP, TripType.ONE_WAY
+    grid("RT Mar1-31 42d <=1stop", RT, MaxStops.ONE_STOP_OR_FEWER, "2027-03-01", "2027-03-31", 42)
+    grid("RT Mar1-31 42d ANY stops", RT, MaxStops.ANY, "2027-03-01", "2027-03-31", 42)
+    grid("RT Mar1-7 42d <=1stop", RT, MaxStops.ONE_STOP_OR_FEWER, "2027-03-01", "2027-03-07", 42)
+    grid("RT Mar1-31 30d ANY", RT, MaxStops.ANY, "2027-03-01", "2027-03-31", 30)
+    grid("RT Dec1-31 14d <=1stop (near)", RT, MaxStops.ONE_STOP_OR_FEWER, "2026-12-01", "2026-12-31", 14)
+    grid("OW Mar1-31 <=1stop", OW, MaxStops.ONE_STOP_OR_FEWER, "2027-03-01", "2027-03-31", 0)
+    return out
+
+
 def main():
     d = dt.date.today()
     near = (d + dt.timedelta(days=45)).isoformat()
@@ -109,6 +178,7 @@ def main():
         out["results"].append(run_case(name, legs, trip, stops))
         time.sleep(4)
     out["results"].append(calendar_case())
+    out["results"].extend(fli_cases())
     OUT.parent.mkdir(parents=True, exist_ok=True)
     OUT.write_text(json.dumps(out, ensure_ascii=False, indent=1))
 
