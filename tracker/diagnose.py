@@ -125,6 +125,33 @@ def fli_cases():
     except Exception as e:
         r["error"] = f"{type(e).__name__}: {e}"
         r["trace"] = traceback.format_exc()[-700:]
+    # raw peek: what does the list endpoint really answer? (round trip and one-way)
+    def peek(name, trip, segs):
+        pr = {"case": "raw list peek: " + name}
+        try:
+            from fli.search._urls import with_locale_params
+            sf = SearchFlights()
+            f2 = FlightSearchFilters(trip_type=trip, passenger_info=pax, flight_segments=segs,
+                                     stops=MaxStops.ONE_STOP_OR_FEWER, seat_type=SeatType.ECONOMY)
+            url = with_locale_params(sf.BASE_URL, "CAD", None, None)
+            resp = sf.client.post(url=url, data=f"f.req={f2.encode()}", impersonate="chrome", allow_redirects=True)
+            pr.update(status=resp.status_code, length=len(resp.text), head=resp.text[:300].replace("\n", " | "))
+            try:
+                res2 = sf._fetch_flights(f2, currency="CAD", language=None, country=None, capture_session=False)
+                pr["n"] = len(res2 or [])
+                if res2:
+                    pr["prices"] = [x.price for x in res2[:8]]
+            except Exception as e:
+                pr["fetch_error"] = f"{type(e).__name__}: {e}"[:300]
+        except Exception as e:
+            pr["error"] = f"{type(e).__name__}: {e}"[:300]
+        print(json.dumps(pr, ensure_ascii=False)[:300])
+        out.append(pr)
+        time.sleep(3)
+
+    peek("one-way YUL-PEK 2027-03-10", TripType.ONE_WAY, [seg(o, d_, "2027-03-10")])
+    peek("round-trip YUL-PEK Mar10/Apr21", TripType.ROUND_TRIP, [seg(o, d_, "2027-03-10"), seg(d_, o, "2027-04-21")])
+    peek("round-trip YUL-PEK Mar10/Apr09 (30d)", TripType.ROUND_TRIP, [seg(o, d_, "2027-03-10"), seg(d_, o, "2027-04-09")])
     out.append(r)
     time.sleep(3)
 
@@ -155,6 +182,10 @@ def fli_cases():
     grid("RT Mar1-31 30d ANY", RT, MaxStops.ANY, "2027-03-01", "2027-03-31", 30)
     grid("RT Dec1-31 14d <=1stop (near)", RT, MaxStops.ONE_STOP_OR_FEWER, "2026-12-01", "2026-12-31", 14)
     grid("OW Mar1-31 <=1stop", OW, MaxStops.ONE_STOP_OR_FEWER, "2027-03-01", "2027-03-31", 0)
+    for dur in (31, 35, 38, 40, 45, 60):
+        grid(f"RT Mar1-31 {dur}d ANY", RT, MaxStops.ANY, "2027-03-01", "2027-03-31", dur)
+    for dur in (30, 35, 42):
+        grid(f"RT Mar1-31 {dur}d <=1stop", RT, MaxStops.ONE_STOP_OR_FEWER, "2027-03-01", "2027-03-31", dur)
     return out
 
 
