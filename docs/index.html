@@ -142,12 +142,12 @@ canvas{max-height:340px}
       </div></div>
   </div>
   <form id="f">
-    <label><span data-i18n="origin"></span><input id="o" value="YUL" maxlength="3"></label>
-    <label><span data-i18n="dest"></span><input id="d" value="PEK" maxlength="3"></label>
+    <label><span data-i18n="origin"></span><select id="o"><option value="YUL">YUL 蒙特利尔 / Montréal</option></select></label>
+    <label><span data-i18n="dest"></span><select id="d"><option value="PEK">PEK 北京 / Beijing</option><option value="PVG">PVG 上海 / Shanghai</option><option value="CGO">CGO 郑州 / Zhengzhou</option></select></label>
     <label><span data-i18n="depart"></span><input id="dep" type="date"></label>
-    <label><span data-i18n="ret"></span><input id="ret" type="date"></label>
-    <label><span data-i18n="stops"></span><select id="st"><option value="0" data-i18n="s0"></option><option value="1" data-i18n="s1" selected></option><option value="2" data-i18n="s2"></option></select></label>
-    <label><span data-i18n="cabin"></span><select id="cab"><option value="economy" data-i18n="c_economy" selected></option><option value="premium-economy" data-i18n="c_premium-economy"></option><option value="business" data-i18n="c_business"></option><option value="first" data-i18n="c_first"></option></select></label>
+    <label><span data-i18n="ret"></span><input id="ret" type="date" readonly></label>
+    <label style="display:none"><span data-i18n="stops"></span><select id="st"><option value="0" data-i18n="s0"></option><option value="1" data-i18n="s1" selected></option><option value="2" data-i18n="s2"></option></select></label>
+    <label style="display:none"><span data-i18n="cabin"></span><select id="cab"><option value="economy" data-i18n="c_economy" selected></option><option value="premium-economy" data-i18n="c_premium-economy"></option><option value="business" data-i18n="c_business"></option><option value="first" data-i18n="c_first"></option></select></label>
     <label><span data-i18n="adults"></span><input id="ad" type="number" min="1" max="9" value="1"></label>
     <label><span data-i18n="children"></span><input id="ch" type="number" min="0" max="8" value="0"></label>
     <button class="go" data-i18n="go"></button>
@@ -240,6 +240,7 @@ zh:{title:'机票追踪',settings:'设置',theme:'主题',th_auto:'跟随系统'
  no_route:'路线 {0} 暂时没有数据：如果是新加的路线，请在 config.json 的 routes 中添加；如果已经配置，说明第一次抓取还在进行（约 1 小时出第一批结果，之后每 15 分钟更新一次，每 4 小时自动补全）。',
  cal_note:'价格矩阵为 Google 日期网格的真实往返价；航班列表中的价格为估算（去程 + 返程单程最低价），仅供参考。',
  est_note:'价格为估算往返价 = 去程单程最低价 + 返程单程最低价（航司的真实往返票价通常会低一些，趋势和对比仍然有效）。',
+ paxnote:'人数：{0}成人 + {1}儿童，价格按 成人价×人数、儿童按成人价{2}%估算（1000元/人 → 合计 {3}）。',
  mismatch:'注意：该路线追踪的是 {0}、成人{1}、儿童{2}，与你选的不同，价格仅供参考',
  fmin:'{0}小时{1}分',
  mon:['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'],wd:['周日','周一','周二','周三','周四','周五','周六']},
@@ -273,6 +274,7 @@ en:{title:'Flight Tracker',settings:'Settings',theme:'Theme',th_auto:'Auto (syst
  no_route:'No data for route {0} yet: if it is new, add it to routes in config.json; if it is already configured, the first collection is still running (first results in about an hour, then updates every 15 minutes; filled in every 4 hours).',
  cal_note:"The price matrix shows real round-trip prices from Google's date grid; prices in the flight list are estimates (outbound + return one-way), for reference only.",
  est_note:"Prices are an estimated round trip = cheapest outbound one-way + cheapest return one-way (real round-trip fares are usually somewhat lower; trends and comparisons still hold).",
+ paxnote:'Travellers: {0} adult(s) + {1} child(ren); price = adult fare × adults, children estimated at {2}% of the adult fare (1000 per adult → total {3}).',
  mismatch:'Note: this route is tracked for {0}, {1} adult(s), {2} child(ren) — different from your selection; prices are indicative.',
  fmin:'{0}h {1}m',
  mon:['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],wd:['Sun','Mon','Tue','Wed','Thu','Fri','Sat']},
@@ -306,6 +308,7 @@ fr:{title:'Suivi des vols',settings:'Paramètres',theme:'Thème',th_auto:'Auto (
  no_route:"Pas encore de données pour l'itinéraire {0} : s'il est nouveau, ajoutez-le dans routes de config.json ; s'il est déjà configuré, la première collecte est en cours (premiers résultats dans environ une heure, puis mise à jour toutes les 15 minutes).",
  cal_note:"La matrice des prix affiche les vrais tarifs aller-retour de la grille de dates de Google ; les prix de la liste de vols sont des estimations (aller + retour simples), à titre indicatif.",
  est_note:"Les prix sont un aller-retour estimé = aller simple le moins cher + retour simple le moins cher (les vrais tarifs aller-retour sont généralement un peu plus bas ; les tendances et comparaisons restent valables).",
+ paxnote:'Voyageurs : {0} adulte(s) + {1} enfant(s) ; prix = tarif adulte × adultes, enfants estimés à {2} % du tarif adulte (1000 par adulte → total {3}).',
  mismatch:'Note : cet itinéraire est suivi pour {0}, {1} adulte(s), {2} enfant(s) — différent de votre sélection ; prix indicatifs.',
  fmin:'{0} h {1}',
  mon:['janv.','févr.','mars','avr.','mai','juin','juil.','août','sept.','oct.','nov.','déc.'],wd:['dim.','lun.','mar.','mer.','jeu.','ven.','sam.']}
@@ -529,6 +532,9 @@ function renderKpis(doc,rows,near){
 }
 
 /* ================= main ================= */
+const CHILD_F=0.75;
+const PF=()=>Math.max(1,+$('ad').value||1)+Math.max(0,+$('ch').value||0)*CHILD_F;
+const PX=v=>Math.round(v*PF());
 async function run(e){
   e&&e.preventDefault();
   const o=$('o').value.toUpperCase().trim(),d=$('d').value.toUpperCase().trim(),id=o+'-'+d;
@@ -559,8 +565,8 @@ async function run(e){
   document.querySelectorAll('.curtag').forEach(e=>e.textContent=doc.currency);
   $('upd').textContent=t('updated',doc.updated.replace('T',' ').replace('Z',''));
   try{const g=await j('data/progress.json');$('upd').textContent+=' · '+(g.pending>0?t('prog_l',g.pending):t('prog_done'))}catch{}
-  $('status').textContent=((doc.route.cabin!==$('cab').value||doc.route.adults!=$('ad').value||doc.route.children!=$('ch').value)?
-    t('mismatch',t('c_'+doc.route.cabin),doc.route.adults,doc.route.children)+' ':'')+(doc.route.pricing==='oneway_sum'?t('est_note'):doc.route.pricing==='calendar'?t('cal_note'):'');
+  const px=(+$('ad').value||1)!==1||(+$('ch').value||0)>0;
+  $('status').textContent=(px?t('paxnote',+$('ad').value||1,+$('ch').value||0,Math.round(CHILD_F*100),PX(1000))+' ':'')+(doc.route.pricing==='oneway_sum'?t('est_note'):doc.route.pricing==='calendar'?t('cal_note'):'');
   const stay=doc.route.stay_days||42,W=doc.route.windows||[];
   if(!$('dep').dataset.touched&&W.length){$('dep').value=W[0].center;$('ret').value=addDays(W[0].center,stay)}
   const ch=$('chips');ch.textContent='';
@@ -570,12 +576,12 @@ async function run(e){
   const dep=$('dep').value,flex=7;
   const near=Object.keys(doc.latest).sort().filter(k=>!dep||Math.abs((new Date(k)-new Date(dep))/864e5)<=flex);
   const rows=[];
-  for(const k of near){const L=doc.latest[k];for(const of of L.offers)if(of.stops<=stops)rows.push({k,retDate:L.return,...of})}
+  for(const k of near){const L=doc.latest[k];for(const of of L.offers)if(of.stops<=stops)rows.push({k,retDate:L.return,...of,price:PX(of.price)})}
   state.rows=rows;renderKpis(doc,rows,near);renderFlights();
   const days=[...new Set(near.flatMap(k=>Object.keys(doc.history[k]||{})))].sort();
   const pal=['--c1','--c2','--c3','--c7','--c5','--c4','--c8'].map(css);
   draw('trend',{type:'line',data:{labels:days,datasets:near.map((k,i)=>({label:t('tr_dep',k.slice(5)),
-    data:days.map(x=>(doc.history[k]||{})[x]??null),borderColor:pal[i%7],backgroundColor:pal[i%7],spanGaps:true,tension:.25,pointRadius:2,borderWidth:2}))},
+    data:days.map(x=>{const v=(doc.history[k]||{})[x];return v==null?null:PX(v)}),borderColor:pal[i%7],backgroundColor:pal[i%7],spanGaps:true,tension:.25,pointRadius:2,borderWidth:2}))},
     options:{plugins:{legend:{position:'bottom'}}}});
   $('trNote').textContent=days.length<2?t('tr_few',days.length):'';
   analyze(doc);loadMatrix(id);loadSummary(id);loadTod(id);renderTrack(id);renderDiscover(doc);
@@ -666,14 +672,14 @@ async function loadMatrix(id){
       const tr=mk('tr');tr.appendChild(mk('td',dep.slice(5)+' '+WDAY(dow(dep))));
       ord.forEach(i=>{const v=row[i];const td=mk('td');
         if(v==null){td.textContent='–'}else{
-          td.appendChild(mk('div',String(v)));
+          td.appendChild(mk('div',String(PX(v))));
           const sm=mk('div',t('mx_ret',addDays(dep,cur.offsets[i]).slice(5),cur.offsets[i]),'note');sm.style.cssText='font-size:11px;margin:0';td.appendChild(sm);
           const f=hi>lo?(v-lo)/(hi-lo):0;
           const col=f<.34?'var(--c3)':f<.67?'var(--c4)':'var(--c8)';
           td.style.background=alpha(col,18+Math.round(22*(f<.34?1-f/.34:f<.67?0:(f-.67)/.33)));
           if(v===lo&&ok(i)){td.style.fontWeight='700';td.style.outline='2px solid var(--c3)'}
           const pv=cmp&&cmp.p[dep]?cmp.p[dep][i]:null;
-          if(pv!=null&&pv!==v){const dd=v-pv,sp=mk('div',(dd>0?'▲':'▼')+Math.abs(dd),'note');sp.style.cssText='font-size:11px;margin:0;font-weight:600;color:'+(dd>0?'var(--bad)':'var(--good)');td.appendChild(sp)}}
+          if(pv!=null&&pv!==v){const dd=v-pv,sp=mk('div',(dd>0?'▲':'▼')+PX(Math.abs(dd)),'note');sp.style.cssText='font-size:11px;margin:0;font-weight:600;color:'+(dd>0?'var(--bad)':'var(--good)');td.appendChild(sp)}}
         td.title=t('mx_title',addDays(dep,cur.offsets[i]));td.classList.add('cell');td.onclick=()=>openCell(dep,cur.offsets[i],$('mxSnap').value===snaps[0],CAL.includes(cur.offsets[i]));
         if(!ok(i))td.style.opacity='.25';
         tr.appendChild(td)});tb.appendChild(tr)}
@@ -702,7 +708,7 @@ function renderTop(cur,id,latest){
     const mid=mk('div');mid.appendChild(mk('b',r.dep.slice(5)+' '+WDAY(dow(r.dep))+'  →  '+addDays(r.dep,r.off).slice(5)+' '+WDAY(dow(addDays(r.dep,r.off)))));
     mid.appendChild(mk('span',t('col_'+(r.cal?'cal':'exact')),'tag'+(r.cal?'':' ex')));
     mid.appendChild(mk('small',t('mx_days',r.off)));el.appendChild(mid);
-    const p=mk('div',String(r.price),'p');p.appendChild(mk('small',cur.currency));el.appendChild(p);
+    const p=mk('div',String(PX(r.price)),'p');p.appendChild(mk('small',cur.currency));el.appendChild(p);
     el.onclick=()=>openCell(r.dep,r.off,true,r.cal);box.appendChild(el)})}
 
 /* ================= Google flexible-dates search (natural language) built from the config ================= */
@@ -792,5 +798,8 @@ const t0=new Date(Date.now()+180*864e5);$('dep').value=t0.toISOString().slice(0,
 $('ret').value=new Date(t0.getTime()+42*864e5).toISOString().slice(0,10);
 $('dep').addEventListener('input',()=>{$('dep').dataset.touched=1});
 $('f').addEventListener('submit',run);
+['ad','ch'].forEach(i=>$(i).addEventListener('input',()=>run()));
+$('d').addEventListener('change',()=>run());
+$('dep').addEventListener('change',()=>{const d=$('dep').value;if(!d)return;$('dep').dataset.touched=1;$('ret').value=addDays(d,(state.doc&&state.doc.route.stay_days)||42);run()});
 j('data/airports.json').then(a=>{AIR=a;}).catch(()=>{}).finally(()=>{applyI18n();initWeights();run()});
 </script></body></html>
