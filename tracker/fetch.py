@@ -287,7 +287,7 @@ def _itin(x):
                   "b": _ap(l.arrival_airport, l.arrival_airport_name),
                   "dep": l.departure_datetime.strftime("%Y-%m-%dT%H:%M:%S"),
                   "arr": l.arrival_datetime.strftime("%Y-%m-%dT%H:%M:%S"),
-                  "min": l.duration, "al": getattr(l.airline, "value", str(l.airline)),
+                  "min": l.duration, "al": getattr(l.airline, "value", str(l.airline)), "c": getattr(l.airline, "name", ""),
                   "no": l.flight_number, "ac": l.aircraft} for l in legs],
     }
 
