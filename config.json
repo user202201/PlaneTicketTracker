@@ -88,9 +88,17 @@
    42
   ],
   "routes": [
-   "YUL-PEK"
+   "YUL-PEK",
+   "YUL-PVG",
+   "YUL-CGO"
   ],
-  "date_step": 3
+  "date_step": 3,
+  "calendar_offsets": [
+   32
+  ],
+  "list_routes": [
+   "YUL-PEK"
+  ]
  },
  "pacing": {
   "batch_size_range": [

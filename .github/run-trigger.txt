@@ -1,1 +1,1 @@
-run requested 2026-11-04 14:11 (sparse budget-aware collection)
+run requested 2026-11-04 14:55 (dense calendar column + sparse exact)

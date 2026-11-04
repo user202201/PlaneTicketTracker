@@ -103,7 +103,7 @@ def month_specs(mx):
 
 def dates_for(route, cfg):
     mx = cfg.get("matrix") or {}
-    skip_months = tuple(sp["month"] for sp in month_specs(mx)) if (route["id"] in mx.get("routes", []) and PRICING["mode"] != "calendar") else ()
+    skip_months = tuple(sp["month"] for sp in month_specs(mx)) if (route["id"] in mx.get("list_routes", mx.get("routes", [])) and PRICING["mode"] != "calendar") else ()
     """All (depart, return) pairs: every window's centre +/- flex, return = depart + stay."""
     flex = route.get("flex_days", cfg.get("flex_days", 7))
     step = route.get("sample_step", cfg.get("sample_step", 2))
@@ -454,11 +454,16 @@ def _pick(offers, n=3):
 
 
 def run_matrix_cells(route, cfg, cur, doc, today, errors, flush=None):
-    """Depart x return price grid. One list query per cell (return leg only for the 'stay' column).
-    Priority: the 'stay' column for every date first (page is useful early), then the other columns.
-    Resumable: cells already stored for today are kept; progress is committed every ~15 min."""
+    """Depart x stay price grid.
+    - calendar columns (e.g. 32 days): Google's date grid, ONE request per month, dense (every date) and rarely throttled;
+    - list columns (e.g. 42 days): exact prices from the result list, sampled dates only, with flight details.
+    Resumable: cells already stored for today are kept; progress is committed periodically."""
     mx = cfg["matrix"]
-    offs = mx["return_offsets"]
+    cal_offs = list(mx.get("calendar_offsets", []))
+    list_on = route["id"] in mx.get("list_routes", mx.get("routes", []))
+    list_offs = list(mx["return_offsets"]) if list_on else []
+    allo = cal_offs + list_offs
+    nc = len(cal_offs)
     stay = cfg.get("stay_days")
     mdir = DATA / "matrix" / route["id"]
     snap_path, offers_path = mdir / f"{today}.json", mdir / "offers.json"
@@ -466,7 +471,7 @@ def run_matrix_cells(route, cfg, cur, doc, today, errors, flush=None):
     try:
         if snap_path.exists():
             prev = json.loads(snap_path.read_text())
-            if prev.get("offsets") == offs:
+            if prev.get("offsets") == allo:
                 grid = prev["p"]
         if offers_path.exists():
             po = json.loads(offers_path.read_text())
@@ -491,27 +496,30 @@ def run_matrix_cells(route, cfg, cur, doc, today, errors, flush=None):
     pct = cfg.get("expand_within_pct", 100)
 
     def want_expand(price):
-        prices = [v for r in grid.values() for v in r if v is not None]
+        prices = [v for r in grid.values() for v in r[nc:] if v is not None] or [v for r in grid.values() for v in r if v is not None]
         return (not prices) or price <= min(prices) * (1 + pct / 100)
 
-    def valid(d, off):
-        if step > 1 and d.toordinal() % step != 0:
-            return False                # sampled dates only (same dates every day -> clean time series)
+    def ok_dates(d, off):
         ret = d + dt.timedelta(days=off)
         if rby.get(d) and ret > rby[d]:
             return False                # after the allowed return date for this month
         return ret <= td + dt.timedelta(days=HORIZON["days"])   # else: not on sale yet (skipped silently)
 
-    for d in days:                      # rows exist for every date that has at least one valid combination
-        if any(valid(d, off) for off in offs):
-            grid.setdefault(d.isoformat(), [None] * len(offs))
+    def valid(d, off, is_cal):
+        if not is_cal and step > 1 and d.toordinal() % step != 0:
+            return False                # sampled dates only (same dates every day -> clean time series)
+        return ok_dates(d, off)
+
+    for d in days:                      # a row exists for every date that has at least one valid combination
+        if any(valid(d, o, i < nc) for i, o in enumerate(allo)):
+            grid.setdefault(d.isoformat(), [None] * len(allo))
 
     def write_files():
         if n_prev + stat["new"] == 0:
             return
         mdir.mkdir(parents=True, exist_ok=True)
         snap_path.write_text(json.dumps(
-            {"months": [sp["month"] for sp in month_specs(mx)], "offsets": offs, "currency": cur,
+            {"months": [sp["month"] for sp in month_specs(mx)], "offsets": allo, "cal": cal_offs, "currency": cur,
              "pricing": PRICING["mode"], "p": dict(sorted(grid.items()))}, separators=(",", ":")))
         idx_path = mdir / "index.json"
         idx = json.loads(idx_path.read_text()) if idx_path.exists() else {"snapshots": []}
@@ -519,8 +527,9 @@ def run_matrix_cells(route, cfg, cur, doc, today, errors, flush=None):
         if today not in idx["snapshots"]:
             idx["snapshots"].append(today)
         idx_path.write_text(json.dumps(idx))
-        offers_path.write_text(json.dumps({"_date": today, **dict(sorted(cells.items()))},
-                                          separators=(",", ":"), ensure_ascii=False))
+        if list_on:
+            offers_path.write_text(json.dumps({"_date": today, **dict(sorted(cells.items()))},
+                                              separators=(",", ":"), ensure_ascii=False))
 
     def save_all():
         write_files()
@@ -528,12 +537,36 @@ def run_matrix_cells(route, cfg, cur, doc, today, errors, flush=None):
             flush()
 
     def pending():
-        return sum(1 for d in days for i, off in enumerate(offs) if valid(d, off) and grid[d.isoformat()][i] is None)
+        return sum(1 for d in days for i, off in enumerate(allo)
+                   if valid(d, off, i < nc) and grid[d.isoformat()][i] is None)
 
-    order = sorted(range(len(offs)), key=lambda i: (offs[i] != stay, i))
-    for i in order:
-        off = offs[i]
-        todo = [d for d in days if valid(d, off) and grid[d.isoformat()][i] is None]
+    # ---- 1) dense calendar columns first: one request per (month, stay) ----
+    for ci, off in enumerate(cal_offs):
+        for sp in month_specs(mx):
+            mdays = [d for d in days if d.strftime("%Y-%m") == sp["month"] and valid(d, off, True)
+                     and grid[d.isoformat()][ci] is None]
+            if not mdays:
+                continue
+            if expired():
+                break
+            try:
+                res = calendar_prices(route, min(mdays), max(mdays), off, cur)
+            except Exception as e:
+                errors.append(f"{route['id']} calendar {sp['month']} +{off}d: {type(e).__name__}: {str(e)[:100]}")
+                continue
+            for d in mdays:
+                price = res.get(d.isoformat())
+                if price:
+                    grid[d.isoformat()][ci] = price
+                    stat["new"] += 1
+                    doc["history"].setdefault(d.isoformat(), {})[today] = price     # dense daily series
+        save_all()
+
+    # ---- 2) exact list columns (sampled dates), the 'stay' column first ----
+    order = sorted(range(len(list_offs)), key=lambda j: (list_offs[j] != stay, j))
+    for j in order:
+        off, i = list_offs[j], nc + j
+        todo = [d for d in days if valid(d, off, False) and grid[d.isoformat()][i] is None]
         random.shuffle(todo)            # random order: no sequential scanning pattern
         for d in todo:
             if expired():
@@ -551,9 +584,9 @@ def run_matrix_cells(route, cfg, cur, doc, today, errors, flush=None):
                 stat["new"] += 1
                 grid[k][i] = min(o["price"] for o in offers)
                 cells.setdefault(k, {})[str(off)] = {"ret": ret.isoformat(), "offers": _pick(offers)}
-                if off == stay:         # feeds overview list + weekday / lead-time analysis
+                if off == stay:         # feeds the overview flight list
                     doc["latest"][k] = {"return": ret.isoformat(), "offers": sorted(offers, key=lambda o: o["price"])[:MAX_OFFERS]}
-                    doc["history"].setdefault(k, {})[today] = grid[k][i]
+                    doc["history"].setdefault(k, {}).setdefault(today, grid[k][i])   # never overrides the dense calendar value
             checkpoint(save_all)
     save_all()
     PENDING["n"] += pending()

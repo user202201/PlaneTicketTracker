@@ -18,14 +18,25 @@ def add(d, n):
 
 
 def load(route_id):
+    """Snapshots restricted to the dense calendar column(s) when present, and only snapshots with the same columns."""
     mdir = DATA / "matrix" / route_id
     if not (mdir / "index.json").exists():
         return None
     snaps = sorted(json.loads((mdir / "index.json").read_text())["snapshots"])
-    data, offs, cur = {}, None, "CAD"
+    parsed = {}
     for s in snaps:
-        f = json.loads((mdir / f"{s}.json").read_text())
-        data[s], offs, cur = f["p"], f["offsets"], f.get("currency", cur)
+        try:
+            f = json.loads((mdir / f"{s}.json").read_text())
+        except Exception:
+            continue
+        cal = f.get("cal") or []
+        cols = [i for i, o in enumerate(f["offsets"]) if o in cal] or list(range(len(f["offsets"])))
+        parsed[s] = ([f["offsets"][i] for i in cols], {k: [r[i] for i in cols] for k, r in f["p"].items()}, f.get("currency", "CAD"))
+    if not parsed:
+        return None
+    last = sorted(parsed)[-1]
+    offs, cur = parsed[last][0], parsed[last][2]
+    data = {s: v[1] for s, v in parsed.items() if v[0] == offs}
     return data, offs, cur
 
 
