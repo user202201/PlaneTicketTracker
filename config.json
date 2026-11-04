@@ -79,18 +79,18 @@
  },
  "pacing": {
   "batch_size_range": [
-   40,
-   80
+   30,
+   50
   ],
   "pause_minutes_range": [
-   1,
-   3
+   2,
+   4
   ],
   "query_sleep_seconds_range": [
-   1,
-   3
+   6,
+   12
   ],
-  "max_runtime_minutes": 200
+  "max_runtime_minutes": 170
  },
  "pricing": "list"
 }

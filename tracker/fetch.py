@@ -23,8 +23,26 @@ def pace_init(cfg):
                 deadline=time.time() + p["max_runtime_minutes"] * 60 * float(os.environ.get("PACE_SCALE", "1")))
 
 
+NET = {"fails": 0, "pauses": 0, "stop": False}
+
+
 def expired():
-    return PACE["deadline"] is not None and time.time() > PACE["deadline"]
+    return NET["stop"] or (PACE["deadline"] is not None and time.time() > PACE["deadline"])
+
+
+def guard():
+    """Google throttles bursts. After 3 failed lookups in a row: wait 8 min once or twice, then give up for
+    this run (partial data is saved; the next scheduled run resumes with a fresh runner/IP)."""
+    if NET["fails"] >= 3:
+        if NET["pauses"] < 2:
+            NET["pauses"] += 1
+            NET["fails"] = 0
+            print(f"[guard] looks throttled, pausing 8 min (pause {NET['pauses']}/2)", flush=True)
+            time.sleep(480 * PACE["scale"])
+        else:
+            NET["stop"] = True
+            print("[guard] still throttled, stopping this run (partial data is kept)", flush=True)
+            raise RuntimeError("throttled by Google; run stopped")
 
 
 def pace():
@@ -139,7 +157,7 @@ def _sf():
     return _SF["sf"]
 
 
-def fli_list(route, dep, ret, currency):
+def fli_list(route, dep, ret, currency, expand=True):
     """Real Google result list (what the Flights page shows): for a round trip each row is an outbound
     itinerary priced as the full round trip. Stops are filtered by Google (correct enum); transient
     error responses are retried."""
@@ -156,8 +174,9 @@ def fli_list(route, dep, ret, currency):
     f = FlightSearchFilters(trip_type=TripType.ROUND_TRIP if ret else TripType.ONE_WAY,
                             passenger_info=PassengerInfo(adults=route.get("adults", 1), children=route.get("children", 0)),
                             flight_segments=segs, stops=stops, seat_type=seat)
+    guard()
     res, last = None, None
-    for attempt in range(3):
+    for attempt in range(2):
         try:
             res = _sf()._fetch_flights(f, currency=currency, language=None, country=None, capture_session=False)
         except Exception as e:
@@ -168,10 +187,12 @@ def fli_list(route, dep, ret, currency):
             break
         time.sleep(random.uniform(3, 6) * PACE["scale"])
     if not res:
-        raise RuntimeError(f"no result after 3 attempts ({type(last).__name__ + ': ' + str(last)[:100] if last else 'empty/error response'})")
+        NET["fails"] += 1
+        raise RuntimeError(f"no result after 2 attempts ({type(last).__name__ + ': ' + str(last)[:100] if last else 'empty/error response'})")
+    NET["fails"] = 0
     pairs = _fli_offers(res)
     offers = [p[0] for p in pairs]
-    if ret and EXPAND["returns"] and pairs:
+    if ret and expand and EXPAND["returns"] and pairs:
         try:                                    # full round trip for the cheapest outbound: also fetch its return leg
             rr = _fli_return(route, f, pairs[0][1], currency)
             if rr:
@@ -223,7 +244,7 @@ def _fli_return(route, f_out, outbound_fr, currency):
     f2 = deepcopy(f_out)
     f2.flight_segments[0].selected_flight = outbound_fr
     res, last = None, None
-    for attempt in range(3):
+    for attempt in range(2):
         try:
             res = _sf()._fetch_flights(f2, currency=currency, language=None, country=None, capture_session=False)
         except Exception as e:
@@ -243,10 +264,10 @@ def _fli_return(route, f_out, outbound_fr, currency):
     return r
 
 
-def search(route, dep, ret, currency):
+def search(route, dep, ret, currency, expand=True):
     """Offers for a trip. "list": real Google round-trip prices (default). oneway_sum: legacy estimate."""
     if PRICING["mode"] == "list":
-        return _ok_stops(route, fli_list(route, dep, ret, currency))
+        return _ok_stops(route, fli_list(route, dep, ret, currency, expand))
     if PRICING["mode"] == "roundtrip" and ret:
         legs = [(dep, route["origin"], route["dest"]), (ret, route["dest"], route["origin"])]
         return _ok_stops(route, _net(route, legs, "round-trip", currency))
@@ -365,12 +386,27 @@ def _pick(offers, n=4):
 
 
 def run_matrix_cells(route, cfg, cur, doc, today, errors):
-    """Depart x return price grid for one month. One query per cell; stores min price per cell."""
+    """Depart x return price grid. One list query per cell (return leg only for the 'stay' column).
+    Resumable: cells already stored for today are kept, so later runs only fill what is missing."""
     mx = cfg["matrix"]
     offs = mx["return_offsets"]
     stay = cfg.get("stay_days")
-    grid, fails_in_row, n_ok = {}, 0, 0
-    cells = {}                      # dep -> {offset: {ret, offers}} (latest day only; powers click-through)
+    mdir = DATA / "matrix" / route["id"]
+    snap_path, offers_path = mdir / f"{today}.json", mdir / "offers.json"
+    grid, cells = {}, {}
+    try:
+        if snap_path.exists():
+            prev = json.loads(snap_path.read_text())
+            if prev.get("offsets") == offs:
+                grid = prev["p"]
+        if offers_path.exists():
+            po = json.loads(offers_path.read_text())
+            if po.get("_date") == today:
+                cells = {k: v for k, v in po.items() if k != "_date"}
+    except Exception:
+        grid, cells = {}, {}
+    n_ok = sum(1 for r in grid.values() for v in r if v is not None)
+    new_ok = 0
     days = []
     for mo in mx["months"]:
         d = dt.date.fromisoformat(mo + "-01")
@@ -380,36 +416,32 @@ def run_matrix_cells(route, cfg, cur, doc, today, errors):
     random.shuffle(days)            # random order: no sequential scanning pattern
     for d in days:
         if expired():
-            errors.append(f"{route['id']} matrix: time budget reached, remaining dates skipped")
+            errors.append(f"{route['id']} matrix: stopped early (time budget or throttling); next run resumes")
             break
-        if d > dt.date.today():
-            row = []
-            for off in offs:
-                if fails_in_row >= 25:      # looks blocked: stop wasting runner time
-                    row.append(None)
-                    continue
-                ret = d + dt.timedelta(days=off)
-                try:
-                    offers = search(route, d, ret, cur)
-                except Exception as e:
-                    offers = []
-                    errors.append(f"{route['id']} matrix {d}->{ret}: {type(e).__name__}: {str(e)[:100]}")
-                if offers:
-                    fails_in_row = 0
-                    n_ok += 1
-                    row.append(min(o["price"] for o in offers))
-                    cells.setdefault(d.isoformat(), {})[str(off)] = {"ret": ret.isoformat(), "offers": _pick(offers)}
-                    if off == stay:         # feed the weekday / lead-time analysis too
-                        doc["latest"][d.isoformat()] = {"return": ret.isoformat(), "offers": sorted(offers, key=lambda o: o["price"])[:MAX_OFFERS]}
-                        doc["history"].setdefault(d.isoformat(), {})[today] = row[-1]
-                else:
-                    fails_in_row += 1
-                    row.append(None)
-            grid[d.isoformat()] = row
-    if n_ok:
-        mdir = DATA / "matrix" / route["id"]
+        if d <= dt.date.today():
+            continue
+        k = d.isoformat()
+        row = grid.get(k) or [None] * len(offs)
+        for i, off in enumerate(offs):
+            if row[i] is not None or expired():
+                continue
+            ret = d + dt.timedelta(days=off)
+            try:
+                offers = search(route, d, ret, cur, expand=(off == stay))
+            except Exception as e:
+                errors.append(f"{route['id']} matrix {d}->{ret}: {type(e).__name__}: {str(e)[:100]}")
+                continue
+            if offers:
+                new_ok += 1
+                row[i] = min(o["price"] for o in offers)
+                cells.setdefault(k, {})[str(off)] = {"ret": ret.isoformat(), "offers": _pick(offers)}
+                if off == stay:         # feed the weekday / lead-time analysis too
+                    doc["latest"][k] = {"return": ret.isoformat(), "offers": sorted(offers, key=lambda o: o["price"])[:MAX_OFFERS]}
+                    doc["history"].setdefault(k, {})[today] = row[i]
+        grid[k] = row
+    if n_ok + new_ok:
         mdir.mkdir(parents=True, exist_ok=True)
-        (mdir / f"{today}.json").write_text(json.dumps(
+        snap_path.write_text(json.dumps(
             {"months": mx["months"], "offsets": offs, "currency": cur, "pricing": PRICING["mode"], "p": dict(sorted(grid.items()))},
             separators=(",", ":")))
         idx_path = mdir / "index.json"
@@ -417,9 +449,9 @@ def run_matrix_cells(route, cfg, cur, doc, today, errors):
         if today not in idx["snapshots"]:
             idx["snapshots"].append(today)
         idx_path.write_text(json.dumps(idx))
-        if cells:
-            (mdir / "offers.json").write_text(json.dumps(dict(sorted(cells.items())), separators=(",", ":"), ensure_ascii=False))
-    return n_ok
+        out = {"_date": today, **dict(sorted(cells.items()))}
+        offers_path.write_text(json.dumps(out, separators=(",", ":"), ensure_ascii=False))
+    return n_ok + new_ok
 
 
 def preflight():
