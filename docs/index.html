@@ -54,7 +54,21 @@ main{padding:16px 0 40px}
 .head{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:8px}
 .head h2{margin:0}
 .note{color:var(--mut);font-size:13px;margin:8px 0 0}.warn{color:var(--warn)}
-.fl{display:grid;grid-template-columns:6px minmax(0,1fr) auto;gap:14px;align-items:center;padding:12px 14px 12px 0;margin-bottom:10px;border:1px solid var(--line);border-radius:12px;background:var(--soft);overflow:hidden}
+.flw{margin-bottom:10px}
+.flw.open .fl{border-radius:12px 12px 0 0;border-bottom-color:transparent}
+.det{display:none;border:1px solid var(--line);border-top:0;border-radius:0 0 12px 12px;padding:14px 18px;background:var(--card)}
+.flw.open .det{display:block}
+.chev{display:block;font-size:12px;color:var(--mut);margin-top:2px;transition:transform .15s}
+.flw.open .chev{transform:rotate(180deg)}
+.leg{display:grid;grid-template-columns:78px 1fr;gap:6px 12px;margin-bottom:2px}
+.leg .tm{font-weight:700;font-variant-numeric:tabular-nums}
+.leg .ap{font-size:14px}.leg .sub{font-size:12px;color:var(--mut)}
+.lay{margin:6px 0 6px 90px;padding:3px 10px;border-left:3px solid var(--c4);font-size:12px;color:var(--warn);background:color-mix(in srgb,var(--c4) 10%,transparent);border-radius:0 6px 6px 0}
+.btns{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.btns a{text-decoration:none;font-size:13px;font-weight:600;padding:7px 14px;border-radius:8px;color:#fff;background:var(--c1)}
+.btns a.k{background:var(--c2)}.btns a.s{background:var(--c7)}
+.dsum{font-size:13px;color:var(--mut);margin-bottom:10px}
+.fl{display:grid;grid-template-columns:6px minmax(0,1fr) auto;gap:14px;align-items:center;padding:12px 14px 12px 0;cursor:pointer;border:1px solid var(--line);border-radius:12px;background:var(--soft);overflow:hidden}
 .fl .bar{align-self:stretch;background:var(--s)}
 .fl .t{font-size:18px;font-weight:700;font-variant-numeric:tabular-nums}
 .fl .m{font-size:13px;color:var(--mut);margin-top:2px;display:flex;gap:8px;flex-wrap:wrap;align-items:center}
@@ -151,7 +165,7 @@ zh:{title:'机票追踪',settings:'设置',theme:'主题',th_auto:'跟随系统'
  tab_ov:'总览',tab_mx:'价格矩阵',tab_se:'走势与淡旺季',tab_tm:'买票时机',
  flights_h:'航班（按你选的优先级排序）',prio:['第一优先','第二优先','第三优先'],
  k_stops:'转机次数（少→多）',k_dur:'总用时（短→长）',k_price:'价格（低→高）',
- nonstop:'直飞',nstops:'{0} 次转机',b_price:'最低价',b_fast:'最快',b_first:'首选',dep_day:'出发日 {0}',
+ d_sum:'{0} 出发 · {1} 返程 · 往返总价（每人）',d_est:'估算价',d_out:'去程行程',d_lay:'在 {0} 转机，等待 {1}',d_ac:'机型 {0}',d_noleg:'这条数据暂无航段详情，下次更新后会显示。',d_noret:'这里只显示去程航段；返程航班请在预订页面选择。',d_book:'查看 / 预订：',d_g:'Google 航班',d_k:'Kayak',d_s:'Skyscanner',d_nextday:'+{0} 天',nonstop:'直飞',nstops:'{0} 次转机',b_price:'最低价',b_fast:'最快',b_first:'首选',dep_day:'出发日 {0}',
  no_flights:'所选日期范围内没有符合条件的航班。',
  kpi_low:'当前最低价',kpi_low_sub:'{0} 出发 · {1}',kpi_none:'无符合条件的航班',kpi_fast:'最短用时',
  kpi_wow:'近 7 天变化',kpi_wow_wait:'数据积累中',kpi_wow_need:'需要至少 8 天记录',kpi_wow_sub:'最低价，对比 7 天前',
@@ -183,7 +197,7 @@ en:{title:'Flight Tracker',settings:'Settings',theme:'Theme',th_auto:'Auto (syst
  tab_ov:'Overview',tab_mx:'Price matrix',tab_se:'Trends & seasons',tab_tm:'When to buy',
  flights_h:'Flights (sorted by your priorities)',prio:['First priority','Second priority','Third priority'],
  k_stops:'Stops (fewest first)',k_dur:'Duration (shortest first)',k_price:'Price (lowest first)',
- nonstop:'Nonstop',nstops:'{0} stop(s)',b_price:'Lowest price',b_fast:'Fastest',b_first:'Top pick',dep_day:'Departs {0}',
+ d_sum:'Depart {0} · return {1} · round-trip total (per person)',d_est:'estimate',d_out:'Outbound itinerary',d_lay:'Layover in {0}, wait {1}',d_ac:'Aircraft {0}',d_noleg:'No segment details for this entry yet; they appear after the next update.',d_noret:'Only the outbound segments are shown; choose the return flight on the booking page.',d_book:'View / book:',d_g:'Google Flights',d_k:'Kayak',d_s:'Skyscanner',d_nextday:'+{0} d',nonstop:'Nonstop',nstops:'{0} stop(s)',b_price:'Lowest price',b_fast:'Fastest',b_first:'Top pick',dep_day:'Departs {0}',
  no_flights:'No matching flights in the selected date range.',
  kpi_low:'Lowest price now',kpi_low_sub:'Departs {0} · {1}',kpi_none:'No matching flights',kpi_fast:'Shortest trip',
  kpi_wow:'Change in 7 days',kpi_wow_wait:'Collecting data',kpi_wow_need:'Needs at least 8 days',kpi_wow_sub:'Lowest price vs 7 days ago',
@@ -215,7 +229,7 @@ fr:{title:'Suivi des vols',settings:'Paramètres',theme:'Thème',th_auto:'Auto (
  tab_ov:'Aperçu',tab_mx:'Matrice des prix',tab_se:'Tendances et saisons',tab_tm:'Quand acheter',
  flights_h:'Vols (triés selon vos priorités)',prio:['1re priorité','2e priorité','3e priorité'],
  k_stops:'Escales (moins d\'abord)',k_dur:'Durée (la plus courte)',k_price:'Prix (le plus bas)',
- nonstop:'Direct',nstops:'{0} escale(s)',b_price:'Prix mini',b_fast:'Plus rapide',b_first:'Premier choix',dep_day:'Départ {0}',
+ d_sum:'Départ {0} · retour {1} · total aller-retour (par personne)',d_est:'estimation',d_out:'Itinéraire aller',d_lay:'Escale à {0}, attente {1}',d_ac:'Appareil {0}',d_noleg:'Pas encore de détails de segments pour cette entrée ; ils apparaîtront à la prochaine mise à jour.',d_noret:"Seuls les segments aller sont affichés ; choisissez le vol retour sur la page de réservation.",d_book:'Voir / réserver :',d_g:'Google Vols',d_k:'Kayak',d_s:'Skyscanner',d_nextday:'+{0} j',nonstop:'Direct',nstops:'{0} escale(s)',b_price:'Prix mini',b_fast:'Plus rapide',b_first:'Premier choix',dep_day:'Départ {0}',
  no_flights:'Aucun vol correspondant dans la période choisie.',
  kpi_low:'Prix le plus bas',kpi_low_sub:'Départ {0} · {1}',kpi_none:'Aucun vol correspondant',kpi_fast:'Trajet le plus court',
  kpi_wow:'Variation sur 7 jours',kpi_wow_wait:'Collecte en cours',kpi_wow_need:'Au moins 8 jours requis',kpi_wow_sub:'Prix mini vs il y a 7 jours',
@@ -290,6 +304,43 @@ function buildSort(){
       store.set('order',JSON.stringify(state.order));buildSort();renderFlights()};
     l.appendChild(s);c.appendChild(l)})}
 
+/* ================= flight detail + booking links ================= */
+const yymmdd=d=>d.slice(2,4)+d.slice(5,7)+d.slice(8,10);
+function bookLinks(o,dep,ret){
+  const r=state.doc.route,from=r.origin,to=r.dest,ad=+$('ad').value||r.adults||1,cab=$('cab').value,cur=state.doc.currency;
+  const cabW={economy:'economy','premium-economy':'premium economy',business:'business class',first:'first class'}[cab];
+  const q=`Flights from ${from} to ${to} on ${dep}${ret?' through '+ret:''} ${cabW} ${ad} adult${ad>1?'s':''}`;
+  const g='https://www.google.com/travel/flights?q='+encodeURIComponent(q)+'&curr='+cur+'&hl='+({zh:'zh-CN',en:'en',fr:'fr'}[LANG]);
+  const kc={economy:'',  'premium-economy':'/premium',business:'/business',first:'/first'}[cab];
+  const k=`https://www.kayak.ca/flights/${from}-${to}/${dep}${ret?'/'+ret:''}${kc}/${ad}adults?sort=price_a`;
+  const sc={economy:'economy','premium-economy':'premiumeconomy',business:'business',first:'first'}[cab];
+  const s=`https://www.skyscanner.ca/transport/flights/${from.toLowerCase()}/${to.toLowerCase()}/${yymmdd(dep)}/${ret?yymmdd(ret)+'/':''}?adultsv2=${ad}&cabinclass=${sc}`;
+  return[[t('d_g'),g,''],[t('d_k'),k,'k'],[t('d_s'),s,'s']];
+}
+function detail(r){
+  const d=mk('div',null,'det');
+  const est=r.est?' ('+t('d_est')+')':'';
+  d.appendChild(mk('div',t('d_sum',r.k,r.ret||'–')+' : '+r.price+' '+state.doc.currency+est,'dsum'));
+  d.appendChild(mk('h2',t('d_out')));
+  const legs=r.legs||[];
+  if(!legs.length){d.appendChild(mk('p',t('d_noleg'),'note'))}
+  legs.forEach((l,i)=>{
+    if(i>0){const w=legs[i-1],lay=(r.lay&&r.lay[i-1]!=null)?r.lay[i-1]:null;
+      d.appendChild(mk('div',t('d_lay',l.a+(l.an?' '+l.an:''),lay!=null?fmtMin(lay):'–'),'lay'))}
+    const row=mk('div',null,'leg');
+    const day=x=>x.slice(0,10),hm=x=>x.slice(11,16);
+    const nd=Math.round((new Date(day(l.arr))-new Date(day(l.dep)))/864e5);
+    row.appendChild(mk('div',hm(l.dep),'tm'));
+    const ap=mk('div',null,'ap');ap.appendChild(document.createTextNode(l.a+(l.an?' · '+l.an:'')));
+    const sub=mk('div',[l.al,l.no].filter(Boolean).join(' ')+(l.ac?' · '+t('d_ac',l.ac):'')+(l.min?' · '+fmtMin(l.min):''),'sub');ap.appendChild(sub);row.appendChild(ap);
+    row.appendChild(mk('div',hm(l.arr)+(nd>0?' '+t('d_nextday',nd):''),'tm'));
+    row.appendChild(mk('div',l.b+(l.bn?' · '+l.bn:'')));
+    d.appendChild(row)});
+  d.appendChild(mk('p',t('d_noret'),'note'));
+  const bt=mk('div',null,'btns');bt.appendChild(mk('span',t('d_book'),'note'));
+  bookLinks(r,r.k,r.ret).forEach(([n,u,c])=>{const a=mk('a',n,c);a.href=u;a.target='_blank';a.rel='noopener noreferrer';bt.appendChild(a)});
+  d.appendChild(bt);return d}
+
 /* ================= flights + KPIs ================= */
 const stopColor=n=>n==0?'var(--good)':n==1?'var(--c4)':'var(--bad)';
 function renderFlights(){
@@ -313,8 +364,9 @@ function renderFlights(){
     m.appendChild(pill);m.appendChild(mk('span',fmtMin(r.duration)));m.appendChild(mk('span',r.airlines.join(' / ')));
     m.appendChild(mk('span',t('dep_day',r.k)));
     mid.appendChild(m);c.appendChild(mid);
-    const p=mk('div',String(r.price),'p');p.appendChild(mk('small',state.doc.currency));c.appendChild(p);
-    box.appendChild(c)})
+    const p=mk('div',String(r.price),'p');p.appendChild(mk('small',state.doc.currency));p.appendChild(mk('span','▾','chev'));c.appendChild(p);
+    const wr=mk('div',null,'flw');wr.appendChild(c);wr.appendChild(detail(r));
+    c.onclick=()=>wr.classList.toggle('open');box.appendChild(wr)})
 }
 function kpi(label,value,sub,color){const k=mk('div',null,'kpi');k.style.setProperty('--k',color);
   k.appendChild(mk('div',label,'l'));k.appendChild(mk('div',value,'v'));k.appendChild(mk('div',sub,'s'));$('kpis').appendChild(k)}
