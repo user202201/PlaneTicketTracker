@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-04T15:56:25Z",
+ "updated": "2026-11-04T16:35:33Z",
  "routes": {
   "YUL-PEK": {
    "days": 1,
@@ -208,11 +208,11 @@
      },
      {
       "c": "info",
-      "t": "各月当前平均最低价（低→高）：8月 3401, 6月 3946 CAD"
+      "t": "各月当前平均最低价（低→高）：8月 3498, 6月 3946, 7月 3946 CAD"
      },
      {
       "c": "good",
-      "t": "当前最便宜的组合：08-05 出发 / 09-03 返程 3401 CAD; 06-19 出发 / 07-20 返程 3946 CAD"
+      "t": "当前最便宜的组合：08-05 出发 / 09-03 返程 3401 CAD; 08-03 出发 / 09-03 返程 3596 CAD; 06-19 出发 / 07-20 返程 3946 CAD"
      },
      {
       "c": "info",
@@ -234,11 +234,11 @@
      },
      {
       "c": "info",
-      "t": "Current average lowest price by month (low→high): Aug 3401, Jun 3946 CAD"
+      "t": "Current average lowest price by month (low→high): Aug 3498, Jun 3946, Jul 3946 CAD"
      },
      {
       "c": "good",
-      "t": "Cheapest combinations now: depart 08-05 / return 09-03 3401 CAD; depart 06-19 / return 07-20 3946 CAD"
+      "t": "Cheapest combinations now: depart 08-05 / return 09-03 3401 CAD; depart 08-03 / return 09-03 3596 CAD; depart 06-19 / return 07-20 3946 CAD"
      },
      {
       "c": "info",
@@ -260,11 +260,11 @@
      },
      {
       "c": "info",
-      "t": "Prix minimum moyen actuel par mois (bas→haut) : août 3401, juin 3946 CAD"
+      "t": "Prix minimum moyen actuel par mois (bas→haut) : août 3498, juin 3946, juil. 3946 CAD"
      },
      {
       "c": "good",
-      "t": "Combinaisons les moins chères : départ 08-05 / retour 09-03 3401 CAD; départ 06-19 / retour 07-20 3946 CAD"
+      "t": "Combinaisons les moins chères : départ 08-05 / retour 09-03 3401 CAD; départ 08-03 / retour 09-03 3596 CAD; départ 06-19 / retour 07-20 3946 CAD"
      },
      {
       "c": "info",
