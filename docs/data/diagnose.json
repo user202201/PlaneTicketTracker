@@ -1,49 +1,11 @@
 {
- "when": "2026-11-04T14:46:15+00:00",
+ "when": "2026-11-04T14:49:53+00:00",
  "results": [
   {
-   "case": "calendar probe: one-way sums vs real round-trip",
-   "steps": [
-    {
-     "rt_dur": 32,
-     "n_dates": 31
-    },
-    {
-     "rt_dur": 33,
-     "n_dates": 1
-    },
-    {
-     "rt_dur": 34,
-     "n_dates": 1
-    }
-   ],
-   "n_out": 31,
-   "n_back": 0,
-   "n_rt30": 31,
-   "sample": {
-    "2027-03-01": [
-     1078.0,
-     1852.0
-    ],
-    "2027-03-02": [
-     1078.0,
-     1852.0
-    ],
-    "2027-03-03": [
-     952.0,
-     1811.0
-    ],
-    "2027-03-04": [
-     1078.0,
-     2103.0
-    ],
-    "2027-03-05": [
-     1108.0,
-     1971.0
-    ]
-   },
-   "seconds": 6.5,
-   "burst_ok_of_12": 11
+   "case": "calendar(32d) vs exact list price (42d)",
+   "rows": [],
+   "error": "NameError: name 'DATA' is not defined",
+   "trace": "Traceback (most recent call last):\n  File \"/home/runner/work/PlaneTicketTracker/PlaneTicketTracker/tracker/diagnose.py\", line 346, in calendar_compare\n    for f in sorted(glob.glob(str(DATA / \"matrix\" / \"YUL-PEK\" / \"20*.json\")))[-1:]:\n                                  ^^^^\nNameError: name 'DATA' is not defined\n"
   }
  ]
 }
