@@ -654,7 +654,8 @@ def run_matrix_cells(route, cfg, cur, doc, today, errors, flush=None, only=None)
     for j in order:
         off, i = list_offs[j], nc + j
         todo = [d for d in days if valid(d, off, False) and grid[d.isoformat()][i] is None]
-        random.shuffle(todo)            # random order: no sequential scanning pattern
+        random.shuffle(todo)            # random tie-break: no sequential scanning pattern
+        todo.sort(key=lambda d: min([v for v in grid[d.isoformat()][:nc] if v is not None] or [10**9]))   # cheapest dates first
         for d in todo:
             if expired():
                 errors.append(f"{route['id']} matrix: stopped for this run (request quota / time budget / throttling); the next run resumes")

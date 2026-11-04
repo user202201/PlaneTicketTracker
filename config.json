@@ -103,7 +103,7 @@
   "list_routes": [
    "YUL-PEK"
   ],
-  "exact_top_per_month": 4
+  "exact_top_per_month": 0
  },
  "pacing": {
   "batch_size_range": [
