@@ -1,190 +1,291 @@
 {
- "when": "2026-11-04T14:57:52+00:00",
+ "when": "2026-11-04T15:03:43+00:00",
  "results": [
   {
-   "case": "range probe: user's trip + stay-length range + calendar grid endpoint",
+   "case": "span probe + Canadian point of sale",
    "steps": [
     {
-     "list": "2027-03-10->2027-04-22",
-     "n": 10,
-     "cheapest": [
-      2019.0,
-      2019.0,
-      2251.0,
-      2368.0
-     ],
-     "first": [
-      [
-       "Air Canada",
-       "303",
-       "YUL",
-       "YVR"
-      ],
-      [
-       "Air Canada",
-       "29",
-       "YVR",
-       "PEK"
-      ]
-     ]
-    },
-    {
-     "list": "2027-03-10->2027-04-21",
-     "n": 8,
-     "cheapest": [
-      2188.0,
-      2249.0,
-      2249.0,
-      3139.0
-     ],
-     "first": [
-      [
-       "KLM",
-       "672",
-       "YUL",
-       "AMS"
-      ],
-      [
-       "KLM",
-       "897",
-       "AMS",
-       "PEK"
-      ]
-     ]
-    },
-    {
-     "endpoint": "GetCalendarGraph",
-     "range": [
-      42,
-      42
-     ],
-     "http": 200,
-     "len": 10727,
+     "cal": "dep 2027-03-10..03-10 (1 day), stay 43",
      "n_rows": 1,
      "distinct_deps": 1,
-     "mar10": [],
-     "sample": [
-      [
-       "2027-03-06",
-       "2027-04-17",
-       2167
-      ]
-     ]
-    },
-    {
-     "endpoint": "GetCalendarGraph",
-     "range": [
-      38,
-      46
-     ],
-     "http": 200,
-     "len": 325,
-     "n_rows": 0,
-     "distinct_deps": 0,
-     "mar10": [],
-     "sample": []
-    },
-    {
-     "endpoint": "GetCalendarGraph",
-     "range": [
-      28,
-      32
-     ],
-     "http": 200,
-     "len": 25519,
-     "n_rows": 155,
-     "distinct_deps": 31,
      "mar10": [
       [
        "2027-03-10",
-       "2027-04-07",
-       1952
-      ],
-      [
-       "2027-03-10",
-       "2027-04-08",
-       1811
-      ],
-      [
-       "2027-03-10",
-       "2027-04-09",
-       1811
-      ],
-      [
-       "2027-03-10",
-       "2027-04-10",
-       2216
-      ],
-      [
-       "2027-03-10",
-       "2027-04-11",
-       1871
-      ]
-     ],
-     "sample": [
-      [
-       "2027-03-01",
-       "2027-03-29",
-       1811
-      ],
-      [
-       "2027-03-01",
-       "2027-03-30",
-       1811
-      ],
-      [
-       "2027-03-01",
-       "2027-03-31",
-       1852
-      ],
-      [
-       "2027-03-01",
-       "2027-04-01",
-       1811
-      ],
-      [
-       "2027-03-01",
-       "2027-04-02",
-       1811
-      ],
-      [
-       "2027-03-02",
-       "2027-03-30",
-       1852
+       "2027-04-22",
+       2019
       ]
      ]
     },
     {
-     "endpoint": "GetCalendarGrid",
-     "range": [
-      42,
-      42
-     ],
-     "http": 200,
-     "len": 11050,
-     "n_rows": 1,
-     "distinct_deps": 1,
-     "mar10": [],
-     "sample": [
-      [
-       "2027-03-23",
-       "2027-05-04",
-       1919
-      ]
-     ]
-    },
-    {
-     "endpoint": "GetCalendarGrid",
-     "range": [
-      38,
-      46
-     ],
-     "http": 200,
-     "len": 324,
+     "cal": "dep 03-10..03-16 (7 d), stay 38-46",
      "n_rows": 0,
      "distinct_deps": 0,
-     "mar10": [],
-     "sample": []
+     "mar10": []
+    },
+    {
+     "cal": "dep 03-10..03-23 (14 d), stay 38-46",
+     "n_rows": 1,
+     "distinct_deps": 1,
+     "mar10": []
+    },
+    {
+     "cal": "dep 03-10..03-30 (21 d), stay 38-46",
+     "n_rows": 1,
+     "distinct_deps": 1,
+     "mar10": [
+      [
+       "2027-03-10",
+       "2027-04-21",
+       2188
+      ]
+     ]
+    },
+    {
+     "cal": "dep 03-10..03-16 (7 d), stay 42-42",
+     "n_rows": 0,
+     "distinct_deps": 0,
+     "mar10": []
+    },
+    {
+     "cal CA pos Mar10->Apr22": [
+      [
+       "2027-03-10",
+       "2027-04-22",
+       2019
+      ]
+     ]
+    },
+    {
+     "list": "default",
+     "n": 10,
+     "all": [
+      [
+       2019.0,
+       [
+        "Air Canada",
+        "Air Canada"
+       ],
+       [
+        "YVR"
+       ],
+       "08:45"
+      ],
+      [
+       2019.0,
+       [
+        "Air Canada",
+        "Air Canada"
+       ],
+       [
+        "YVR"
+       ],
+       "07:30"
+      ],
+      [
+       2251.0,
+       [
+        "Turkish Airlines",
+        "Turkish Airlines"
+       ],
+       [
+        "IST"
+       ],
+       "19:55"
+      ],
+      [
+       2368.0,
+       [
+        "KLM",
+        "KLM"
+       ],
+       [
+        "AMS"
+       ],
+       "19:40"
+      ],
+      [
+       2524.0,
+       [
+        "Turkish Airlines",
+        "Air China"
+       ],
+       [
+        "IST"
+       ],
+       "19:55"
+      ],
+      [
+       6160.0,
+       [
+        "Air Canada",
+        "Air China"
+       ],
+       [
+        "ATH"
+       ],
+       "18:55"
+      ],
+      [
+       6309.0,
+       [
+        "Lufthansa Cargo",
+        "Air China"
+       ],
+       [
+        "MUC"
+       ],
+       "20:10"
+      ],
+      [
+       15254.0,
+       [
+        "Air Canada",
+        "Air China"
+       ],
+       [
+        "YVR"
+       ],
+       "07:30"
+      ],
+      [
+       15255.0,
+       [
+        "Emirates",
+        "Emirates"
+       ],
+       [
+        "DXB"
+       ],
+       "10:40"
+      ],
+      [
+       18453.0,
+       [
+        "Air Canada",
+        "Hainan Airlines"
+       ],
+       [
+        "BRU"
+       ],
+       "19:10"
+      ]
+     ]
+    },
+    {
+     "list": "country=CA",
+     "n": 10,
+     "all": [
+      [
+       2019.0,
+       [
+        "Air Canada",
+        "Air Canada"
+       ],
+       [
+        "YVR"
+       ],
+       "08:45"
+      ],
+      [
+       2019.0,
+       [
+        "Air Canada",
+        "Air Canada"
+       ],
+       [
+        "YVR"
+       ],
+       "07:30"
+      ],
+      [
+       2251.0,
+       [
+        "Turkish Airlines",
+        "Turkish Airlines"
+       ],
+       [
+        "IST"
+       ],
+       "19:55"
+      ],
+      [
+       2368.0,
+       [
+        "KLM",
+        "KLM"
+       ],
+       [
+        "AMS"
+       ],
+       "19:40"
+      ],
+      [
+       2524.0,
+       [
+        "Turkish Airlines",
+        "Air China"
+       ],
+       [
+        "IST"
+       ],
+       "19:55"
+      ],
+      [
+       6160.0,
+       [
+        "Air Canada",
+        "Air China"
+       ],
+       [
+        "ATH"
+       ],
+       "18:55"
+      ],
+      [
+       6309.0,
+       [
+        "Lufthansa Cargo",
+        "Air China"
+       ],
+       [
+        "MUC"
+       ],
+       "20:10"
+      ],
+      [
+       15254.0,
+       [
+        "Air Canada",
+        "Air China"
+       ],
+       [
+        "YVR"
+       ],
+       "07:30"
+      ],
+      [
+       15255.0,
+       [
+        "Emirates",
+        "Emirates"
+       ],
+       [
+        "DXB"
+       ],
+       "10:40"
+      ],
+      [
+       18453.0,
+       [
+        "Air Canada",
+        "Hainan Airlines"
+       ],
+       [
+        "BRU"
+       ],
+       "19:10"
+      ]
+     ]
     }
    ]
   }
