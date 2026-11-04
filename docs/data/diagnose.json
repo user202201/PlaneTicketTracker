@@ -1,11 +1,11 @@
 {
- "when": "2026-11-04T13:07:18+00:00",
+ "when": "2026-11-04T13:10:38+00:00",
  "results": [
   {
    "case": "near one-way YUL-PEK (+45d)",
    "url": "https://www.google.com/travel/flights/search?tfs=GhoSCjIwMjYtMTItMTlqBRIDWVVMcgUSA1BFS0IBAUgBmAEC&hl=en-US&curr=CAD",
    "status": 200,
-   "length": 1962030,
+   "length": 1944578,
    "final_url": "https://www.google.com/travel/flights?tfs=GhoSCjIwMjYtMTItMTlqBRIDWVVMcgUSA1BFS0IBAUgBmAEC&hl=en-US&curr=CAD",
    "ds_scripts": [
     "ds:0",
@@ -26,7 +26,7 @@
    "case": "one-way YUL-PEK Mar10 any stops",
    "url": "https://www.google.com/travel/flights/search?tfs=GhoSCjIwMjctMDMtMTBqBRIDWVVMcgUSA1BFS0IBAUgBmAEC&hl=en-US&curr=CAD",
    "status": 200,
-   "length": 2391902,
+   "length": 2374677,
    "final_url": "https://www.google.com/travel/flights?tfs=GhoSCjIwMjctMDMtMTBqBRIDWVVMcgUSA1BFS0IBAUgBmAEC&hl=en-US&curr=CAD",
    "ds_scripts": [
     "ds:0",
@@ -93,7 +93,7 @@
     null,
     null
    ],
-   "payload5": "[2, [null, 952], [null, 961], [null, 9], [null, 880], [null, 1200], 1, null, null, null, [[[1788494400000, 1089], [1788580800000, 1052], [1788667200000, 1089], [1788753600000, 1086], [1788840000000, 1086], [1788926400000, 1086], [1789012800000, 1086], [1789099200000, 1089], [1789185600000, 1089], [1789272000000, 1089], [1789358400000, 1089], [1789444800000, 1089], [1789531200000, 1089], [1789617600000, 1089], [1789704000000, 1089], [1789790400000, 1090], [1789876800000, 1090], [1789963200000, 1090], [1790049600000, 1090], [1790136000000, 1193], [1790222400000, 1199], [1790308800000, 1200], [1790395200000, 1202], [1790481600000, 1203], [1790568000000, 1180], [1790654400000, 1090], [1790740800000, 1090], [1790827200000, 1090], [1790913600000, 1091], [1791000000000, 1181], [1791086400000, 1181], [1791172800000, 1166], [1791259200000, 1166], [1791345600000, 1088], [1791432000000, 1088], [1791518400000, 1052], [1791604800000, 1052], [1791691200000, 1052], [1791777600000, 1052], [1791864000000, 1052], [1791950400000, 1088], [1792036800000, 1060], [1792123200000, 1060], [1792209600000, 1081], [1792296000000, 1081], [1792382400000, 1060], [1792468800000, 1060], [1792555200000, 1060], [1792641600000, 1060], [1792728000000, 1060], [1792814400000, 1060], [1792900800000, 1044], [1792987200000, 1044], [1793073600000, 1093], [1793160000000, 1166], [1793246400000, 1081], [1793332800000, 1081], [1793419200000, 1081], [1793505600000, 1081], [1793595600000, 1081], [1793682000000, 1081], [1793768400000, 952]]], [[1793797642565266, 54782706, 188539961], null, null, null, null, [[12]]], \"Beijing\"]",
+   "payload5": "[2, [null, 952], [null, 961], [null, 9], [null, 880], [null, 1200], 1, null, null, null, [[[1788494400000, 1089], [1788580800000, 1052], [1788667200000, 1089], [1788753600000, 1086], [1788840000000, 1086], [1788926400000, 1086], [1789012800000, 1086], [1789099200000, 1089], [1789185600000, 1089], [1789272000000, 1089], [1789358400000, 1089], [1789444800000, 1089], [1789531200000, 1089], [1789617600000, 1089], [1789704000000, 1089], [1789790400000, 1090], [1789876800000, 1090], [1789963200000, 1090], [1790049600000, 1090], [1790136000000, 1193], [1790222400000, 1199], [1790308800000, 1200], [1790395200000, 1202], [1790481600000, 1203], [1790568000000, 1180], [1790654400000, 1090], [1790740800000, 1090], [1790827200000, 1090], [1790913600000, 1091], [1791000000000, 1181], [1791086400000, 1181], [1791172800000, 1166], [1791259200000, 1166], [1791345600000, 1088], [1791432000000, 1088], [1791518400000, 1052], [1791604800000, 1052], [1791691200000, 1052], [1791777600000, 1052], [1791864000000, 1052], [1791950400000, 1088], [1792036800000, 1060], [1792123200000, 1060], [1792209600000, 1081], [1792296000000, 1081], [1792382400000, 1060], [1792468800000, 1060], [1792555200000, 1060], [1792641600000, 1060], [1792728000000, 1060], [1792814400000, 1060], [1792900800000, 1044], [1792987200000, 1044], [1793073600000, 1093], [1793160000000, 1166], [1793246400000, 1081], [1793332800000, 1081], [1793419200000, 1081], [1793505600000, 1081], [1793595600000, 1081], [1793682000000, 1081], [1793768400000, 952]]], [[1793797843494520, 134453222, 2601468903], null, null, null, null, [[12]]], \"Beijing\"]",
    "n_flights": 6,
    "sample": [
     {
@@ -125,7 +125,7 @@
    "case": "one-way YUL-PEK Mar10 <=1 stop",
    "url": "https://www.google.com/travel/flights/search?tfs=GhwSCjIwMjctMDMtMTAoAWoFEgNZVUxyBRIDUEVLQgEBSAGYAQI=&hl=en-US&curr=CAD",
    "status": 200,
-   "length": 1951763,
+   "length": 2370138,
    "final_url": "https://www.google.com/travel/flights?tfs=GhwSCjIwMjctMDMtMTAoAWoFEgNZVUxyBRIDUEVLQgEBSAGYAQI%3D&hl=en-US&curr=CAD",
    "ds_scripts": [
     "ds:0",
@@ -139,14 +139,92 @@
     "captcha"
    ],
    "title": "Montreal to Beijing | Google Flights",
-   "error_flag": true,
-   "parse_error": "FlightsNotFound: no flights found; received error"
+   "error_flag": false,
+   "payload_shape": [
+    [
+     null,
+     "list[6]",
+     "int",
+     "str",
+     "str"
+    ],
+    [
+     "list[2]"
+    ],
+    [
+     "list[3]",
+     null,
+     "int",
+     "int",
+     "list[1]"
+    ],
+    [
+     "list[7]",
+     "int",
+     "int",
+     "int",
+     "list[1]"
+    ],
+    null,
+    [
+     "int",
+     "list[2]",
+     "list[2]",
+     "list[2]",
+     "list[2]",
+     "list[2]",
+     "int",
+     null,
+     null,
+     null
+    ],
+    null,
+    [
+     "list[2]",
+     "list[2]",
+     "list[3]",
+     "list[2]",
+     "list[1]",
+     "list[4]",
+     null,
+     "list[1]"
+    ],
+    null,
+    null
+   ],
+   "payload5": "[1, [null, 952], [null, 1188], [null, 236], [null, 1000], [null, 1650], 1, null, null, null, [[[1788494400000, 1194], [1788580800000, 1191], [1788667200000, 1191], [1788753600000, 1086], [1788840000000, 1086], [1788926400000, 1086], [1789012800000, 1086], [1789099200000, 1165], [1789185600000, 1165], [1789272000000, 1165], [1789358400000, 1165], [1789444800000, 1165], [1789531200000, 1172], [1789617600000, 1194], [1789704000000, 1195], [1789790400000, 1196], [1789876800000, 1198], [1789963200000, 1193], [1790049600000, 1193], [1790136000000, 1193], [1790222400000, 1199], [1790308800000, 1200], [1790395200000, 1202], [1790481600000, 1203], [1790568000000, 1203], [1790654400000, 1203], [1790740800000, 1204], [1790827200000, 1205], [1790913600000, 1206], [1791000000000, 1206], [1791086400000, 1208], [1791172800000, 1166], [1791259200000, 1166], [1791345600000, 1088], [1791432000000, 1088], [1791518400000, 1052], [1791604800000, 1052], [1791691200000, 1052], [1791777600000, 1052], [1791864000000, 1052], [1791950400000, 1088], [1792036800000, 1060], [1792123200000, 1060], [1792209600000, 1113], [1792296000000, 1103], [1792382400000, 1060], [1792468800000, 1060], [1792555200000, 1060], [1792641600000, 1060], [1792728000000, 1060], [1792814400000, 1060], [1792900800000, 1044], [1792987200000, 1044], [1793073600000, 1093], [1793160000000, 1166], [1793246400000, 1166], [1793332800000, 1166], [1793419200000, 1108], [1793505600000, 1108], [1793595600000, 1108], [1793682000000, 1128], [1793768400000, 952]]], [[1793797848130551, 133357389, 504807298], null, null, null, null, [[12]]], \"Beijing\"]",
+   "n_flights": 7,
+   "sample": [
+    {
+     "price": 1128,
+     "airlines": [
+      "Air Canada"
+     ],
+     "legs": 2
+    },
+    {
+     "price": 1892,
+     "airlines": [
+      "Air Canada",
+      "United"
+     ],
+     "legs": 2
+    },
+    {
+     "price": 1910,
+     "airlines": [
+      "Turkish Airlines",
+      "Air China"
+     ],
+     "legs": 2
+    }
+   ]
   },
   {
    "case": "round-trip YUL-PEK Mar10/Apr21 any",
    "url": "https://www.google.com/travel/flights/search?tfs=GhoSCjIwMjctMDMtMTBqBRIDWVVMcgUSA1BFSxoaEgoyMDI3LTA0LTIxagUSA1BFS3IFEgNZVUxCAQFIAZgBAQ==&hl=en-US&curr=CAD",
    "status": 200,
-   "length": 1963279,
+   "length": 1946593,
    "final_url": "https://www.google.com/travel/flights?tfs=GhoSCjIwMjctMDMtMTBqBRIDWVVMcgUSA1BFSxoaEgoyMDI3LTA0LTIxagUSA1BFS3IFEgNZVUxCAQFIAZgBAQ%3D%3D&hl=en-US&curr=CAD",
    "ds_scripts": [
     "ds:0",
@@ -167,7 +245,7 @@
    "case": "round-trip YUL-PEK Mar10/Apr21 <=1",
    "url": "https://www.google.com/travel/flights/search?tfs=GhwSCjIwMjctMDMtMTAoAWoFEgNZVUxyBRIDUEVLGhwSCjIwMjctMDQtMjEoAWoFEgNQRUtyBRIDWVVMQgEBSAGYAQE=&hl=en-US&curr=CAD",
    "status": 200,
-   "length": 1964402,
+   "length": 1967824,
    "final_url": "https://www.google.com/travel/flights?tfs=GhwSCjIwMjctMDMtMTAoAWoFEgNZVUxyBRIDUEVLGhwSCjIwMjctMDQtMjEoAWoFEgNQRUtyBRIDWVVMQgEBSAGYAQE%3D&hl=en-US&curr=CAD",
    "ds_scripts": [
     "ds:0",
@@ -181,14 +259,45 @@
     "captcha"
    ],
    "title": "Montreal to Beijing | Google Flights",
-   "error_flag": true,
-   "parse_error": "FlightsNotFound: no flights found; received error"
+   "error_flag": false,
+   "payload_shape": [
+    [
+     null,
+     "list[6]",
+     "int",
+     "str",
+     "str"
+    ],
+    [
+     "list[2]",
+     "list[2]"
+    ],
+    null,
+    null,
+    null,
+    null,
+    null,
+    [
+     null,
+     "list[2]",
+     "list[1]",
+     null,
+     "list[1]",
+     "list[4]",
+     null,
+     "list[1]"
+    ],
+    null,
+    null
+   ],
+   "payload5": "null",
+   "parse_error": "TypeError: 'NoneType' object is not subscriptable"
   },
   {
    "case": "one-way YUL-PVG Mar10",
    "url": "https://www.google.com/travel/flights/search?tfs=GhoSCjIwMjctMDMtMTBqBRIDWVVMcgUSA1BWR0IBAUgBmAEC&hl=en-US&curr=CAD",
    "status": 200,
-   "length": 1950602,
+   "length": 1945014,
    "final_url": "https://www.google.com/travel/flights?tfs=GhoSCjIwMjctMDMtMTBqBRIDWVVMcgUSA1BWR0IBAUgBmAEC&hl=en-US&curr=CAD",
    "ds_scripts": [
     "ds:0",
@@ -209,7 +318,7 @@
    "case": "one-way PEK-YUL Apr21 (return leg)",
    "url": "https://www.google.com/travel/flights/search?tfs=GhoSCjIwMjctMDQtMjFqBRIDUEVLcgUSA1lVTEIBAUgBmAEC&hl=en-US&curr=CAD",
    "status": 200,
-   "length": 1961854,
+   "length": 2902444,
    "final_url": "https://www.google.com/travel/flights?tfs=GhoSCjIwMjctMDQtMjFqBRIDUEVLcgUSA1lVTEIBAUgBmAEC&hl=en-US&curr=CAD",
    "ds_scripts": [
     "ds:0",
@@ -223,14 +332,69 @@
     "captcha"
    ],
    "title": "Beijing to Montreal | Google Flights",
-   "error_flag": true,
-   "parse_error": "FlightsNotFound: no flights found; received error"
+   "error_flag": false,
+   "payload_shape": [
+    [
+     null,
+     "list[6]",
+     "int",
+     "str",
+     "str"
+    ],
+    [
+     "list[2]"
+    ],
+    [
+     "list[4]",
+     null,
+     "int",
+     "int",
+     "list[1]"
+    ],
+    [
+     "list[21]",
+     "int",
+     "int",
+     "int",
+     "list[1]"
+    ],
+    null,
+    [
+     "int",
+     "list[2]",
+     "list[2]",
+     "list[2]",
+     "list[2]",
+     "list[2]",
+     "int",
+     null,
+     null,
+     null
+    ],
+    [
+     "list[3]"
+    ],
+    [
+     "list[2]",
+     "list[2]",
+     "list[3]",
+     "list[2]",
+     "list[1]",
+     "list[4]",
+     null,
+     "list[1]"
+    ],
+    null,
+    null
+   ],
+   "payload5": "[2, [null, 1348], [null, 1332], [null, -17], [null, 1250], [null, 1650], 1, null, null, null, [[[1788537600000, 1168], [1788624000000, 1173], [1788710400000, 1287], [1788796800000, 1101], [1788883200000, 1098], [1788969600000, 1096], [1789056000000, 1177], [1789142400000, 1180], [1789228800000, 1182], [1789315200000, 1182], [1789401600000, 1182], [1789488000000, 1127], [1789574400000, 1294], [1789660800000, 1301], [1789747200000, 1300], [1789833600000, 1216], [1789920000000, 1216], [1790006400000, 1302], [1790092800000, 1306], [1790179200000, 1308], [1790265600000, 1309], [1790352000000, 1314], [1790438400000, 1314], [1790524800000, 1314], [1790611200000, 1315], [1790697600000, 1308], [1790784000000, 1309], [1790870400000, 1312], [1790956800000, 1222], [1791043200000, 1224], [1791129600000, 1224], [1791216000000, 1191], [1791302400000, 1192], [1791388800000, 1251], [1791475200000, 1255], [1791561600000, 1189], [1791648000000, 1194], [1791734400000, 1194], [1791820800000, 1195], [1791907200000, 1190], [1791993600000, 1195], [1792080000000, 1154], [1792166400000, 1151], [1792252800000, 1151], [1792339200000, 1446], [1792425600000, 1439], [1792512000000, 1438], [1792598400000, 1439], [1792684800000, 1037], [1792771200000, 1123], [1792857600000, 1210], [1792944000000, 1199], [1793030400000, 1202], [1793116800000, 1312], [1793203200000, 1439], [1793289600000, 1433], [1793376000000, 1432], [1793462400000, 1434], [1793548800000, 1434], [1793635200000, 1433], [1793721600000, 1348]]], [[1793797865688849, 134453222, 2601468903], null, null, null, null, [[27]]], \"Montreal\"]",
+   "parse_error": "IndexError: list index out of range"
   },
   {
    "case": "round-trip natural-language q",
    "url": "q=Flights from YUL to PEK on 2027-03-10 returning 2027-04-21",
    "status": 200,
-   "length": 1953258,
+   "length": 1969699,
    "final_url": "https://www.google.com/travel/flights?q=Flights+from+YUL+to+PEK+on+2027-03-10+returning+2027-04-21&hl=en-US&curr=CAD",
    "ds_scripts": [
     "ds:0",
@@ -244,14 +408,47 @@
     "captcha"
    ],
    "title": "Montreal to Beijing | Google Flights",
-   "error_flag": true,
-   "parse_error": "FlightsNotFound: no flights found; received error"
+   "error_flag": false,
+   "payload_shape": [
+    [
+     null,
+     "list[6]",
+     "int",
+     "str",
+     "str"
+    ],
+    [
+     "list[2]",
+     "list[2]"
+    ],
+    null,
+    null,
+    null,
+    null,
+    [
+     "list[5]"
+    ],
+    [
+     null,
+     "list[2]",
+     "list[1]",
+     null,
+     "list[1]",
+     "list[4]",
+     null,
+     "list[1]"
+    ],
+    null,
+    null
+   ],
+   "payload5": "null",
+   "parse_error": "TypeError: 'NoneType' object is not subscriptable"
   },
   {
    "case": "one-way YYZ-LHR (control, +45d)",
    "url": "https://www.google.com/travel/flights/search?tfs=GhoSCjIwMjYtMTItMTlqBRIDWVlacgUSA0xIUkIBAUgBmAEC&hl=en-US&curr=CAD",
    "status": 200,
-   "length": 2440764,
+   "length": 2434762,
    "final_url": "https://www.google.com/travel/flights?tfs=GhoSCjIwMjYtMTItMTlqBRIDWVlacgUSA0xIUkIBAUgBmAEC&hl=en-US&curr=CAD",
    "ds_scripts": [
     "ds:0",
@@ -318,7 +515,7 @@
     null,
     null
    ],
-   "payload5": "[3, [null, 895], [null, 728], [null, -168], [null, 490], [null, 1250], 1, null, null, null, [[[1788580800000, 745], [1788667200000, 745], [1788753600000, 745], [1788840000000, 745], [1788926400000, 745], [1789012800000, 745], [1789099200000, 745], [1789185600000, 745], [1789272000000, 745], [1789358400000, 745], [1789444800000, 745], [1789531200000, 741], [1789617600000, 741], [1789704000000, 741], [1789790400000, 741], [1789876800000, 741], [1789963200000, 741], [1790049600000, 741], [1790136000000, 741], [1790222400000, 779], [1790308800000, 744], [1790395200000, 744], [1790481600000, 781], [1790568000000, 781], [1790654400000, 781], [1790740800000, 781], [1790827200000, 832], [1790913600000, 791], [1791000000000, 994], [1791086400000, 994], [1791172800000, 744], [1791259200000, 744], [1791345600000, 744], [1791432000000, 832], [1791518400000, 832], [1791604800000, 929], [1791691200000, 929], [1791777600000, 1036], [1791864000000, 1036], [1791950400000, 1020], [1792036800000, 1036], [1792123200000, 1036], [1792209600000, 929], [1792296000000, 1036], [1792382400000, 1036], [1792468800000, 1036], [1792555200000, 1036], [1792641600000, 1035], [1792728000000, 1117], [1792814400000, 1035], [1792900800000, 1131], [1792987200000, 1035], [1793073600000, 1035], [1793160000000, 1041], [1793246400000, 1041], [1793332800000, 895], [1793419200000, 739], [1793505600000, 779], [1793595600000, 895], [1793682000000, 895], [1793768400000, 895]]], [[1793797673544033, 54782706, 188539961], null, null, null, null, [[15]]], \"London\", [[[2026, 6, 14], 188, [3, 6]], [[2026, 9, 12], 98, [3, 3]], [[2026, 11, 4], 45], [null, 96]]]",
+   "payload5": "[3, [null, 895], [null, 728], [null, -168], [null, 490], [null, 1250], 1, null, null, null, [[[1788580800000, 745], [1788667200000, 745], [1788753600000, 745], [1788840000000, 745], [1788926400000, 745], [1789012800000, 745], [1789099200000, 745], [1789185600000, 745], [1789272000000, 745], [1789358400000, 745], [1789444800000, 745], [1789531200000, 741], [1789617600000, 741], [1789704000000, 741], [1789790400000, 741], [1789876800000, 741], [1789963200000, 741], [1790049600000, 741], [1790136000000, 741], [1790222400000, 779], [1790308800000, 744], [1790395200000, 744], [1790481600000, 781], [1790568000000, 781], [1790654400000, 781], [1790740800000, 781], [1790827200000, 832], [1790913600000, 791], [1791000000000, 994], [1791086400000, 994], [1791172800000, 744], [1791259200000, 744], [1791345600000, 744], [1791432000000, 832], [1791518400000, 832], [1791604800000, 929], [1791691200000, 929], [1791777600000, 1036], [1791864000000, 1036], [1791950400000, 1020], [1792036800000, 1036], [1792123200000, 1036], [1792209600000, 929], [1792296000000, 1036], [1792382400000, 1036], [1792468800000, 1036], [1792555200000, 1036], [1792641600000, 1035], [1792728000000, 1117], [1792814400000, 1035], [1792900800000, 1131], [1792987200000, 1035], [1793073600000, 1035], [1793160000000, 1041], [1793246400000, 1041], [1793332800000, 895], [1793419200000, 739], [1793505600000, 779], [1793595600000, 895], [1793682000000, 895], [1793768400000, 895]]], [[1793797874793810, 133362464, 4228890305], null, null, null, null, [[15]]], \"London\", [[[2026, 6, 14], 188, [3, 6]], [[2026, 9, 12], 98, [3, 3]], [[2026, 11, 4], 45], [null, 96]]]",
    "n_flights": 10,
    "sample": [
     {
@@ -348,8 +545,301 @@
   },
   {
    "case": "list-mode check YUL-PEK 2027-03-03/2027-04-16 <=1 stop (Google page: 1899)",
-   "error": "RuntimeError: no result after 3 attempts (empty/error response)",
-   "trace": "Traceback (most recent call last):\n  File \"/home/runner/work/PlaneTicketTracker/PlaneTicketTracker/tracker/diagnose.py\", line 201, in list_case\n    offers = fetch.fli_list(route, dt.date(2027, 3, 3), dt.date(2027, 4, 16), \"CAD\")\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/runner/work/PlaneTicketTracker/PlaneTicketTracker/tracker/fetch.py\", line 170, in fli_list\n    raise RuntimeError(f\"no result after 3 attempts ({type(last).__name__ + ': ' + str(last)[:100] if last else 'empty/error response'})\")\nRuntimeError: no result after 3 attempts (empty/error response)\n"
+   "n": 11,
+   "cheapest": [
+    {
+     "price": 1811,
+     "airlines": [
+      "Turkish Airlines"
+     ],
+     "stops": 1,
+     "dur": 1415,
+     "via": [
+      "IST"
+     ],
+     "lay": [
+      310
+     ],
+     "legs": [
+      [
+       "Turkish Airlines 36",
+       "YUL>IST",
+       "19:55",
+       "13:25"
+      ],
+      [
+       "Turkish Airlines 194",
+       "IST>PEK",
+       "18:35",
+       "08:30"
+      ]
+     ]
+    },
+    {
+     "price": 1897,
+     "airlines": [
+      "Air Canada"
+     ],
+     "stops": 1,
+     "dur": 1235,
+     "via": [
+      "YVR"
+     ],
+     "lay": [
+      140
+     ],
+     "legs": [
+      [
+       "Air Canada 303",
+       "YUL>YVR",
+       "08:45",
+       "12:05"
+      ],
+      [
+       "Air Canada 29",
+       "YVR>PEK",
+       "14:25",
+       "18:20"
+      ]
+     ]
+    },
+    {
+     "price": 1897,
+     "airlines": [
+      "Air Canada"
+     ],
+     "stops": 1,
+     "dur": 1310,
+     "via": [
+      "YVR"
+     ],
+     "lay": [
+      192
+     ],
+     "legs": [
+      [
+       "Air Canada 301",
+       "YUL>YVR",
+       "07:30",
+       "11:13"
+      ],
+      [
+       "Air Canada 29",
+       "YVR>PEK",
+       "14:25",
+       "18:20"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "case": "probe: Mar3/Apr16 <=1",
+   "attempts": [
+    {
+     "http": 200,
+     "len": 326,
+     "errtype": true,
+     "n": 11,
+     "min": 1811.0,
+     "s": 0.7
+    }
+   ]
+  },
+  {
+   "case": "probe: Mar3/Apr16 ANY",
+   "attempts": [
+    {
+     "http": 200,
+     "len": 331,
+     "errtype": true,
+     "n": 0,
+     "s": 22.5
+    },
+    {
+     "http": 200,
+     "len": 325,
+     "errtype": true,
+     "n": 0,
+     "s": 21.5
+    },
+    {
+     "http": 200,
+     "len": 330,
+     "errtype": true,
+     "n": 0,
+     "s": 44.2
+    }
+   ]
+  },
+  {
+   "case": "probe: Mar3/Apr16 <=1 FRESH client",
+   "attempts": [
+    {
+     "http": 200,
+     "len": 46011,
+     "errtype": false,
+     "n": 11,
+     "min": 1811.0,
+     "s": 6.5
+    }
+   ]
+  },
+  {
+   "case": "probe: Mar10/Apr21 <=1",
+   "attempts": [
+    {
+     "http": 200,
+     "len": 327,
+     "errtype": true,
+     "n": 0,
+     "s": 21.9
+    },
+    {
+     "http": 200,
+     "len": 326,
+     "errtype": true,
+     "n": 0,
+     "s": 0.1
+    },
+    {
+     "http": 200,
+     "len": 331,
+     "errtype": true,
+     "n": 0,
+     "s": 43.9
+    }
+   ]
+  },
+  {
+   "case": "probe: Mar3/Apr15 <=1",
+   "attempts": [
+    {
+     "http": 200,
+     "len": 330,
+     "errtype": true,
+     "n": 0,
+     "s": 43.9
+    },
+    {
+     "http": 200,
+     "len": 331,
+     "errtype": true,
+     "n": 0,
+     "s": 44.0
+    },
+    {
+     "http": 200,
+     "len": 94,
+     "errtype": false,
+     "n": 0,
+     "s": 0.1
+    }
+   ]
+  },
+  {
+   "case": "probe: Mar4/Apr17 <=1",
+   "attempts": [
+    {
+     "http": 200,
+     "len": 94,
+     "errtype": false,
+     "n": 0,
+     "s": 0.1
+    },
+    {
+     "http": 200,
+     "len": 95,
+     "errtype": false,
+     "n": 0,
+     "s": 0.1
+    },
+    {
+     "http": 200,
+     "len": 95,
+     "errtype": false,
+     "n": 0,
+     "s": 0.1
+    }
+   ]
+  },
+  {
+   "case": "probe: Mar10/Apr09 30d <=1",
+   "attempts": [
+    {
+     "http": 200,
+     "len": 94,
+     "errtype": false,
+     "n": 0,
+     "s": 0.1
+    },
+    {
+     "http": 200,
+     "len": 95,
+     "errtype": false,
+     "n": 0,
+     "s": 0.2
+    },
+    {
+     "http": 200,
+     "len": 95,
+     "errtype": false,
+     "n": 0,
+     "s": 0.1
+    }
+   ]
+  },
+  {
+   "case": "probe: Dec1/Dec15 <=1 (near)",
+   "attempts": [
+    {
+     "http": 200,
+     "len": 95,
+     "errtype": false,
+     "n": 0,
+     "s": 0.1
+    },
+    {
+     "http": 200,
+     "len": 95,
+     "errtype": false,
+     "n": 0,
+     "s": 0.1
+    },
+    {
+     "http": 200,
+     "len": 95,
+     "errtype": false,
+     "n": 0,
+     "s": 0.1
+    }
+   ]
+  },
+  {
+   "case": "probe: OW Mar3 <=1",
+   "attempts": [
+    {
+     "http": 200,
+     "len": 94,
+     "errtype": false,
+     "n": 0,
+     "s": 0.1
+    },
+    {
+     "http": 200,
+     "len": 95,
+     "errtype": false,
+     "n": 0,
+     "s": 0.1
+    },
+    {
+     "http": 200,
+     "len": 94,
+     "errtype": false,
+     "n": 0,
+     "s": 0.1
+    }
+   ]
   },
   {
    "case": "calendar grid YUL-PEK round-trip Mar 1-31, 42 days, <=1 stop",
@@ -360,27 +850,27 @@
   {
    "case": "raw list peek: one-way YUL-PEK 2027-03-10",
    "status": 200,
-   "length": 324,
-   "head": ")]}' |  | [[\"wrb.fr\",null,null,null,null,[13,null,[[\"type.googleapis.com/travel.frontend.flights.ErrorResponse\",[[null,[[1793797690945810,55304023,857328208],null,null,null,null,[[0]]],0,\"Oi7rapLdOde-r8oP0JTnmAM\",\"H6NIj2E9PwdcAKZqzABG----------oyem9AAAAAGrrLjoOVcL8A\"],0]]]]],[\"di\",63],[\"af.httprm\",63,\"-",
+   "length": 95,
+   "head": ")]}' |  | [[\"wrb.fr\",null,null,null,null,[13]],[\"di\",47],[\"af.httprm\",47,\"-4642885488494957830\",4]]",
    "n": 0
   },
   {
    "case": "raw list peek: round-trip YUL-PEK Mar10/Apr21",
    "status": 200,
-   "length": 324,
-   "head": ")]}' |  | [[\"wrb.fr\",null,null,null,null,[13,null,[[\"type.googleapis.com/travel.frontend.flights.ErrorResponse\",[[null,[[1793797694096261,55304023,857328208],null,null,null,null,[[0]]],0,\"Pi7raoXwBde-r8oP0JTnmAM\",\"H4O80XhcZNfQAKfp_QBG----------okqt9AAAAAGrrLj4BsCbcA\"],0]]]]],[\"di\",85],[\"af.httprm\",85,\"-",
+   "length": 94,
+   "head": ")]}' |  | [[\"wrb.fr\",null,null,null,null,[13]],[\"di\",64],[\"af.httprm\",63,\"-521435212157346645\",6]]",
    "n": 0
   },
   {
    "case": "raw list peek: round-trip YUL-PEK Mar10/Apr09 (30d)",
    "status": 200,
-   "length": 324,
-   "head": ")]}' |  | [[\"wrb.fr\",null,null,null,null,[13,null,[[\"type.googleapis.com/travel.frontend.flights.ErrorResponse\",[[null,[[1793797697287243,55299843,1494433457],null,null,null,null,[[0]]],0,\"QS7raovEEYOer8oPsf3MyAU\",\"HCo8Rk3EQpOQAI6mnwBG---------okeu19AAAAAGrrLkEEZZRwA\"],0]]]]],[\"di\",99],[\"af.httprm\",99,\"",
+   "length": 94,
+   "head": ")]}' |  | [[\"wrb.fr\",null,null,null,null,[13]],[\"di\",74],[\"af.httprm\",74,\"8636560626205917735\",8]]",
    "n": 0
   },
   {
    "case": "fli round-trip list YUL-PEK Mar10/Apr21 <=1 stop",
-   "seconds": 0.2,
+   "seconds": 0.1,
    "n": 0,
    "items": []
   },
@@ -401,41 +891,8 @@
   },
   {
    "case": "grid: RT Mar1-31 30d ANY",
-   "n_dates": 31,
-   "sample": [
-    [
-     "2027-03-01",
-     1852.0
-    ],
-    [
-     "2027-03-02",
-     1852.0
-    ],
-    [
-     "2027-03-03",
-     1811.0
-    ],
-    [
-     "2027-03-04",
-     1897.0
-    ],
-    [
-     "2027-03-05",
-     1942.0
-    ],
-    [
-     "2027-03-06",
-     1897.0
-    ],
-    [
-     "2027-03-07",
-     1811.0
-    ],
-    [
-     "2027-03-08",
-     1952.0
-    ]
-   ]
+   "n_dates": 0,
+   "sample": []
   },
   {
    "case": "grid: RT Dec1-31 14d <=1stop (near)",
@@ -459,23 +916,13 @@
   },
   {
    "case": "grid: RT Mar1-31 38d ANY",
-   "n_dates": 1,
-   "sample": [
-    [
-     "2027-03-14",
-     2064.0
-    ]
-   ]
+   "n_dates": 0,
+   "sample": []
   },
   {
    "case": "grid: RT Mar1-31 40d ANY",
-   "n_dates": 1,
-   "sample": [
-    [
-     "2027-03-12",
-     2248.0
-    ]
-   ]
+   "n_dates": 0,
+   "sample": []
   },
   {
    "case": "grid: RT Mar1-31 45d ANY",
@@ -484,71 +931,23 @@
   },
   {
    "case": "grid: RT Mar1-31 60d ANY",
-   "n_dates": 1,
-   "sample": [
-    [
-     "2027-03-11",
-     1811.0
-    ]
-   ]
+   "n_dates": 0,
+   "sample": []
   },
   {
    "case": "grid: RT Mar1-31 30d <=1stop",
-   "n_dates": 31,
-   "sample": [
-    [
-     "2027-03-01",
-     1852.0
-    ],
-    [
-     "2027-03-02",
-     1852.0
-    ],
-    [
-     "2027-03-03",
-     1811.0
-    ],
-    [
-     "2027-03-04",
-     2103.0
-    ],
-    [
-     "2027-03-05",
-     1971.0
-    ],
-    [
-     "2027-03-06",
-     1997.0
-    ],
-    [
-     "2027-03-07",
-     1811.0
-    ],
-    [
-     "2027-03-08",
-     1952.0
-    ]
-   ]
+   "n_dates": 0,
+   "sample": []
   },
   {
    "case": "grid: RT Mar1-31 35d <=1stop",
-   "n_dates": 1,
-   "sample": [
-    [
-     "2027-03-08",
-     1811.0
-    ]
-   ]
+   "n_dates": 0,
+   "sample": []
   },
   {
    "case": "grid: RT Mar1-31 42d <=1stop",
-   "n_dates": 1,
-   "sample": [
-    [
-     "2027-03-15",
-     1811.0
-    ]
-   ]
+   "n_dates": 0,
+   "sample": []
   }
  ]
 }
