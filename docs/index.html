@@ -660,10 +660,11 @@ async function loadMatrix(id){
     const tb=$('mx');tb.textContent='';
     const h=mk('tr');h.appendChild(mk('th',t('mx_corner')));
     const CAL=cur.cal||[];
-    cur.offsets.forEach(o=>{const th=mk('th',t('mx_days',o)+(CAL.length?' ('+t(CAL.includes(o)?'col_cal':'col_exact')+')':''));if(CAL.length&&!CAL.includes(o))th.title=t('col_exact_tip');h.appendChild(th)});tb.appendChild(h);
+    const ord=cur.offsets.map((_,i)=>i).sort((a,b)=>(CAL.includes(cur.offsets[a])?1:0)-(CAL.includes(cur.offsets[b])?1:0)||a-b);   // exact column(s) first
+    ord.map(i=>cur.offsets[i]).forEach(o=>{const th=mk('th',t('mx_days',o)+(CAL.length?' ('+t(CAL.includes(o)?'col_cal':'col_exact')+')':''));if(CAL.length&&!CAL.includes(o))th.title=t('col_exact_tip');h.appendChild(th)});tb.appendChild(h);
     for(const dep of deps){const row=cur.p[dep];
       const tr=mk('tr');tr.appendChild(mk('td',dep.slice(5)+' '+WDAY(dow(dep))));
-      row.forEach((v,i)=>{const td=mk('td');
+      ord.forEach(i=>{const v=row[i];const td=mk('td');
         if(v==null){td.textContent='–'}else{
           td.appendChild(mk('div',String(v)));
           const sm=mk('div',t('mx_ret',addDays(dep,cur.offsets[i]).slice(5),cur.offsets[i]),'note');sm.style.cssText='font-size:11px;margin:0';td.appendChild(sm);
