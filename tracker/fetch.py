@@ -553,14 +553,42 @@ def run_matrix_cells(route, cfg, cur, doc, today, errors, flush=None, only=None)
             return False                # after the allowed return date for this month
         return ret <= td + dt.timedelta(days=HORIZON["days"])   # else: not on sale yet (skipped silently)
 
+    PK = {"set": None}                  # dates chosen for exact (list) queries: cheapest per month according to the calendar
+
     def valid(d, off, is_cal):
-        if not is_cal and step > 1 and d.toordinal() % step != 0:
-            return False                # sampled dates only (same dates every day -> clean time series)
+        if not is_cal:
+            if PK["set"] is not None:
+                if d not in PK["set"]:
+                    return False
+            elif step > 1 and d.toordinal() % step != 0:
+                return False            # fallback: sampled dates only (same dates every day -> clean time series)
         return ok_dates(d, off)
 
     for d in days:                      # a row exists for every date that has at least one valid combination
         if any(valid(d, o, i < nc) for i, o in enumerate(allo)):
             grid.setdefault(d.isoformat(), [None] * len(allo))
+
+    def restore_and_pick():
+        # exact prices stored earlier today in offers.json survive column-layout changes
+        for k, byoff in cells.items():
+            if k in grid:
+                for off_s, c in byoff.items():
+                    if int(off_s) in list_offs and c.get("offers"):
+                        i = nc + list_offs.index(int(off_s))
+                        if grid[k][i] is None:
+                            grid[k][i] = min(o["price"] for o in c["offers"])
+        topk = int(mx.get("exact_top_per_month", 0))
+        PK["set"] = None
+        if topk and nc and list_offs:
+            picked = set()
+            for sp in month_specs(mx):
+                cand = sorted((min(v for v in grid[d.isoformat()][:nc] if v is not None), d) for d in days
+                              if d.isoformat() in grid and d.strftime("%Y-%m") == sp["month"]
+                              and any(v is not None for v in grid[d.isoformat()][:nc]))
+                picked.update(d for _, d in cand[:topk])
+            PK["set"] = picked or None
+
+    restore_and_pick()
 
     def write_files():
         if n_prev + stat["new"] == 0:
@@ -616,6 +644,7 @@ def run_matrix_cells(route, cfg, cur, doc, today, errors, flush=None, only=None)
         save_all()
 
     # ---- 2) exact list columns (sampled dates), the 'stay' column first ----
+    restore_and_pick()
     if only == "cal":
         save_all()
         return stat["new"]
