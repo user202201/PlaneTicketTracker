@@ -71,7 +71,7 @@ jobs:
           git add docs/data
           git diff --cached --quiet || (git commit -m "data: $(date -u +%F\ %H:%M)" && git pull --rebase -X theirs && git push)
       - name: Relay - start the next batch if work remains today
-        if: always() && inputs.mode != 'diagnose'
+        if: (success() || failure()) && inputs.mode != 'diagnose'    # NOT when the run was cancelled (a cancel must not start a new run)
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
