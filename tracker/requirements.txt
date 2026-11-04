@@ -1,4 +1,4 @@
 fast-flights==3.1.0
+flights==0.9.0
 typing_extensions>=4.7
 protobuf>=4.21
-flights>=0.9

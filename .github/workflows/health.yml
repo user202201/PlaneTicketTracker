@@ -1,0 +1,40 @@
+name: health-check
+on:
+  schedule:
+    - cron: "17 2,14 * * *"     # twice a day
+  workflow_dispatch:
+permissions:
+  contents: read
+  issues: write
+jobs:
+  health:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: { ref: "${{ github.ref_name }}" }
+      - name: Check data freshness and open / close an issue
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          TITLE="[机票追踪] 数据采集可能已停止"
+          LAST=$(python3 - <<'PY'
+          import json,pathlib,datetime as dt
+          p=pathlib.Path("docs/data/progress.json")
+          d=None
+          try: d=json.loads(p.read_text()).get("date")
+          except Exception: pass
+          if d:
+              age=(dt.datetime.now(dt.timezone.utc).date()-dt.date.fromisoformat(d)).days
+              print(f"{d} ({age} days ago)|{age}")
+          else:
+              print("no data yet|99")
+          PY
+          )
+          WHEN="${LAST%%|*}"; AGE="${LAST##*|}"
+          OPEN=$(gh issue list --state open --search "in:title 数据采集可能已停止" --json number --jq '.[0].number' || true)
+          if [ "$AGE" -ge 2 ]; then
+            BODY="最近一次成功采集：$WHEN。\n\n可能原因：Google 对 GitHub 服务器限流、依赖库失效、或定时任务被停用。\n\n处理：到 Actions 页面查看最近的 track-prices 运行日志；必要时手动 Run workflow。若定时任务被自动停用，在 Actions 页面点 Enable。"
+            if [ -z "$OPEN" ]; then gh issue create --title "$TITLE" --body "$(printf "$BODY")"; else gh issue comment "$OPEN" --body "$(printf "仍未恢复：最近一次成功采集 $WHEN")"; fi
+          else
+            if [ -n "$OPEN" ]; then gh issue close "$OPEN" --comment "数据采集已恢复（最近一次：$WHEN）。"; fi
+          fi

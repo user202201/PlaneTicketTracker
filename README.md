@@ -1,16 +1,52 @@
-# PlaneTicketTracker
+# PlaneTicketTracker — 机票价格追踪（免费，自动运行）
 
-免费的机票价格追踪器：GitHub Actions 每天抓取 Google Flights（`fast-flights`），数据存在 `docs/data/`，GitHub Pages 展示。
+页面：`https://user202201.github.io/planetickettracker/`（GitHub Pages，静态网页）
+数据：GitHub Actions 定时从 Google Flights 抓取，存成 JSON 提交回仓库，网页读取这些 JSON 展示。
 
-## 启用
-1. 合并到 `main`，Settings → Pages → Source 选 `main` / `/docs`。
-2. Actions → track-prices → Run workflow，手动跑一次验证抓取。
-3. 邮件（可选）：Settings → Secrets → Actions 添加 `SMTP_USER`（Gmail 地址）、`SMTP_PASS`（Gmail 应用专用密码）、`ALERT_TO`（收件地址）。
-4. `config.json` 里改航线、日期、降价阈值（`below_price` / `pct_below_avg`）。
+## 一、它怎么运转（不用你管）
 
-## 说明
-- 淡旺季图的“估算”为经验值；“实测”随每日记录自动叠加。
-- 抓取非官方 API，Google 改版或拦截时会失败，失败会写入 `docs/data/status.json`，全部失败时发邮件。
+| 任务 | 文件 | 时间 | 做什么 |
+|---|---|---|---|
+| 主采集（接力） | `.github/workflows/track.yml` | 每天约 9:00（蒙特利尔）开始，抓完当天任务为止 | 查价格矩阵、航班列表、返程详情；每批随机数量，被限流自动等更久再换服务器重试 |
+| 巡检 | 同上 | 每天 3 次 | 接力断了就接上；没活干几秒退出 |
+| 时段探测 | `probe.yml` | 每天早 / 中 / 下午 | 同一批样本各查一次，分析一天中哪个时段便宜 |
+| 健康检查 | `health.yml` | 每天 2 次 | 超过 2 天没有新数据 → 自动开一个 Issue（GitHub 会邮件通知你），恢复后自动关闭 |
+| 保活 | `keepalive.yml` | 每月 2 次 | 防止“60 天无提交，定时任务被自动停用” |
 
-## 访问页面
-合并到 `main` 并启用 Pages 后，地址是：`https://user202201.github.io/planetickettracker/`
+## 二、要改什么，改哪里
+
+全部在 `config.json`：
+- `routes`：航线（出发地、目的地代码）、转机上限、舱位、人数。
+- `matrix.months`：追踪的月份。可写 `"2027-03"`，或 `{"month":"2027-06","from_day":18,"return_by":"2027-09-15"}`（从几号起、返程不晚于哪天）。
+- `matrix.return_offsets`：停留天数列（默认 40/42/44 天）。每多一列，请求量多约 1/3。
+- `windows`：总览页顶部月份按钮对应的日期窗口。
+- `schedule.quota_range`：每次运行的随机请求数（默认 50–100）。
+- `pacing`：请求间隔、批次停顿、单次运行时长上限。
+- `tod`：时段探测的航线和采样密度。
+- `alert`：降价提醒（需要邮箱，见下）。
+
+## 三、出问题了怎么办
+
+| 现象 | 原因 | 怎么办 |
+|---|---|---|
+| 收到 Issue「数据采集可能已停止」 | Google 限流 / 依赖失效 / 定时任务被停用 | 1) Actions → track-prices 看最近日志；2) 手动 Run workflow；3) 若提示被停用，点 Enable |
+| 页面提示“暂时没有数据” | 第一批还没抓完，或路线没配置 | 等 1 小时；确认路线在 `config.json` 的 `routes` 里 |
+| 日志里全是 `no result after 2 attempts` | 这台 GitHub 服务器的 IP 被 Google 限流 | 正常现象，程序会自动换服务器重试；连续 4 次失败后交给巡检 |
+| 日志出现 `FATAL: cannot import` | 依赖版本问题 | 检查 `tracker/requirements.txt`，必要时更新 `flights` 的版本 |
+| 想看 Google 实际返回了什么 | — | Actions → diagnose → Run workflow，结果写入 `docs/data/diagnose.json` |
+| 页面样式 / 图表异常 | 浏览器缓存 | 强制刷新（Ctrl+Shift+R） |
+
+## 四、邮件降价提醒（可选，默认关闭）
+
+Settings → Secrets and variables → Actions，新增：`SMTP_USER`（Gmail 地址）、`SMTP_PASS`（Gmail 应用专用密码）、`ALERT_TO`（收件地址）。在 `config.json` 的 `alert` 里设 `below_price` 或 `pct_below_avg`。
+
+## 五、限制与成本（都免费，前提：仓库保持公开）
+
+- 公开仓库的 Actions 不限分钟数；改成私有会受 2000 分钟 / 月限制，并且 Pages 不可用。
+- 抓取 Google Flights 属于非官方方式，Google 随时可能改版或限流，需要更新代码时看第三节。
+- 价格是 Google 列表里的真实往返价（最多 1 次转机由 Google 筛选）。
+- 仓库会慢慢变大；详情文件已做瘦身。如需彻底压缩，可在一两个月后把 git 历史压缩（会改写提交历史，不可恢复，需谨慎）。
+
+## 六、数据文件
+
+`docs/data/`：`<航线>.json`（价格轨迹 + 当前航班）、`matrix/<航线>/<日期>.json`（每日矩阵快照）、`matrix/<航线>/offers.json`（当天各格子的航班详情，只保留当天）、`tod/`（时段探测）、`summary.json`（智能总结）、`progress.json`（今日采集进度）、`airports.json`（机场名对照表）。

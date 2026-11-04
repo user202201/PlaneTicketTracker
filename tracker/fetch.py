@@ -631,10 +631,11 @@ def main():
     except Exception:
         pass
     runs_today = (prev.get("runs_today", 0) + 1) if prev.get("date") == today else 1
+    zero_streak = (prev.get("zero_streak", 0) + 1 if prev.get("date") == today else 1) if (ok == 0 and PACE["count"] > 0) else 0
     stop = "done" if PENDING["n"] == 0 else ("throttled" if NET["stop"] else "quota")
     (DATA / "progress.json").write_text(json.dumps(
         {"date": today, "pending": PENDING["n"], "updated": now, "ok": ok, "requests": PACE["count"],
-         "stop": stop, "runs_today": runs_today}, indent=1))
+         "stop": stop, "runs_today": runs_today, "zero_streak": zero_streak}, indent=1))
     print(f"ok={ok} failed={fail} requests={PACE['count']} quota={PACE['quota']}")
     for e in errors[:10]:
         print(" ", e)
