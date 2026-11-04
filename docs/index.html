@@ -307,6 +307,7 @@ applyTheme();
 /* ================= helpers ================= */
 const $=id=>document.getElementById(id);
 const css=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+let AIR={};
 let charts={},state={doc:null,rows:[],order:['stops','dur','price']};
 const fmtMin=m=>t('fmin',Math.floor(m/60),String(m%60).padStart(2,'0'));
 const addDays=(d,n)=>new Date(new Date(d+'T00:00:00Z').getTime()+n*864e5).toISOString().slice(0,10);
@@ -400,14 +401,14 @@ function legList(d,it){
   if(!legs.length){d.appendChild(mk('p',t('d_noleg'),'note'));return}
   legs.forEach((l,i)=>{
     if(i>0){const lay=(it.lay&&it.lay[i-1]!=null)?it.lay[i-1]:null;
-      d.appendChild(mk('div',t('d_lay',l.a+(l.an?' '+l.an:''),lay!=null?fmtMin(lay):'–'),'lay'))}
+      d.appendChild(mk('div',t('d_lay',l.a+(AIR[l.a]?' '+AIR[l.a]:''),lay!=null?fmtMin(lay):'–'),'lay'))}
     const row=mk('div',null,'leg'),day=x=>x.slice(0,10),hm=x=>x.slice(11,16);
     const nd=Math.round((new Date(day(l.arr))-new Date(day(l.dep)))/864e5);
     row.appendChild(mk('div',hm(l.dep),'tm'));
-    const ap=mk('div',null,'ap');ap.appendChild(document.createTextNode(l.a+(l.an?' · '+l.an:'')));
+    const ap=mk('div',null,'ap');ap.appendChild(document.createTextNode(l.a+(AIR[l.a]||l.an?' · '+(AIR[l.a]||l.an):'')));
     ap.appendChild(mk('div',[l.al,l.no].filter(Boolean).join(' ')+(l.ac?' · '+t('d_ac',l.ac):'')+(l.min?' · '+fmtMin(l.min):''),'sub'));row.appendChild(ap);
     row.appendChild(mk('div',hm(l.arr)+(nd>0?' '+t('d_nextday',nd):''),'tm'));
-    row.appendChild(mk('div',l.b+(l.bn?' · '+l.bn:'')));
+    row.appendChild(mk('div',l.b+(AIR[l.b]||l.bn?' · '+(AIR[l.b]||l.bn):'')));
     d.appendChild(row)})}
 function itinSection(d,title,it){
   d.appendChild(mk('h2',title));
@@ -670,5 +671,5 @@ const t0=new Date(Date.now()+180*864e5);$('dep').value=t0.toISOString().slice(0,
 $('ret').value=new Date(t0.getTime()+42*864e5).toISOString().slice(0,10);
 $('dep').addEventListener('input',()=>{$('dep').dataset.touched=1});
 $('f').addEventListener('submit',run);
-applyI18n();initWeights();run();
+j('data/airports.json').then(a=>{AIR=a;}).catch(()=>{}).finally(()=>{applyI18n();initWeights();run()});
 </script></body></html>

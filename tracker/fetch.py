@@ -48,8 +48,8 @@ def git_push(msg):
 
 
 def checkpoint(save, force=False):
-    """Every ~15 min (or when forced): write files and push them."""
-    if force or time.time() - CHK["last"] >= 15 * 60 * PACE["scale"]:
+    """Every ~45 min (or when forced): write files and push them."""
+    if force or time.time() - CHK["last"] >= 45 * 60 * PACE["scale"]:
         save()
         git_push("data: checkpoint")
         CHK["last"] = time.time()
@@ -197,6 +197,7 @@ def _ok_stops(route, offers):
 
 
 _SF = {}
+AIRPORTS = {}                       # code -> full name, written once to docs/data/airports.json (not repeated per leg)
 
 
 def _sf():
@@ -251,6 +252,22 @@ def fli_list(route, dep, ret, currency, expand=True):
     return offers
 
 
+def _ap(airport, google_name):
+    AIRPORTS.setdefault(airport.name, google_name or airport.value)
+    return airport.name
+
+
+def _save_airports():
+    p = DATA / "airports.json"
+    try:
+        cur = json.loads(p.read_text()) if p.exists() else {}
+    except Exception:
+        cur = {}
+    if AIRPORTS and any(cur.get(k) != v for k, v in AIRPORTS.items()):
+        cur.update(AIRPORTS)
+        p.write_text(json.dumps(dict(sorted(cur.items())), ensure_ascii=False, separators=(",", ":")))
+
+
 def _itin(x):
     """One itinerary (FlightResult) as a compact dict, incl. per-leg details."""
     legs = x.legs
@@ -265,8 +282,8 @@ def _itin(x):
         "dep": legs[0].departure_datetime.strftime("%Y-%m-%d %H:%M"),
         "arr": legs[-1].arrival_datetime.strftime("%Y-%m-%d %H:%M"),
         "lay": [getattr(v, "duration", None) for v in (x.layovers or [])],
-        "legs": [{"a": l.departure_airport.name, "an": l.departure_airport_name or l.departure_airport.value,
-                  "b": l.arrival_airport.name, "bn": l.arrival_airport_name or l.arrival_airport.value,
+        "legs": [{"a": _ap(l.departure_airport, l.departure_airport_name),
+                  "b": _ap(l.arrival_airport, l.arrival_airport_name),
                   "dep": l.departure_datetime.strftime("%Y-%m-%dT%H:%M:%S"),
                   "arr": l.arrival_datetime.strftime("%Y-%m-%dT%H:%M:%S"),
                   "min": l.duration, "al": getattr(l.airline, "value", str(l.airline)),
@@ -425,7 +442,7 @@ def run_matrix(route, cfg, cur, doc, today, errors, flush=None):
     return run_matrix_cells(route, cfg, cur, doc, today, errors, flush)
 
 
-def _pick(offers, n=4):
+def _pick(offers, n=3):
     """Cheapest n offers plus the fastest one (keeps the file small but still useful)."""
     by_price = sorted(offers, key=lambda o: o["price"])
     keep = by_price[:n]
@@ -563,7 +580,9 @@ def main():
         doc["route"] = {**route, "windows": cfg["windows"], "stay_days": cfg.get("stay_days"), "pricing": PRICING["mode"]}
         doc["currency"] = cur
         doc["updated"] = now
+        doc["latest"] = {k: v for k, v in doc.get("latest", {}).items() if k > today}   # departed dates: details are useless
         def save_doc(doc=doc, path=path):
+            _save_airports()
             cutoff = (dt.date.today() - dt.timedelta(days=HISTORY_DAYS)).isoformat()
             for k, v in doc["history"].items():
                 doc["history"][k] = {d: p for d, p in v.items() if d >= cutoff}
