@@ -523,12 +523,16 @@ def run_matrix_cells(route, cfg, cur, doc, today, errors, flush=None, only=None)
                 grid = prev["p"]
         if offers_path.exists():
             po = json.loads(offers_path.read_text())
-            if po.get("_date") == today:
-                cells = {k: v for k, v in po.items() if k != "_date"}
+            # exact cells are CARRIED across days (tagged with the day they were fetched); fresh ones replace them
+            cells = {k: v for k, v in po.items() if k != "_date" and k > today}
+            for byoff in cells.values():
+                for c in byoff.values():
+                    c.setdefault("d", po.get("_date") or today)
     except Exception:
         grid, cells = {}, {}
     n_prev = sum(1 for r in grid.values() for v in r if v is not None)
     stat = {"new": 0}
+    stale = {}                          # "dep|offset" -> fetch date, for exact prices carried over from an earlier day
     td = dt.date.today()
     days, rby = [], {}
     for sp in month_specs(mx):
@@ -577,6 +581,8 @@ def run_matrix_cells(route, cfg, cur, doc, today, errors, flush=None, only=None)
                         i = nc + list_offs.index(int(off_s))
                         if grid[k][i] is None:
                             grid[k][i] = min(o["price"] for o in c["offers"])
+                        if c.get("d", today) != today and grid[k][i] == min(o["price"] for o in c["offers"]):
+                            stale[f"{k}|{int(off_s)}"] = c["d"]
         topk = int(mx.get("exact_top_per_month", 0))
         PK["set"] = None
         if topk and nc and list_offs:
@@ -596,7 +602,7 @@ def run_matrix_cells(route, cfg, cur, doc, today, errors, flush=None, only=None)
         mdir.mkdir(parents=True, exist_ok=True)
         snap_path.write_text(json.dumps(
             {"months": [sp["month"] for sp in month_specs(mx)], "offsets": allo, "cal": cal_offs, "currency": cur,
-             "pricing": PRICING["mode"], "p": dict(sorted(grid.items()))}, separators=(",", ":")))
+             "pricing": PRICING["mode"], "st": dict(sorted(stale.items())), "p": dict(sorted(grid.items()))}, separators=(",", ":")))
         idx_path = mdir / "index.json"
         idx = json.loads(idx_path.read_text()) if idx_path.exists() else {"snapshots": []}
         idx["months"] = [sp["month"] for sp in month_specs(mx)]
@@ -616,7 +622,8 @@ def run_matrix_cells(route, cfg, cur, doc, today, errors, flush=None, only=None)
         # only exact (list) cells count: calendar columns are one cheap request per month, and a route/month Google has no
         # grid prices for (e.g. a thin route) would otherwise keep the relay retrying forever
         return sum(1 for d in days for i, off in enumerate(allo)
-                   if i >= nc and valid(d, off, False) and grid[d.isoformat()][i] is None)
+                   if i >= nc and valid(d, off, False)
+                   and (grid[d.isoformat()][i] is None or f"{d.isoformat()}|{off}" in stale))
 
     # ---- 1) dense calendar columns first: ONE request per month returns every (departure, return) pair for all stays ----
     if cal_offs and do_cal:
@@ -653,9 +660,12 @@ def run_matrix_cells(route, cfg, cur, doc, today, errors, flush=None, only=None)
     order = sorted(range(len(list_offs)), key=lambda j: (list_offs[j] != stay, j))
     for j in order:
         off, i = list_offs[j], nc + j
-        todo = [d for d in days if valid(d, off, False) and grid[d.isoformat()][i] is None]
+        todo = [d for d in days if valid(d, off, False)
+                and (grid[d.isoformat()][i] is None or f"{d.isoformat()}|{off}" in stale)]
         random.shuffle(todo)            # random tie-break: no sequential scanning pattern
-        todo.sort(key=lambda d: min([v for v in grid[d.isoformat()][:nc] if v is not None] or [10**9]))   # cheapest dates first
+        # never-priced cells first, then the oldest carried price, then the cheapest dates
+        todo.sort(key=lambda d: (grid[d.isoformat()][i] is not None, stale.get(f"{d.isoformat()}|{off}", ""),
+                                 min([v for v in grid[d.isoformat()][:nc] if v is not None] or [10**9])))
         for d in todo:
             if expired():
                 errors.append(f"{route['id']} matrix: stopped for this run (request quota / time budget / throttling); the next run resumes")
@@ -671,7 +681,8 @@ def run_matrix_cells(route, cfg, cur, doc, today, errors, flush=None, only=None)
             if offers:
                 stat["new"] += 1
                 grid[k][i] = min(o["price"] for o in offers)
-                cells.setdefault(k, {})[str(off)] = {"ret": ret.isoformat(), "offers": _pick(offers)}
+                stale.pop(f"{k}|{off}", None)
+                cells.setdefault(k, {})[str(off)] = {"ret": ret.isoformat(), "offers": _pick(offers), "d": today}
                 if off == stay:         # feeds the overview flight list
                     doc["latest"][k] = {"return": ret.isoformat(), "offers": sorted(offers, key=lambda o: o["price"])[:MAX_OFFERS]}
                     doc["history"].setdefault(k, {}).setdefault(today, grid[k][i])   # never overrides the dense calendar value
