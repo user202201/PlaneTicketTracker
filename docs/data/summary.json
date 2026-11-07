@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-07T20:36:04Z",
+ "updated": "2026-11-07T21:31:11Z",
  "routes": {
   "YUL-PEK": {
    "days": 4,
@@ -36,7 +36,7 @@
      },
      {
       "c": "info",
-      "t": "“一天中哪个时段买”需要至少 14 天的三时段数据（目前 0 天）。"
+      "t": "“一天中哪个时段买”需要至少 14 天的三时段数据（目前 1 天）。"
      }
     ],
     "en": [
@@ -70,7 +70,7 @@
      },
      {
       "c": "info",
-      "t": "“Best time of day to buy” needs at least 14 days of three-slot data (currently 0)."
+      "t": "“Best time of day to buy” needs at least 14 days of three-slot data (currently 1)."
      }
     ],
     "fr": [
@@ -104,7 +104,7 @@
      },
      {
       "c": "info",
-      "t": "« Meilleur moment de la journée » nécessite au moins 14 jours de données sur les trois créneaux (actuellement 0)."
+      "t": "« Meilleur moment de la journée » nécessite au moins 14 jours de données sur les trois créneaux (actuellement 1)."
      }
     ]
    }
