@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-07T18:44:05Z",
+ "updated": "2026-11-07T19:39:32Z",
  "routes": {
   "YUL-PEK": {
    "days": 4,
@@ -228,7 +228,7 @@
      },
      {
       "c": "info",
-      "t": "停留天数：在 28–32 天中，停留 28 天平均最便宜（比同一出发日的最低价高 0.0%）。"
+      "t": "停留天数：在 28–32 天中，停留 30 天平均最便宜（比同一出发日的最低价高 0.0%）。"
      },
      {
       "c": "info",
@@ -254,7 +254,7 @@
      },
      {
       "c": "info",
-      "t": "Trip length: within 28–32 days, 28 days is cheapest on average (0.0% above the cheapest for the same departure date)."
+      "t": "Trip length: within 28–32 days, 30 days is cheapest on average (0.0% above the cheapest for the same departure date)."
      },
      {
       "c": "info",
@@ -280,7 +280,7 @@
      },
      {
       "c": "info",
-      "t": "Durée du séjour : entre 28 et 32 jours, 28 jours est le moins cher en moyenne (0.0 % au-dessus du minimum pour le même départ)."
+      "t": "Durée du séjour : entre 28 et 32 jours, 30 jours est le moins cher en moyenne (0.0 % au-dessus du minimum pour le même départ)."
      },
      {
       "c": "info",
