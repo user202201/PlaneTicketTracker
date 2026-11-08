@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-08T17:22:15Z",
+ "updated": "2026-11-08T18:16:56Z",
  "routes": {
   "YUL-PEK": {
    "days": 5,
@@ -224,7 +224,7 @@
      },
      {
       "c": "good",
-      "t": "当前最便宜的组合：08-09 出发 / 09-08 返程 3081 CAD; 08-10 出发 / 09-08 返程 3276 CAD; 08-10 出发 / 09-10 返程 3276 CAD"
+      "t": "当前最便宜的组合：08-09 出发 / 09-08 返程 3081 CAD; 08-09 出发 / 09-10 返程 3081 CAD; 08-10 出发 / 09-08 返程 3276 CAD"
      },
      {
       "c": "info",
@@ -250,7 +250,7 @@
      },
      {
       "c": "good",
-      "t": "Cheapest combinations now: depart 08-09 / return 09-08 3081 CAD; depart 08-10 / return 09-08 3276 CAD; depart 08-10 / return 09-10 3276 CAD"
+      "t": "Cheapest combinations now: depart 08-09 / return 09-08 3081 CAD; depart 08-09 / return 09-10 3081 CAD; depart 08-10 / return 09-08 3276 CAD"
      },
      {
       "c": "info",
@@ -276,7 +276,7 @@
      },
      {
       "c": "good",
-      "t": "Combinaisons les moins chères : départ 08-09 / retour 09-08 3081 CAD; départ 08-10 / retour 09-08 3276 CAD; départ 08-10 / retour 09-10 3276 CAD"
+      "t": "Combinaisons les moins chères : départ 08-09 / retour 09-08 3081 CAD; départ 08-09 / retour 09-10 3081 CAD; départ 08-10 / retour 09-08 3276 CAD"
      },
      {
       "c": "info",
