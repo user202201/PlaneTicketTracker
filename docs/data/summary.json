@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-09T22:00:00Z",
+ "updated": "2026-11-09T22:54:16Z",
  "routes": {
   "YUL-PEK": {
    "days": 6,
@@ -220,7 +220,7 @@
      },
      {
       "c": "info",
-      "t": "各月当前平均最低价（低→高）：8月 3306, 7月 3907, 6月 4003 CAD"
+      "t": "各月当前平均最低价（低→高）：8月 3306, 6月 4003, 7月 4070 CAD"
      },
      {
       "c": "good",
@@ -246,7 +246,7 @@
      },
      {
       "c": "info",
-      "t": "Current average lowest price by month (low→high): Aug 3306, Jul 3907, Jun 4003 CAD"
+      "t": "Current average lowest price by month (low→high): Aug 3306, Jun 4003, Jul 4070 CAD"
      },
      {
       "c": "good",
@@ -272,7 +272,7 @@
      },
      {
       "c": "info",
-      "t": "Prix minimum moyen actuel par mois (bas→haut) : août 3306, juil. 3907, juin 4003 CAD"
+      "t": "Prix minimum moyen actuel par mois (bas→haut) : août 3306, juin 4003, juil. 4070 CAD"
      },
      {
       "c": "good",
