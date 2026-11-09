@@ -1,14 +1,14 @@
 {
- "updated": "2026-11-08T23:41:29Z",
+ "updated": "2026-11-09T00:46:38Z",
  "routes": {
   "YUL-PEK": {
-   "days": 5,
-   "latest": "2026-11-08",
+   "days": 6,
+   "latest": "2026-11-09",
    "bullets": {
     "zh": [
      {
       "c": "info",
-      "t": "已收集 5 天的数据（最新：2026-11-08）。"
+      "t": "已收集 6 天的数据（最新：2026-11-09）。"
      },
      {
       "c": "info",
@@ -16,23 +16,23 @@
      },
      {
       "c": "info",
-      "t": "各月当前平均最低价（低→高）：4月 1878, 3月 1884, 5月 1934, 8月 2169, 6月 2199, 7月 2302 CAD"
+      "t": "各月当前平均最低价（低→高）：3月 1880, 4月 1888, 5月 1974, 6月 2201, 8月 2229, 7月 2331 CAD"
      },
      {
       "c": "good",
-      "t": "当前最便宜的组合：03-17 出发 / 04-18 返程 1746 CAD; 03-24 出发 / 04-25 返程 1746 CAD; 03-29 出发 / 04-30 返程 1746 CAD"
+      "t": "当前最便宜的组合：03-03 出发 / 04-04 返程 1746 CAD; 03-10 出发 / 04-11 返程 1746 CAD; 03-17 出发 / 04-18 返程 1746 CAD"
      },
      {
       "c": "info",
-      "t": "出发星期：周四出发平均比当月均价低 2.3%，周六出发最贵（高 5.7%）。"
+      "t": "出发星期：周四出发平均比当月均价低 3.3%，周六出发最贵（高 6.6%）。"
      },
      {
       "c": "info",
-      "t": "停留天数：在 28–32 天中，停留 28 天平均最便宜（比同一出发日的最低价高 3.2%）。"
+      "t": "停留天数：在 28–32 天中，停留 28 天平均最便宜（比同一出发日的最低价高 2.1%）。"
      },
      {
       "c": "info",
-      "t": "“星期几买票最划算”需要至少 28 天数据（目前 5 天）。"
+      "t": "“星期几买票最划算”需要至少 28 天数据（目前 6 天）。"
      },
      {
       "c": "info",
@@ -42,7 +42,7 @@
     "en": [
      {
       "c": "info",
-      "t": "Collected 5 days of data (latest: 2026-11-08)."
+      "t": "Collected 6 days of data (latest: 2026-11-09)."
      },
      {
       "c": "info",
@@ -50,23 +50,23 @@
      },
      {
       "c": "info",
-      "t": "Current average lowest price by month (low→high): Apr 1878, Mar 1884, May 1934, Aug 2169, Jun 2199, Jul 2302 CAD"
+      "t": "Current average lowest price by month (low→high): Mar 1880, Apr 1888, May 1974, Jun 2201, Aug 2229, Jul 2331 CAD"
      },
      {
       "c": "good",
-      "t": "Cheapest combinations now: depart 03-17 / return 04-18 1746 CAD; depart 03-24 / return 04-25 1746 CAD; depart 03-29 / return 04-30 1746 CAD"
+      "t": "Cheapest combinations now: depart 03-03 / return 04-04 1746 CAD; depart 03-10 / return 04-11 1746 CAD; depart 03-17 / return 04-18 1746 CAD"
      },
      {
       "c": "info",
-      "t": "Departure weekday: leaving on Thu is on average 2.3% below the monthly average; Sat is the most expensive (5.7% above)."
+      "t": "Departure weekday: leaving on Thu is on average 3.3% below the monthly average; Sat is the most expensive (6.6% above)."
      },
      {
       "c": "info",
-      "t": "Trip length: within 28–32 days, 28 days is cheapest on average (3.2% above the cheapest for the same departure date)."
+      "t": "Trip length: within 28–32 days, 28 days is cheapest on average (2.1% above the cheapest for the same departure date)."
      },
      {
       "c": "info",
-      "t": "“Best weekday to buy” needs at least 28 days of data (currently 5)."
+      "t": "“Best weekday to buy” needs at least 28 days of data (currently 6)."
      },
      {
       "c": "info",
@@ -76,7 +76,7 @@
     "fr": [
      {
       "c": "info",
-      "t": "5 jours de données collectés (dernier : 2026-11-08)."
+      "t": "6 jours de données collectés (dernier : 2026-11-09)."
      },
      {
       "c": "info",
@@ -84,23 +84,23 @@
      },
      {
       "c": "info",
-      "t": "Prix minimum moyen actuel par mois (bas→haut) : avr. 1878, mars 1884, mai 1934, août 2169, juin 2199, juil. 2302 CAD"
+      "t": "Prix minimum moyen actuel par mois (bas→haut) : mars 1880, avr. 1888, mai 1974, juin 2201, août 2229, juil. 2331 CAD"
      },
      {
       "c": "good",
-      "t": "Combinaisons les moins chères : départ 03-17 / retour 04-18 1746 CAD; départ 03-24 / retour 04-25 1746 CAD; départ 03-29 / retour 04-30 1746 CAD"
+      "t": "Combinaisons les moins chères : départ 03-03 / retour 04-04 1746 CAD; départ 03-10 / retour 04-11 1746 CAD; départ 03-17 / retour 04-18 1746 CAD"
      },
      {
       "c": "info",
-      "t": "Jour de départ : partir le jeu. coûte en moyenne 2.3 % de moins que la moyenne du mois ; le sam. est le plus cher (5.7 % au-dessus)."
+      "t": "Jour de départ : partir le jeu. coûte en moyenne 3.3 % de moins que la moyenne du mois ; le sam. est le plus cher (6.6 % au-dessus)."
      },
      {
       "c": "info",
-      "t": "Durée du séjour : entre 28 et 32 jours, 28 jours est le moins cher en moyenne (3.2 % au-dessus du minimum pour le même départ)."
+      "t": "Durée du séjour : entre 28 et 32 jours, 28 jours est le moins cher en moyenne (2.1 % au-dessus du minimum pour le même départ)."
      },
      {
       "c": "info",
-      "t": "« Meilleur jour pour acheter » nécessite au moins 28 jours de données (actuellement 5)."
+      "t": "« Meilleur jour pour acheter » nécessite au moins 28 jours de données (actuellement 6)."
      },
      {
       "c": "info",
@@ -110,13 +110,13 @@
    }
   },
   "YUL-PVG": {
-   "days": 5,
-   "latest": "2026-11-08",
+   "days": 6,
+   "latest": "2026-11-09",
    "bullets": {
     "zh": [
      {
       "c": "info",
-      "t": "已收集 5 天的数据（最新：2026-11-08）。"
+      "t": "已收集 6 天的数据（最新：2026-11-09）。"
      },
      {
       "c": "info",
@@ -124,7 +124,7 @@
      },
      {
       "c": "info",
-      "t": "各月当前平均最低价（低→高）：8月 1731, 3月 1754, 4月 1778, 5月 1802, 7月 2205, 6月 2371 CAD"
+      "t": "各月当前平均最低价（低→高）：8月 1731, 3月 1749, 4月 1772, 5月 1799, 7月 2206, 6月 2343 CAD"
      },
      {
       "c": "good",
@@ -132,7 +132,7 @@
      },
      {
       "c": "info",
-      "t": "出发星期：周一出发平均比当月均价低 4.1%，周六出发最贵（高 6.5%）。"
+      "t": "出发星期：周一出发平均比当月均价低 4.1%，周六出发最贵（高 6.8%）。"
      },
      {
       "c": "info",
@@ -140,13 +140,13 @@
      },
      {
       "c": "info",
-      "t": "“星期几买票最划算”需要至少 28 天数据（目前 5 天）。"
+      "t": "“星期几买票最划算”需要至少 28 天数据（目前 6 天）。"
      }
     ],
     "en": [
      {
       "c": "info",
-      "t": "Collected 5 days of data (latest: 2026-11-08)."
+      "t": "Collected 6 days of data (latest: 2026-11-09)."
      },
      {
       "c": "info",
@@ -154,7 +154,7 @@
      },
      {
       "c": "info",
-      "t": "Current average lowest price by month (low→high): Aug 1731, Mar 1754, Apr 1778, May 1802, Jul 2205, Jun 2371 CAD"
+      "t": "Current average lowest price by month (low→high): Aug 1731, Mar 1749, Apr 1772, May 1799, Jul 2206, Jun 2343 CAD"
      },
      {
       "c": "good",
@@ -162,7 +162,7 @@
      },
      {
       "c": "info",
-      "t": "Departure weekday: leaving on Mon is on average 4.1% below the monthly average; Sat is the most expensive (6.5% above)."
+      "t": "Departure weekday: leaving on Mon is on average 4.1% below the monthly average; Sat is the most expensive (6.8% above)."
      },
      {
       "c": "info",
@@ -170,13 +170,13 @@
      },
      {
       "c": "info",
-      "t": "“Best weekday to buy” needs at least 28 days of data (currently 5)."
+      "t": "“Best weekday to buy” needs at least 28 days of data (currently 6)."
      }
     ],
     "fr": [
      {
       "c": "info",
-      "t": "5 jours de données collectés (dernier : 2026-11-08)."
+      "t": "6 jours de données collectés (dernier : 2026-11-09)."
      },
      {
       "c": "info",
@@ -184,7 +184,7 @@
      },
      {
       "c": "info",
-      "t": "Prix minimum moyen actuel par mois (bas→haut) : août 1731, mars 1754, avr. 1778, mai 1802, juil. 2205, juin 2371 CAD"
+      "t": "Prix minimum moyen actuel par mois (bas→haut) : août 1731, mars 1749, avr. 1772, mai 1799, juil. 2206, juin 2343 CAD"
      },
      {
       "c": "good",
@@ -192,7 +192,7 @@
      },
      {
       "c": "info",
-      "t": "Jour de départ : partir le lun. coûte en moyenne 4.1 % de moins que la moyenne du mois ; le sam. est le plus cher (6.5 % au-dessus)."
+      "t": "Jour de départ : partir le lun. coûte en moyenne 4.1 % de moins que la moyenne du mois ; le sam. est le plus cher (6.8 % au-dessus)."
      },
      {
       "c": "info",
@@ -200,7 +200,7 @@
      },
      {
       "c": "info",
-      "t": "« Meilleur jour pour acheter » nécessite au moins 28 jours de données (actuellement 5)."
+      "t": "« Meilleur jour pour acheter » nécessite au moins 28 jours de données (actuellement 6)."
      }
     ]
    }
