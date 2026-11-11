@@ -1,17 +1,21 @@
 {
- "updated": "2026-11-11T02:44:26Z",
- "ok": 1671,
- "failed": 7,
+ "updated": "2026-11-11T03:32:55Z",
+ "ok": 1676,
+ "failed": 0,
  "errors": [
-  "YUL-CGO 2027-04-03: RuntimeError: no result after 2 attempts (empty/error response)",
-  "YUL-CGO 2027-07-11: RuntimeError: no result after 2 attempts (empty/error response)",
-  "YUL-CGO 2027-03-11: RuntimeError: no result after 2 attempts (empty/error response)",
-  "YUL-CGO 2027-03-07: RuntimeError: no result after 2 attempts (empty/error response)",
-  "YUL-CGO 2027-07-15: RuntimeError: no result after 2 attempts (empty/error response)",
-  "YUL-CGO 2027-07-03: RuntimeError: no result after 2 attempts (empty/error response)",
-  "YUL-CGO 2027-05-15: RuntimeError: throttled by Google; run stopped",
+  "YUL-PEK matrix 2027-03-09->2027-04-20: RuntimeError: no result after 2 attempts (empty/error response)",
+  "YUL-PEK matrix 2027-04-16->2027-05-28: RuntimeError: no result after 2 attempts (empty/error response)",
+  "YUL-PEK matrix 2027-04-24->2027-06-05: RuntimeError: no result after 2 attempts (empty/error response)",
+  "YUL-PEK matrix 2027-05-02->2027-06-13: RuntimeError: no result after 2 attempts (empty/error response)",
+  "YUL-PEK matrix 2027-05-06->2027-06-17: RuntimeError: no result after 2 attempts (empty/error response)",
+  "YUL-PEK matrix 2027-05-09->2027-06-20: RuntimeError: no result after 2 attempts (empty/error response)",
+  "YUL-PEK matrix 2027-05-27->2027-07-08: RuntimeError: no result after 2 attempts (empty/error response)",
+  "YUL-PEK matrix 2027-05-20->2027-07-01: RuntimeError: no result after 2 attempts (empty/error response)",
+  "YUL-PEK matrix 2027-05-24->2027-07-05: RuntimeError: no result after 2 attempts (empty/error response)",
+  "YUL-PEK matrix 2027-05-21->2027-07-02: RuntimeError: no result after 2 attempts (empty/error response)",
+  "YUL-PEK matrix 2027-05-31->2027-07-12: RuntimeError: throttled by Google; run stopped",
+  "YUL-PEK matrix: stopped for this run (request quota / time budget / throttling); the next run resumes",
   "YUL-CGO: time budget reached",
-  "YUL-PVG: time budget reached",
-  "YUL-PEK matrix: stopped for this run (request quota / time budget / throttling); the next run resumes"
+  "YUL-PVG: time budget reached"
  ]
 }
