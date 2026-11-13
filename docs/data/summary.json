@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-13T01:16:06Z",
+ "updated": "2026-11-13T02:17:24Z",
  "routes": {
   "YUL-PEK": {
    "days": 10,
@@ -122,13 +122,13 @@
    }
   },
   "YUL-PVG": {
-   "days": 9,
-   "latest": "2026-11-12",
+   "days": 10,
+   "latest": "2026-11-13",
    "bullets": {
     "zh": [
      {
       "c": "info",
-      "t": "已收集 9 天的数据（最新：2026-11-12）。"
+      "t": "已收集 10 天的数据（最新：2026-11-13）。"
      },
      {
       "c": "info",
@@ -136,7 +136,7 @@
      },
      {
       "c": "info",
-      "t": "各月当前平均最低价（低→高）：8月 1717, 3月 1756, 4月 1778, 5月 1805, 7月 2206, 6月 2342 CAD"
+      "t": "各月当前平均最低价（低→高）：8月 1717, 3月 1816, 4月 1854, 5月 1945, 7月 2214, 6月 2373 CAD"
      },
      {
       "c": "good",
@@ -144,25 +144,25 @@
      },
      {
       "c": "info",
-      "t": "出发星期：周一出发平均比当月均价低 3.9%，周六出发最贵（高 6.6%）。"
+      "t": "出发星期：周二出发平均比当月均价低 2.4%，周六出发最贵（高 3.3%）。"
      },
      {
       "c": "info",
-      "t": "停留天数：在 28–32 天中，停留 30 天平均最便宜（比同一出发日的最低价高 4.9%）。"
+      "t": "停留天数：在 28–32 天中，停留 30 天平均最便宜（比同一出发日的最低价高 2.9%）。"
      },
      {
       "c": "info",
-      "t": "近一周变化（对比 2026-11-05）：3月 -0.0%, 4月 +0.2%, 5月 +0.2%, 6月 -3.1%, 7月 +0.5%, 8月 -1.3%"
+      "t": "近一周变化（对比 2026-11-06）：3月 +3.4%, 4月 +4.4%, 5月 +7.9%, 6月 +0.0%, 7月 +0.2%, 8月 -0.6%"
      },
      {
       "c": "info",
-      "t": "“星期几买票最划算”需要至少 28 天数据（目前 9 天）。"
+      "t": "“星期几买票最划算”需要至少 28 天数据（目前 10 天）。"
      }
     ],
     "en": [
      {
       "c": "info",
-      "t": "Collected 9 days of data (latest: 2026-11-12)."
+      "t": "Collected 10 days of data (latest: 2026-11-13)."
      },
      {
       "c": "info",
@@ -170,7 +170,7 @@
      },
      {
       "c": "info",
-      "t": "Current average lowest price by month (low→high): Aug 1717, Mar 1756, Apr 1778, May 1805, Jul 2206, Jun 2342 CAD"
+      "t": "Current average lowest price by month (low→high): Aug 1717, Mar 1816, Apr 1854, May 1945, Jul 2214, Jun 2373 CAD"
      },
      {
       "c": "good",
@@ -178,25 +178,25 @@
      },
      {
       "c": "info",
-      "t": "Departure weekday: leaving on Mon is on average 3.9% below the monthly average; Sat is the most expensive (6.6% above)."
+      "t": "Departure weekday: leaving on Tue is on average 2.4% below the monthly average; Sat is the most expensive (3.3% above)."
      },
      {
       "c": "info",
-      "t": "Trip length: within 28–32 days, 30 days is cheapest on average (4.9% above the cheapest for the same departure date)."
+      "t": "Trip length: within 28–32 days, 30 days is cheapest on average (2.9% above the cheapest for the same departure date)."
      },
      {
       "c": "info",
-      "t": "Change over the past week (vs 2026-11-05): Mar -0.0%, Apr +0.2%, May +0.2%, Jun -3.1%, Jul +0.5%, Aug -1.3%"
+      "t": "Change over the past week (vs 2026-11-06): Mar +3.4%, Apr +4.4%, May +7.9%, Jun +0.0%, Jul +0.2%, Aug -0.6%"
      },
      {
       "c": "info",
-      "t": "“Best weekday to buy” needs at least 28 days of data (currently 9)."
+      "t": "“Best weekday to buy” needs at least 28 days of data (currently 10)."
      }
     ],
     "fr": [
      {
       "c": "info",
-      "t": "9 jours de données collectés (dernier : 2026-11-12)."
+      "t": "10 jours de données collectés (dernier : 2026-11-13)."
      },
      {
       "c": "info",
@@ -204,7 +204,7 @@
      },
      {
       "c": "info",
-      "t": "Prix minimum moyen actuel par mois (bas→haut) : août 1717, mars 1756, avr. 1778, mai 1805, juil. 2206, juin 2342 CAD"
+      "t": "Prix minimum moyen actuel par mois (bas→haut) : août 1717, mars 1816, avr. 1854, mai 1945, juil. 2214, juin 2373 CAD"
      },
      {
       "c": "good",
@@ -212,19 +212,19 @@
      },
      {
       "c": "info",
-      "t": "Jour de départ : partir le lun. coûte en moyenne 3.9 % de moins que la moyenne du mois ; le sam. est le plus cher (6.6 % au-dessus)."
+      "t": "Jour de départ : partir le mar. coûte en moyenne 2.4 % de moins que la moyenne du mois ; le sam. est le plus cher (3.3 % au-dessus)."
      },
      {
       "c": "info",
-      "t": "Durée du séjour : entre 28 et 32 jours, 30 jours est le moins cher en moyenne (4.9 % au-dessus du minimum pour le même départ)."
+      "t": "Durée du séjour : entre 28 et 32 jours, 30 jours est le moins cher en moyenne (2.9 % au-dessus du minimum pour le même départ)."
      },
      {
       "c": "info",
-      "t": "Évolution sur la semaine (vs 2026-11-05) : mars -0.0%, avr. +0.2%, mai +0.2%, juin -3.1%, juil. +0.5%, août -1.3%"
+      "t": "Évolution sur la semaine (vs 2026-11-06) : mars +3.4%, avr. +4.4%, mai +7.9%, juin +0.0%, juil. +0.2%, août -0.6%"
      },
      {
       "c": "info",
-      "t": "« Meilleur jour pour acheter » nécessite au moins 28 jours de données (actuellement 9)."
+      "t": "« Meilleur jour pour acheter » nécessite au moins 28 jours de données (actuellement 10)."
      }
     ]
    }
