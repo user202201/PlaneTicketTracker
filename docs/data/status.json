@@ -1,16 +1,20 @@
 {
- "updated": "2026-11-14T16:44:54Z",
- "ok": 1691,
- "failed": 0,
+ "updated": "2026-11-14T17:35:45Z",
+ "ok": 1688,
+ "failed": 10,
  "errors": [
-  "YUL-PEK matrix 2027-08-03->2027-09-14: RuntimeError: no result after 2 attempts (empty/error response)",
-  "YUL-PEK matrix 2027-05-03->2027-06-14: RuntimeError: no result after 2 attempts (empty/error response)",
-  "YUL-PEK matrix 2027-04-02->2027-05-14: RuntimeError: no result after 2 attempts (empty/error response)",
-  "YUL-PEK matrix 2027-05-05->2027-06-16: RuntimeError: no result after 2 attempts (empty/error response)",
-  "YUL-PEK matrix 2027-04-05->2027-05-17: RuntimeError: no result after 2 attempts (empty/error response)",
-  "YUL-PEK matrix 2027-05-08->2027-06-19: RuntimeError: no result after 2 attempts (empty/error response)",
-  "YUL-PEK matrix 2027-05-19->2027-06-30: RuntimeError: throttled by Google; run stopped",
-  "YUL-PEK matrix: stopped for this run (request quota / time budget / throttling); the next run resumes",
-  "YUL-CGO: time budget reached"
+  "YUL-CGO 2027-05-07: RuntimeError: no result after 2 attempts (empty/error response)",
+  "YUL-CGO 2027-07-11: RuntimeError: no result after 2 attempts (empty/error response)",
+  "YUL-CGO 2027-05-03: no offers",
+  "YUL-CGO 2027-03-15: RuntimeError: no result after 2 attempts (empty/error response)",
+  "YUL-CGO 2027-07-26: RuntimeError: no result after 2 attempts (empty/error response)",
+  "YUL-CGO 2027-04-03: RuntimeError: no result after 2 attempts (empty/error response)",
+  "YUL-CGO 2027-06-30: RuntimeError: no result after 2 attempts (empty/error response)",
+  "YUL-CGO 2027-03-07: RuntimeError: no result after 2 attempts (empty/error response)",
+  "YUL-CGO 2027-05-11: RuntimeError: no result after 2 attempts (empty/error response)",
+  "YUL-CGO 2027-04-11: RuntimeError: throttled by Google; run stopped",
+  "YUL-CGO: time budget reached",
+  "YUL-PVG: time budget reached",
+  "YUL-PEK matrix: stopped for this run (request quota / time budget / throttling); the next run resumes"
  ]
 }
