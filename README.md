@@ -3,6 +3,8 @@
 页面：`https://user202201.github.io/planetickettracker/`（GitHub Pages，静态网页）
 数据：GitHub Actions 定时从 Google Flights 抓取，存成 JSON 提交回仓库，网页读取这些 JSON 展示。
 
+> 开发者/AI 请先读 [ARCHITECTURE.md](ARCHITECTURE.md)（模块结构与实现细节）。
+
 ## 一、它怎么运转（不用你管）
 
 | 任务 | 文件 | 时间 | 做什么 |
@@ -18,7 +20,7 @@
 全部在 `config.json`：
 - `routes`：航线（出发地、目的地代码）、转机上限、舱位、人数。
 - `matrix.months`：追踪的月份。可写 `"2027-03"`，或 `{"month":"2027-06","from_day":18,"return_by":"2027-09-15"}`（从几号起、返程不晚于哪天）。
-- `matrix.return_offsets`：停留天数列（默认 40/42/44 天）。每多一列，请求量多约 1/3。
+- `matrix.return_offsets`：精确价的停留天数列（现在只有 42 天）。每多一列，请求量成倍增加。
 - `windows`：总览页顶部月份按钮对应的日期窗口。
 - `schedule.quota_range`：每次运行的随机请求数（默认 50–100）。
 - `pacing`：请求间隔、批次停顿、单次运行时长上限。
@@ -46,7 +48,7 @@
 ## 三点五、为什么抓取规模不大（重要）
 
 Google 对 GitHub 服务器的容忍度很低：**每台服务器大约只放行 5~10 次请求，随后临时拦截**。所以抓取按这个额度设计：
-- 只追踪 42 天停留，出发日每 3 天取一个（`matrix.date_step`），上海、郑州每个月只取 4 个日期（`sample_step`）。
+- 只追踪 42 天停留，精确列现在每个出发日都查（`matrix.date_step`=1），按“没价格 → 价格最旧 → 日历价最低”的顺序跨天轮流补，上海、郑州每个月只取 4 个日期（`sample_step`）。
 - 返程详情只对价格接近当天最低的格子再查（`expand_within_pct`）。
 - 一天约 130 次请求，由接力机制分到约 13 台服务器上完成；被拦截时换服务器、拉长等待重试。
 - 想要更密的矩阵，可以在自己家里的电脑上运行同一套代码（家庭网络通常不被拦），结果同样提交到 GitHub。
@@ -66,4 +68,4 @@ Settings → Secrets and variables → Actions，新增：`SMTP_USER`（Gmail �
 
 ## 六、数据文件
 
-`docs/data/`：`<航线>.json`（价格轨迹 + 当前航班）、`matrix/<航线>/<日期>.json`（每日矩阵快照）、`matrix/<航线>/offers.json`（当天各格子的航班详情，只保留当天）、`tod/`（时段探测）、`summary.json`（智能总结）、`progress.json`（今日采集进度）、`airports.json`（机场名对照表）。
+`docs/data/`：`<航线>.json`（价格轨迹 + 当前航班）、`matrix/<航线>/<日期>.json`（每日矩阵快照）、`matrix/<航线>/offers.json`（各格子的航班详情，跨天携带，每格带抓取日期 `d`）、`tod/`（时段探测）、`summary.json`（智能总结）、`progress.json`（今日采集进度）、`airports.json`（机场名对照表）。
