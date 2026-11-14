@@ -1,19 +1,17 @@
 {
- "updated": "2026-11-14T14:59:49Z",
- "ok": 1690,
+ "updated": "2026-11-14T15:56:18Z",
+ "ok": 1697,
  "failed": 0,
  "errors": [
-  "YUL-PEK matrix 2027-05-02->2027-06-13: RuntimeError: no result after 2 attempts (empty/error response)",
-  "YUL-PEK matrix 2027-05-25->2027-07-06: RuntimeError: no result after 2 attempts (empty/error response)",
-  "YUL-PEK matrix 2027-07-01->2027-08-12: RuntimeError: no result after 2 attempts (empty/error response)",
-  "YUL-PEK matrix 2027-06-20->2027-08-01: RuntimeError: no result after 2 attempts (empty/error response)",
-  "YUL-PEK matrix 2027-06-24->2027-08-05: RuntimeError: no result after 2 attempts (empty/error response)",
-  "YUL-PEK matrix 2027-06-29->2027-08-10: RuntimeError: no result after 2 attempts (empty/error response)",
-  "YUL-PEK matrix 2027-05-30->2027-07-11: RuntimeError: no result after 2 attempts (empty/error response)",
-  "YUL-PEK matrix 2027-08-04->2027-09-15: RuntimeError: no result after 2 attempts (empty/error response)",
-  "YUL-PEK matrix 2027-06-22->2027-08-03: RuntimeError: throttled by Google; run stopped",
+  "YUL-PEK matrix 2027-06-22->2027-08-03: RuntimeError: no result after 2 attempts (empty/error response)",
+  "YUL-PEK matrix 2027-08-02->2027-09-13: RuntimeError: no result after 2 attempts (empty/error response)",
+  "YUL-PEK matrix 2027-08-03->2027-09-14: RuntimeError: no result after 2 attempts (empty/error response)",
+  "YUL-PEK matrix 2027-04-02->2027-05-14: RuntimeError: no result after 2 attempts (empty/error response)",
+  "YUL-PEK matrix 2027-05-22->2027-07-03: RuntimeError: no result after 2 attempts (empty/error response)",
+  "YUL-PEK matrix 2027-05-05->2027-06-16: RuntimeError: no result after 2 attempts (empty/error response)",
+  "YUL-PEK matrix 2027-05-19->2027-06-30: RuntimeError: throttled by Google; run stopped",
   "YUL-PEK matrix: stopped for this run (request quota / time budget / throttling); the next run resumes",
-  "YUL-CGO: time budget reached",
-  "YUL-PVG: time budget reached"
+  "YUL-PVG: time budget reached",
+  "YUL-CGO: time budget reached"
  ]
 }
