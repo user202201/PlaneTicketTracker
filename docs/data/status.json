@@ -1,16 +1,21 @@
 {
- "updated": "2026-11-14T04:01:06Z",
- "ok": 1974,
- "failed": 7,
+ "updated": "2026-11-14T04:50:57Z",
+ "ok": 1672,
+ "failed": 11,
  "errors": [
-  "YUL-CGO 2027-07-07: RuntimeError: no result after 2 attempts (empty/error response)",
-  "YUL-CGO 2027-07-15: RuntimeError: no result after 2 attempts (empty/error response)",
+  "YUL-CGO 2027-03-07: RuntimeError: no result after 2 attempts (empty/error response)",
+  "YUL-CGO 2027-06-30: RuntimeError: no result after 2 attempts (empty/error response)",
+  "YUL-CGO 2027-05-07: no offers",
+  "YUL-CGO 2027-06-18: no offers",
   "YUL-CGO 2027-04-15: RuntimeError: no result after 2 attempts (empty/error response)",
-  "YUL-CGO 2027-04-07: RuntimeError: no result after 2 attempts (empty/error response)",
-  "YUL-CGO 2027-03-11: RuntimeError: no result after 2 attempts (empty/error response)",
-  "YUL-CGO 2027-03-03: RuntimeError: no result after 2 attempts (empty/error response)",
-  "YUL-CGO 2027-05-07: RuntimeError: throttled by Google; run stopped",
+  "YUL-CGO 2027-03-15: RuntimeError: no result after 2 attempts (empty/error response)",
+  "YUL-CGO 2027-04-11: RuntimeError: no result after 2 attempts (empty/error response)",
+  "YUL-CGO 2027-07-11: RuntimeError: no result after 2 attempts (empty/error response)",
+  "YUL-CGO 2027-07-07: RuntimeError: no result after 2 attempts (empty/error response)",
+  "YUL-CGO 2027-05-03: RuntimeError: no result after 2 attempts (empty/error response)",
+  "YUL-CGO 2027-04-07: RuntimeError: throttled by Google; run stopped",
   "YUL-CGO: time budget reached",
+  "YUL-PVG: time budget reached",
   "YUL-PEK matrix: stopped for this run (request quota / time budget / throttling); the next run resumes"
  ]
 }
