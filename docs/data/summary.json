@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-17T03:07:15Z",
+ "updated": "2026-11-17T03:51:12Z",
  "routes": {
   "YUL-PEK": {
    "days": 14,
@@ -192,7 +192,7 @@
      },
      {
       "c": "info",
-      "t": "各月当前平均最低价（低→高）：8月 1748, 3月 1817, 5月 1933, 7月 2205, 6月 2381 CAD"
+      "t": "各月当前平均最低价（低→高）：8月 1748, 3月 1817, 4月 1849, 5月 1933, 7月 2205, 6月 2381 CAD"
      },
      {
       "c": "good",
@@ -200,15 +200,15 @@
      },
      {
       "c": "info",
-      "t": "出发星期：周二出发平均比当月均价低 3.0%，周五出发最贵（高 2.1%）。"
+      "t": "出发星期：周二出发平均比当月均价低 2.5%，周六出发最贵（高 2.0%）。"
      },
      {
       "c": "info",
-      "t": "停留天数：在 28–32 天中，停留 29 天平均最便宜（比同一出发日的最低价高 3.4%）。"
+      "t": "停留天数：在 28–32 天中，停留 29 天平均最便宜（比同一出发日的最低价高 2.9%）。"
      },
      {
       "c": "info",
-      "t": "近一周变化（对比 2026-11-10）：3月 +3.9%, 5月 +7.4%, 6月 +1.8%, 7月 -0.0%, 8月 +1.1%"
+      "t": "近一周变化（对比 2026-11-10）：3月 +3.9%, 4月 +4.3%, 5月 +7.4%, 6月 +1.8%, 7月 -0.0%, 8月 +1.1%"
      },
      {
       "c": "good",
@@ -217,6 +217,10 @@
      {
       "c": "wait",
       "t": "3月：高于已观察低点 4% 且一周涨 4%，上涨中，不想再涨可尽早决定。"
+     },
+     {
+      "c": "wait",
+      "t": "4月：高于已观察低点 4% 且一周涨 4%，上涨中，不想再涨可尽早决定。"
      },
      {
       "c": "wait",
@@ -242,7 +246,7 @@
      },
      {
       "c": "info",
-      "t": "Current average lowest price by month (low→high): Aug 1748, Mar 1817, May 1933, Jul 2205, Jun 2381 CAD"
+      "t": "Current average lowest price by month (low→high): Aug 1748, Mar 1817, Apr 1849, May 1933, Jul 2205, Jun 2381 CAD"
      },
      {
       "c": "good",
@@ -250,15 +254,15 @@
      },
      {
       "c": "info",
-      "t": "Departure weekday: leaving on Tue is on average 3.0% below the monthly average; Fri is the most expensive (2.1% above)."
+      "t": "Departure weekday: leaving on Tue is on average 2.5% below the monthly average; Sat is the most expensive (2.0% above)."
      },
      {
       "c": "info",
-      "t": "Trip length: within 28–32 days, 29 days is cheapest on average (3.4% above the cheapest for the same departure date)."
+      "t": "Trip length: within 28–32 days, 29 days is cheapest on average (2.9% above the cheapest for the same departure date)."
      },
      {
       "c": "info",
-      "t": "Change over the past week (vs 2026-11-10): Mar +3.9%, May +7.4%, Jun +1.8%, Jul -0.0%, Aug +1.1%"
+      "t": "Change over the past week (vs 2026-11-10): Mar +3.9%, Apr +4.3%, May +7.4%, Jun +1.8%, Jul -0.0%, Aug +1.1%"
      },
      {
       "c": "good",
@@ -267,6 +271,10 @@
      {
       "c": "wait",
       "t": "Mar: 4% above the lowest seen and up 4% this week — rising; decide soon if you don't want to pay more."
+     },
+     {
+      "c": "wait",
+      "t": "Apr: 4% above the lowest seen and up 4% this week — rising; decide soon if you don't want to pay more."
      },
      {
       "c": "wait",
@@ -292,7 +300,7 @@
      },
      {
       "c": "info",
-      "t": "Prix minimum moyen actuel par mois (bas→haut) : août 1748, mars 1817, mai 1933, juil. 2205, juin 2381 CAD"
+      "t": "Prix minimum moyen actuel par mois (bas→haut) : août 1748, mars 1817, avr. 1849, mai 1933, juil. 2205, juin 2381 CAD"
      },
      {
       "c": "good",
@@ -300,15 +308,15 @@
      },
      {
       "c": "info",
-      "t": "Jour de départ : partir le mar. coûte en moyenne 3.0 % de moins que la moyenne du mois ; le ven. est le plus cher (2.1 % au-dessus)."
+      "t": "Jour de départ : partir le mar. coûte en moyenne 2.5 % de moins que la moyenne du mois ; le sam. est le plus cher (2.0 % au-dessus)."
      },
      {
       "c": "info",
-      "t": "Durée du séjour : entre 28 et 32 jours, 29 jours est le moins cher en moyenne (3.4 % au-dessus du minimum pour le même départ)."
+      "t": "Durée du séjour : entre 28 et 32 jours, 29 jours est le moins cher en moyenne (2.9 % au-dessus du minimum pour le même départ)."
      },
      {
       "c": "info",
-      "t": "Évolution sur la semaine (vs 2026-11-10) : mars +3.9%, mai +7.4%, juin +1.8%, juil. -0.0%, août +1.1%"
+      "t": "Évolution sur la semaine (vs 2026-11-10) : mars +3.9%, avr. +4.3%, mai +7.4%, juin +1.8%, juil. -0.0%, août +1.1%"
      },
      {
       "c": "good",
@@ -317,6 +325,10 @@
      {
       "c": "wait",
       "t": "mars : 4 % au-dessus du minimum observé et +4 % cette semaine — en hausse ; décidez vite pour éviter de payer plus."
+     },
+     {
+      "c": "wait",
+      "t": "avr. : 4 % au-dessus du minimum observé et +4 % cette semaine — en hausse ; décidez vite pour éviter de payer plus."
      },
      {
       "c": "wait",
