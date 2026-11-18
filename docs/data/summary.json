@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-18T02:55:45Z",
+ "updated": "2026-11-18T03:48:03Z",
  "routes": {
   "YUL-PEK": {
    "days": 15,
@@ -12,7 +12,7 @@
      },
      {
       "c": "info",
-      "t": "各月当前平均最低价（低→高）：3月 1916, 5月 1922, 8月 1996, 6月 2250, 7月 2284 CAD"
+      "t": "各月当前平均最低价（低→高）：4月 1874, 3月 1916, 5月 1922, 8月 1996, 6月 2250, 7月 2284 CAD"
      },
      {
       "c": "good",
@@ -20,15 +20,19 @@
      },
      {
       "c": "info",
-      "t": "出发星期：周三出发平均比当月均价低 3.0%，周六出发最贵（高 2.5%）。"
+      "t": "出发星期：周三出发平均比当月均价低 2.3%，周六出发最贵（高 2.6%）。"
      },
      {
       "c": "info",
-      "t": "停留天数：在 28–32 天中，停留 32 天平均最便宜（比同一出发日的最低价高 3.6%）。"
+      "t": "停留天数：在 28–32 天中，停留 32 天平均最便宜（比同一出发日的最低价高 3.2%）。"
      },
      {
       "c": "info",
-      "t": "近一周变化（对比 2026-11-11）：3月 +1.5%, 5月 -2.6%, 6月 +1.6%, 7月 -2.2%, 8月 -10.7%"
+      "t": "近一周变化（对比 2026-11-11）：3月 +1.5%, 4月 -1.3%, 5月 -2.6%, 6月 +1.6%, 7月 -2.2%, 8月 -10.7%"
+     },
+     {
+      "c": "good",
+      "t": "4月：接近已观察到的最低价，价格合适可考虑入手。"
      },
      {
       "c": "good",
@@ -66,7 +70,7 @@
      },
      {
       "c": "info",
-      "t": "Current average lowest price by month (low→high): Mar 1916, May 1922, Aug 1996, Jun 2250, Jul 2284 CAD"
+      "t": "Current average lowest price by month (low→high): Apr 1874, Mar 1916, May 1922, Aug 1996, Jun 2250, Jul 2284 CAD"
      },
      {
       "c": "good",
@@ -74,15 +78,19 @@
      },
      {
       "c": "info",
-      "t": "Departure weekday: leaving on Wed is on average 3.0% below the monthly average; Sat is the most expensive (2.5% above)."
+      "t": "Departure weekday: leaving on Wed is on average 2.3% below the monthly average; Sat is the most expensive (2.6% above)."
      },
      {
       "c": "info",
-      "t": "Trip length: within 28–32 days, 32 days is cheapest on average (3.6% above the cheapest for the same departure date)."
+      "t": "Trip length: within 28–32 days, 32 days is cheapest on average (3.2% above the cheapest for the same departure date)."
      },
      {
       "c": "info",
-      "t": "Change over the past week (vs 2026-11-11): Mar +1.5%, May -2.6%, Jun +1.6%, Jul -2.2%, Aug -10.7%"
+      "t": "Change over the past week (vs 2026-11-11): Mar +1.5%, Apr -1.3%, May -2.6%, Jun +1.6%, Jul -2.2%, Aug -10.7%"
+     },
+     {
+      "c": "good",
+      "t": "Apr: close to the lowest price seen so far — a reasonable time to buy."
      },
      {
       "c": "good",
@@ -120,7 +128,7 @@
      },
      {
       "c": "info",
-      "t": "Prix minimum moyen actuel par mois (bas→haut) : mars 1916, mai 1922, août 1996, juin 2250, juil. 2284 CAD"
+      "t": "Prix minimum moyen actuel par mois (bas→haut) : avr. 1874, mars 1916, mai 1922, août 1996, juin 2250, juil. 2284 CAD"
      },
      {
       "c": "good",
@@ -128,15 +136,19 @@
      },
      {
       "c": "info",
-      "t": "Jour de départ : partir le mer. coûte en moyenne 3.0 % de moins que la moyenne du mois ; le sam. est le plus cher (2.5 % au-dessus)."
+      "t": "Jour de départ : partir le mer. coûte en moyenne 2.3 % de moins que la moyenne du mois ; le sam. est le plus cher (2.6 % au-dessus)."
      },
      {
       "c": "info",
-      "t": "Durée du séjour : entre 28 et 32 jours, 32 jours est le moins cher en moyenne (3.6 % au-dessus du minimum pour le même départ)."
+      "t": "Durée du séjour : entre 28 et 32 jours, 32 jours est le moins cher en moyenne (3.2 % au-dessus du minimum pour le même départ)."
      },
      {
       "c": "info",
-      "t": "Évolution sur la semaine (vs 2026-11-11) : mars +1.5%, mai -2.6%, juin +1.6%, juil. -2.2%, août -10.7%"
+      "t": "Évolution sur la semaine (vs 2026-11-11) : mars +1.5%, avr. -1.3%, mai -2.6%, juin +1.6%, juil. -2.2%, août -10.7%"
+     },
+     {
+      "c": "good",
+      "t": "avr. : proche du prix le plus bas observé — bon moment pour acheter."
      },
      {
       "c": "good",
