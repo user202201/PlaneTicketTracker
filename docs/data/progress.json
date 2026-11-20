@@ -1,10 +1,10 @@
 {
  "date": "2026-11-20",
- "pending": 151,
- "updated": "2026-11-20T10:25:32Z",
- "ok": 1684,
- "requests": 26,
+ "pending": 145,
+ "updated": "2026-11-20T11:22:23Z",
+ "ok": 1681,
+ "requests": 34,
  "stop": "throttled",
- "runs_today": 13,
+ "runs_today": 14,
  "zero_streak": 0
 }
