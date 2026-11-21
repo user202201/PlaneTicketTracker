@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-21T22:12:28Z",
+ "updated": "2026-11-21T23:05:30Z",
  "routes": {
   "YUL-PEK": {
    "days": 18,
@@ -360,7 +360,7 @@
      },
      {
       "c": "info",
-      "t": "各月当前平均最低价（低→高）：8月 2941, 7月 3149, 6月 3918 CAD"
+      "t": "各月当前平均最低价（低→高）：8月 2937, 7月 3149, 6月 3918 CAD"
      },
      {
       "c": "good",
@@ -372,7 +372,7 @@
      },
      {
       "c": "info",
-      "t": "近一周变化（对比 2026-11-14）：6月 -4.7%, 7月 -15.4%, 8月 -12.5%"
+      "t": "近一周变化（对比 2026-11-14）：6月 -4.7%, 7月 -15.4%, 8月 -12.7%"
      },
      {
       "c": "good",
@@ -398,7 +398,7 @@
      },
      {
       "c": "info",
-      "t": "Current average lowest price by month (low→high): Aug 2941, Jul 3149, Jun 3918 CAD"
+      "t": "Current average lowest price by month (low→high): Aug 2937, Jul 3149, Jun 3918 CAD"
      },
      {
       "c": "good",
@@ -410,7 +410,7 @@
      },
      {
       "c": "info",
-      "t": "Change over the past week (vs 2026-11-14): Jun -4.7%, Jul -15.4%, Aug -12.5%"
+      "t": "Change over the past week (vs 2026-11-14): Jun -4.7%, Jul -15.4%, Aug -12.7%"
      },
      {
       "c": "good",
@@ -436,7 +436,7 @@
      },
      {
       "c": "info",
-      "t": "Prix minimum moyen actuel par mois (bas→haut) : août 2941, juil. 3149, juin 3918 CAD"
+      "t": "Prix minimum moyen actuel par mois (bas→haut) : août 2937, juil. 3149, juin 3918 CAD"
      },
      {
       "c": "good",
@@ -448,7 +448,7 @@
      },
      {
       "c": "info",
-      "t": "Évolution sur la semaine (vs 2026-11-14) : juin -4.7%, juil. -15.4%, août -12.5%"
+      "t": "Évolution sur la semaine (vs 2026-11-14) : juin -4.7%, juil. -15.4%, août -12.7%"
      },
      {
       "c": "good",
