@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-25T17:22:54Z",
+ "updated": "2026-11-25T18:17:25Z",
  "routes": {
   "YUL-PEK": {
    "days": 22,
@@ -360,11 +360,11 @@
      },
      {
       "c": "info",
-      "t": "各月当前平均最低价（低→高）：8月 3458, 7月 3874, 6月 4078 CAD"
+      "t": "各月当前平均最低价（低→高）：8月 3458, 7月 3784, 6月 4078 CAD"
      },
      {
       "c": "good",
-      "t": "当前最便宜的组合：08-10 出发 / 09-08 返程 3277 CAD; 08-12 出发 / 09-10 返程 3277 CAD; 08-05 出发 / 09-03 返程 3402 CAD"
+      "t": "当前最便宜的组合：08-10 出发 / 09-08 返程 3277 CAD; 08-12 出发 / 09-10 返程 3277 CAD; 08-12 出发 / 09-12 返程 3277 CAD"
      },
      {
       "c": "info",
@@ -372,7 +372,7 @@
      },
      {
       "c": "info",
-      "t": "近一周变化（对比 2026-11-18）：6月 +8.1%, 7月 +22.1%, 8月 +10.5%"
+      "t": "近一周变化（对比 2026-11-18）：6月 +8.1%, 7月 +19.2%, 8月 +10.5%"
      },
      {
       "c": "wait",
@@ -380,7 +380,7 @@
      },
      {
       "c": "wait",
-      "t": "7月：高于已观察低点 23% 且一周涨 22%，上涨中，不想再涨可尽早决定。"
+      "t": "7月：高于已观察低点 20% 且一周涨 19%，上涨中，不想再涨可尽早决定。"
      },
      {
       "c": "wait",
@@ -398,11 +398,11 @@
      },
      {
       "c": "info",
-      "t": "Current average lowest price by month (low→high): Aug 3458, Jul 3874, Jun 4078 CAD"
+      "t": "Current average lowest price by month (low→high): Aug 3458, Jul 3784, Jun 4078 CAD"
      },
      {
       "c": "good",
-      "t": "Cheapest combinations now: depart 08-10 / return 09-08 3277 CAD; depart 08-12 / return 09-10 3277 CAD; depart 08-05 / return 09-03 3402 CAD"
+      "t": "Cheapest combinations now: depart 08-10 / return 09-08 3277 CAD; depart 08-12 / return 09-10 3277 CAD; depart 08-12 / return 09-12 3277 CAD"
      },
      {
       "c": "info",
@@ -410,7 +410,7 @@
      },
      {
       "c": "info",
-      "t": "Change over the past week (vs 2026-11-18): Jun +8.1%, Jul +22.1%, Aug +10.5%"
+      "t": "Change over the past week (vs 2026-11-18): Jun +8.1%, Jul +19.2%, Aug +10.5%"
      },
      {
       "c": "wait",
@@ -418,7 +418,7 @@
      },
      {
       "c": "wait",
-      "t": "Jul: 23% above the lowest seen and up 22% this week — rising; decide soon if you don't want to pay more."
+      "t": "Jul: 20% above the lowest seen and up 19% this week — rising; decide soon if you don't want to pay more."
      },
      {
       "c": "wait",
@@ -436,11 +436,11 @@
      },
      {
       "c": "info",
-      "t": "Prix minimum moyen actuel par mois (bas→haut) : août 3458, juil. 3874, juin 4078 CAD"
+      "t": "Prix minimum moyen actuel par mois (bas→haut) : août 3458, juil. 3784, juin 4078 CAD"
      },
      {
       "c": "good",
-      "t": "Combinaisons les moins chères : départ 08-10 / retour 09-08 3277 CAD; départ 08-12 / retour 09-10 3277 CAD; départ 08-05 / retour 09-03 3402 CAD"
+      "t": "Combinaisons les moins chères : départ 08-10 / retour 09-08 3277 CAD; départ 08-12 / retour 09-10 3277 CAD; départ 08-12 / retour 09-12 3277 CAD"
      },
      {
       "c": "info",
@@ -448,7 +448,7 @@
      },
      {
       "c": "info",
-      "t": "Évolution sur la semaine (vs 2026-11-18) : juin +8.1%, juil. +22.1%, août +10.5%"
+      "t": "Évolution sur la semaine (vs 2026-11-18) : juin +8.1%, juil. +19.2%, août +10.5%"
      },
      {
       "c": "wait",
@@ -456,7 +456,7 @@
      },
      {
       "c": "wait",
-      "t": "juil. : 23 % au-dessus du minimum observé et +22 % cette semaine — en hausse ; décidez vite pour éviter de payer plus."
+      "t": "juil. : 20 % au-dessus du minimum observé et +19 % cette semaine — en hausse ; décidez vite pour éviter de payer plus."
      },
      {
       "c": "wait",
