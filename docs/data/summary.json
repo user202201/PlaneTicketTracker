@@ -1,26 +1,26 @@
 {
- "updated": "2026-11-25T00:17:27Z",
+ "updated": "2026-11-25T01:08:53Z",
  "routes": {
   "YUL-PEK": {
-   "days": 21,
-   "latest": "2026-11-24",
+   "days": 22,
+   "latest": "2026-11-25",
    "bullets": {
     "zh": [
      {
       "c": "info",
-      "t": "已收集 21 天的数据（最新：2026-11-24）。"
+      "t": "已收集 22 天的数据（最新：2026-11-25）。"
      },
      {
       "c": "info",
-      "t": "各月当前平均最低价（低→高）：4月 1888, 3月 1899, 5月 1909, 8月 2185, 6月 2246, 7月 2331 CAD"
+      "t": "各月当前平均最低价（低→高）：4月 1884, 3月 1893, 5月 1902, 8月 2187, 6月 2245, 7月 2336 CAD"
      },
      {
       "c": "good",
-      "t": "当前最便宜的组合：03-03 出发 / 04-04 返程 1774 CAD; 03-10 出发 / 04-11 返程 1774 CAD; 03-17 出发 / 04-18 返程 1774 CAD"
+      "t": "当前最便宜的组合：03-03 出发 / 04-04 返程 1775 CAD; 03-10 出发 / 04-11 返程 1775 CAD; 03-17 出发 / 04-18 返程 1775 CAD"
      },
      {
       "c": "info",
-      "t": "出发星期：周三出发平均比当月均价低 3.5%，周六出发最贵（高 3.4%）。"
+      "t": "出发星期：周三出发平均比当月均价低 3.2%，周六出发最贵（高 3.6%）。"
      },
      {
       "c": "info",
@@ -28,7 +28,7 @@
      },
      {
       "c": "info",
-      "t": "近一周变化（对比 2026-11-17）：3月 +0.7%, 4月 +1.2%, 5月 -0.6%, 6月 +1.5%, 7月 +2.8%, 8月 +3.6%"
+      "t": "近一周变化（对比 2026-11-18）：3月 -1.2%, 4月 +0.6%, 5月 -1.0%, 6月 -0.2%, 7月 +2.3%, 8月 +9.5%"
      },
      {
       "c": "good",
@@ -44,19 +44,19 @@
      },
      {
       "c": "wait",
-      "t": "8月：高于已观察低点 10% 且一周涨 4%，上涨中，不想再涨可尽早决定。"
+      "t": "8月：高于已观察低点 10% 且一周涨 10%，上涨中，不想再涨可尽早决定。"
      },
      {
       "c": "good",
       "t": "6月：接近已观察到的最低价，价格合适可考虑入手。"
      },
      {
-      "c": "good",
-      "t": "7月：接近已观察到的最低价，价格合适可考虑入手。"
+      "c": "wait",
+      "t": "7月：高于观察期均价，高于最低点 3%，建议观望。"
      },
      {
       "c": "info",
-      "t": "“星期几买票最划算”需要至少 28 天数据（目前 21 天）。"
+      "t": "“星期几买票最划算”需要至少 28 天数据（目前 22 天）。"
      },
      {
       "c": "info",
@@ -66,19 +66,19 @@
     "en": [
      {
       "c": "info",
-      "t": "Collected 21 days of data (latest: 2026-11-24)."
+      "t": "Collected 22 days of data (latest: 2026-11-25)."
      },
      {
       "c": "info",
-      "t": "Current average lowest price by month (low→high): Apr 1888, Mar 1899, May 1909, Aug 2185, Jun 2246, Jul 2331 CAD"
+      "t": "Current average lowest price by month (low→high): Apr 1884, Mar 1893, May 1902, Aug 2187, Jun 2245, Jul 2336 CAD"
      },
      {
       "c": "good",
-      "t": "Cheapest combinations now: depart 03-03 / return 04-04 1774 CAD; depart 03-10 / return 04-11 1774 CAD; depart 03-17 / return 04-18 1774 CAD"
+      "t": "Cheapest combinations now: depart 03-03 / return 04-04 1775 CAD; depart 03-10 / return 04-11 1775 CAD; depart 03-17 / return 04-18 1775 CAD"
      },
      {
       "c": "info",
-      "t": "Departure weekday: leaving on Wed is on average 3.5% below the monthly average; Sat is the most expensive (3.4% above)."
+      "t": "Departure weekday: leaving on Wed is on average 3.2% below the monthly average; Sat is the most expensive (3.6% above)."
      },
      {
       "c": "info",
@@ -86,7 +86,7 @@
      },
      {
       "c": "info",
-      "t": "Change over the past week (vs 2026-11-17): Mar +0.7%, Apr +1.2%, May -0.6%, Jun +1.5%, Jul +2.8%, Aug +3.6%"
+      "t": "Change over the past week (vs 2026-11-18): Mar -1.2%, Apr +0.6%, May -1.0%, Jun -0.2%, Jul +2.3%, Aug +9.5%"
      },
      {
       "c": "good",
@@ -102,19 +102,19 @@
      },
      {
       "c": "wait",
-      "t": "Aug: 10% above the lowest seen and up 4% this week — rising; decide soon if you don't want to pay more."
+      "t": "Aug: 10% above the lowest seen and up 10% this week — rising; decide soon if you don't want to pay more."
      },
      {
       "c": "good",
       "t": "Jun: close to the lowest price seen so far — a reasonable time to buy."
      },
      {
-      "c": "good",
-      "t": "Jul: close to the lowest price seen so far — a reasonable time to buy."
+      "c": "wait",
+      "t": "Jul: above the observed average, 3% above the lowest — suggest waiting."
      },
      {
       "c": "info",
-      "t": "“Best weekday to buy” needs at least 28 days of data (currently 21)."
+      "t": "“Best weekday to buy” needs at least 28 days of data (currently 22)."
      },
      {
       "c": "info",
@@ -124,19 +124,19 @@
     "fr": [
      {
       "c": "info",
-      "t": "21 jours de données collectés (dernier : 2026-11-24)."
+      "t": "22 jours de données collectés (dernier : 2026-11-25)."
      },
      {
       "c": "info",
-      "t": "Prix minimum moyen actuel par mois (bas→haut) : avr. 1888, mars 1899, mai 1909, août 2185, juin 2246, juil. 2331 CAD"
+      "t": "Prix minimum moyen actuel par mois (bas→haut) : avr. 1884, mars 1893, mai 1902, août 2187, juin 2245, juil. 2336 CAD"
      },
      {
       "c": "good",
-      "t": "Combinaisons les moins chères : départ 03-03 / retour 04-04 1774 CAD; départ 03-10 / retour 04-11 1774 CAD; départ 03-17 / retour 04-18 1774 CAD"
+      "t": "Combinaisons les moins chères : départ 03-03 / retour 04-04 1775 CAD; départ 03-10 / retour 04-11 1775 CAD; départ 03-17 / retour 04-18 1775 CAD"
      },
      {
       "c": "info",
-      "t": "Jour de départ : partir le mer. coûte en moyenne 3.5 % de moins que la moyenne du mois ; le sam. est le plus cher (3.4 % au-dessus)."
+      "t": "Jour de départ : partir le mer. coûte en moyenne 3.2 % de moins que la moyenne du mois ; le sam. est le plus cher (3.6 % au-dessus)."
      },
      {
       "c": "info",
@@ -144,7 +144,7 @@
      },
      {
       "c": "info",
-      "t": "Évolution sur la semaine (vs 2026-11-17) : mars +0.7%, avr. +1.2%, mai -0.6%, juin +1.5%, juil. +2.8%, août +3.6%"
+      "t": "Évolution sur la semaine (vs 2026-11-18) : mars -1.2%, avr. +0.6%, mai -1.0%, juin -0.2%, juil. +2.3%, août +9.5%"
      },
      {
       "c": "good",
@@ -160,19 +160,19 @@
      },
      {
       "c": "wait",
-      "t": "août : 10 % au-dessus du minimum observé et +4 % cette semaine — en hausse ; décidez vite pour éviter de payer plus."
+      "t": "août : 10 % au-dessus du minimum observé et +10 % cette semaine — en hausse ; décidez vite pour éviter de payer plus."
      },
      {
       "c": "good",
       "t": "juin : proche du prix le plus bas observé — bon moment pour acheter."
      },
      {
-      "c": "good",
-      "t": "juil. : proche du prix le plus bas observé — bon moment pour acheter."
+      "c": "wait",
+      "t": "juil. : au-dessus de la moyenne observée, 3 % au-dessus du minimum — mieux vaut attendre."
      },
      {
       "c": "info",
-      "t": "« Meilleur jour pour acheter » nécessite au moins 28 jours de données (actuellement 21)."
+      "t": "« Meilleur jour pour acheter » nécessite au moins 28 jours de données (actuellement 22)."
      },
      {
       "c": "info",
@@ -182,33 +182,33 @@
    }
   },
   "YUL-PVG": {
-   "days": 21,
-   "latest": "2026-11-24",
+   "days": 22,
+   "latest": "2026-11-25",
    "bullets": {
     "zh": [
      {
       "c": "info",
-      "t": "已收集 21 天的数据（最新：2026-11-24）。"
+      "t": "已收集 22 天的数据（最新：2026-11-25）。"
      },
      {
       "c": "info",
-      "t": "各月当前平均最低价（低→高）：3月 1749, 8月 1802, 4月 1884, 5月 2002, 6月 2135, 7月 2209 CAD"
+      "t": "各月当前平均最低价（低→高）：3月 1720, 8月 1811, 5月 1991, 6月 2136, 7月 2228 CAD"
      },
      {
       "c": "good",
-      "t": "当前最便宜的组合：03-04 出发 / 04-05 返程 1504 CAD; 03-07 出发 / 04-05 返程 1504 CAD; 03-08 出发 / 04-05 返程 1504 CAD"
+      "t": "当前最便宜的组合：03-01 出发 / 03-29 返程 1505 CAD; 03-04 出发 / 04-05 返程 1505 CAD; 03-05 出发 / 04-05 返程 1505 CAD"
      },
      {
       "c": "info",
-      "t": "出发星期：周一出发平均比当月均价低 2.6%，周五出发最贵（高 3.5%）。"
+      "t": "出发星期：周一出发平均比当月均价低 2.8%，周六出发最贵（高 3.0%）。"
      },
      {
       "c": "info",
-      "t": "停留天数：在 28–32 天中，停留 28 天平均最便宜（比同一出发日的最低价高 3.3%）。"
+      "t": "停留天数：在 28–32 天中，停留 28 天平均最便宜（比同一出发日的最低价高 3.7%）。"
      },
      {
       "c": "info",
-      "t": "近一周变化（对比 2026-11-17）：3月 -3.7%, 4月 +1.9%, 5月 +3.6%, 6月 -10.3%, 7月 +0.2%, 8月 +3.1%"
+      "t": "近一周变化（对比 2026-11-18）：3月 -4.9%, 5月 +2.3%, 6月 -7.1%, 7月 +1.4%, 8月 +3.6%"
      },
      {
       "c": "good",
@@ -216,15 +216,11 @@
      },
      {
       "c": "wait",
-      "t": "8月：高于已观察低点 5% 且一周涨 3%，上涨中，不想再涨可尽早决定。"
+      "t": "8月：高于已观察低点 5% 且一周涨 4%，上涨中，不想再涨可尽早决定。"
      },
      {
       "c": "wait",
-      "t": "4月：高于观察期均价，高于最低点 6%，建议观望。"
-     },
-     {
-      "c": "wait",
-      "t": "5月：高于已观察低点 11% 且一周涨 4%，上涨中，不想再涨可尽早决定。"
+      "t": "5月：高于观察期均价，高于最低点 11%，建议观望。"
      },
      {
       "c": "good",
@@ -236,33 +232,33 @@
      },
      {
       "c": "info",
-      "t": "“星期几买票最划算”需要至少 28 天数据（目前 21 天）。"
+      "t": "“星期几买票最划算”需要至少 28 天数据（目前 22 天）。"
      }
     ],
     "en": [
      {
       "c": "info",
-      "t": "Collected 21 days of data (latest: 2026-11-24)."
+      "t": "Collected 22 days of data (latest: 2026-11-25)."
      },
      {
       "c": "info",
-      "t": "Current average lowest price by month (low→high): Mar 1749, Aug 1802, Apr 1884, May 2002, Jun 2135, Jul 2209 CAD"
+      "t": "Current average lowest price by month (low→high): Mar 1720, Aug 1811, May 1991, Jun 2136, Jul 2228 CAD"
      },
      {
       "c": "good",
-      "t": "Cheapest combinations now: depart 03-04 / return 04-05 1504 CAD; depart 03-07 / return 04-05 1504 CAD; depart 03-08 / return 04-05 1504 CAD"
+      "t": "Cheapest combinations now: depart 03-01 / return 03-29 1505 CAD; depart 03-04 / return 04-05 1505 CAD; depart 03-05 / return 04-05 1505 CAD"
      },
      {
       "c": "info",
-      "t": "Departure weekday: leaving on Mon is on average 2.6% below the monthly average; Fri is the most expensive (3.5% above)."
+      "t": "Departure weekday: leaving on Mon is on average 2.8% below the monthly average; Sat is the most expensive (3.0% above)."
      },
      {
       "c": "info",
-      "t": "Trip length: within 28–32 days, 28 days is cheapest on average (3.3% above the cheapest for the same departure date)."
+      "t": "Trip length: within 28–32 days, 28 days is cheapest on average (3.7% above the cheapest for the same departure date)."
      },
      {
       "c": "info",
-      "t": "Change over the past week (vs 2026-11-17): Mar -3.7%, Apr +1.9%, May +3.6%, Jun -10.3%, Jul +0.2%, Aug +3.1%"
+      "t": "Change over the past week (vs 2026-11-18): Mar -4.9%, May +2.3%, Jun -7.1%, Jul +1.4%, Aug +3.6%"
      },
      {
       "c": "good",
@@ -270,15 +266,11 @@
      },
      {
       "c": "wait",
-      "t": "Aug: 5% above the lowest seen and up 3% this week — rising; decide soon if you don't want to pay more."
+      "t": "Aug: 5% above the lowest seen and up 4% this week — rising; decide soon if you don't want to pay more."
      },
      {
       "c": "wait",
-      "t": "Apr: above the observed average, 6% above the lowest — suggest waiting."
-     },
-     {
-      "c": "wait",
-      "t": "May: 11% above the lowest seen and up 4% this week — rising; decide soon if you don't want to pay more."
+      "t": "May: above the observed average, 11% above the lowest — suggest waiting."
      },
      {
       "c": "good",
@@ -290,33 +282,33 @@
      },
      {
       "c": "info",
-      "t": "“Best weekday to buy” needs at least 28 days of data (currently 21)."
+      "t": "“Best weekday to buy” needs at least 28 days of data (currently 22)."
      }
     ],
     "fr": [
      {
       "c": "info",
-      "t": "21 jours de données collectés (dernier : 2026-11-24)."
+      "t": "22 jours de données collectés (dernier : 2026-11-25)."
      },
      {
       "c": "info",
-      "t": "Prix minimum moyen actuel par mois (bas→haut) : mars 1749, août 1802, avr. 1884, mai 2002, juin 2135, juil. 2209 CAD"
+      "t": "Prix minimum moyen actuel par mois (bas→haut) : mars 1720, août 1811, mai 1991, juin 2136, juil. 2228 CAD"
      },
      {
       "c": "good",
-      "t": "Combinaisons les moins chères : départ 03-04 / retour 04-05 1504 CAD; départ 03-07 / retour 04-05 1504 CAD; départ 03-08 / retour 04-05 1504 CAD"
+      "t": "Combinaisons les moins chères : départ 03-01 / retour 03-29 1505 CAD; départ 03-04 / retour 04-05 1505 CAD; départ 03-05 / retour 04-05 1505 CAD"
      },
      {
       "c": "info",
-      "t": "Jour de départ : partir le lun. coûte en moyenne 2.6 % de moins que la moyenne du mois ; le ven. est le plus cher (3.5 % au-dessus)."
+      "t": "Jour de départ : partir le lun. coûte en moyenne 2.8 % de moins que la moyenne du mois ; le sam. est le plus cher (3.0 % au-dessus)."
      },
      {
       "c": "info",
-      "t": "Durée du séjour : entre 28 et 32 jours, 28 jours est le moins cher en moyenne (3.3 % au-dessus du minimum pour le même départ)."
+      "t": "Durée du séjour : entre 28 et 32 jours, 28 jours est le moins cher en moyenne (3.7 % au-dessus du minimum pour le même départ)."
      },
      {
       "c": "info",
-      "t": "Évolution sur la semaine (vs 2026-11-17) : mars -3.7%, avr. +1.9%, mai +3.6%, juin -10.3%, juil. +0.2%, août +3.1%"
+      "t": "Évolution sur la semaine (vs 2026-11-18) : mars -4.9%, mai +2.3%, juin -7.1%, juil. +1.4%, août +3.6%"
      },
      {
       "c": "good",
@@ -324,15 +316,11 @@
      },
      {
       "c": "wait",
-      "t": "août : 5 % au-dessus du minimum observé et +3 % cette semaine — en hausse ; décidez vite pour éviter de payer plus."
+      "t": "août : 5 % au-dessus du minimum observé et +4 % cette semaine — en hausse ; décidez vite pour éviter de payer plus."
      },
      {
       "c": "wait",
-      "t": "avr. : au-dessus de la moyenne observée, 6 % au-dessus du minimum — mieux vaut attendre."
-     },
-     {
-      "c": "wait",
-      "t": "mai : 11 % au-dessus du minimum observé et +4 % cette semaine — en hausse ; décidez vite pour éviter de payer plus."
+      "t": "mai : au-dessus de la moyenne observée, 11 % au-dessus du minimum — mieux vaut attendre."
      },
      {
       "c": "good",
@@ -344,7 +332,7 @@
      },
      {
       "c": "info",
-      "t": "« Meilleur jour pour acheter » nécessite au moins 28 jours de données (actuellement 21)."
+      "t": "« Meilleur jour pour acheter » nécessite au moins 28 jours de données (actuellement 22)."
      }
     ]
    }
