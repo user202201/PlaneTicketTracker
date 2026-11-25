@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-25T18:17:25Z",
+ "updated": "2026-11-25T19:12:00Z",
  "routes": {
   "YUL-PEK": {
    "days": 22,
@@ -360,7 +360,7 @@
      },
      {
       "c": "info",
-      "t": "各月当前平均最低价（低→高）：8月 3458, 7月 3784, 6月 4078 CAD"
+      "t": "各月当前平均最低价（低→高）：8月 3450, 7月 3784, 6月 4151 CAD"
      },
      {
       "c": "good",
@@ -372,11 +372,11 @@
      },
      {
       "c": "info",
-      "t": "近一周变化（对比 2026-11-18）：6月 +8.1%, 7月 +19.2%, 8月 +10.5%"
+      "t": "近一周变化（对比 2026-11-18）：6月 +10.0%, 7月 +19.2%, 8月 +10.2%"
      },
      {
       "c": "wait",
-      "t": "8月：高于已观察低点 18% 且一周涨 10%，上涨中，不想再涨可尽早决定。"
+      "t": "8月：高于已观察低点 17% 且一周涨 10%，上涨中，不想再涨可尽早决定。"
      },
      {
       "c": "wait",
@@ -384,7 +384,7 @@
      },
      {
       "c": "wait",
-      "t": "6月：高于已观察低点 8% 且一周涨 8%，上涨中，不想再涨可尽早决定。"
+      "t": "6月：高于已观察低点 10% 且一周涨 10%，上涨中，不想再涨可尽早决定。"
      },
      {
       "c": "info",
@@ -398,7 +398,7 @@
      },
      {
       "c": "info",
-      "t": "Current average lowest price by month (low→high): Aug 3458, Jul 3784, Jun 4078 CAD"
+      "t": "Current average lowest price by month (low→high): Aug 3450, Jul 3784, Jun 4151 CAD"
      },
      {
       "c": "good",
@@ -410,11 +410,11 @@
      },
      {
       "c": "info",
-      "t": "Change over the past week (vs 2026-11-18): Jun +8.1%, Jul +19.2%, Aug +10.5%"
+      "t": "Change over the past week (vs 2026-11-18): Jun +10.0%, Jul +19.2%, Aug +10.2%"
      },
      {
       "c": "wait",
-      "t": "Aug: 18% above the lowest seen and up 10% this week — rising; decide soon if you don't want to pay more."
+      "t": "Aug: 17% above the lowest seen and up 10% this week — rising; decide soon if you don't want to pay more."
      },
      {
       "c": "wait",
@@ -422,7 +422,7 @@
      },
      {
       "c": "wait",
-      "t": "Jun: 8% above the lowest seen and up 8% this week — rising; decide soon if you don't want to pay more."
+      "t": "Jun: 10% above the lowest seen and up 10% this week — rising; decide soon if you don't want to pay more."
      },
      {
       "c": "info",
@@ -436,7 +436,7 @@
      },
      {
       "c": "info",
-      "t": "Prix minimum moyen actuel par mois (bas→haut) : août 3458, juil. 3784, juin 4078 CAD"
+      "t": "Prix minimum moyen actuel par mois (bas→haut) : août 3450, juil. 3784, juin 4151 CAD"
      },
      {
       "c": "good",
@@ -448,11 +448,11 @@
      },
      {
       "c": "info",
-      "t": "Évolution sur la semaine (vs 2026-11-18) : juin +8.1%, juil. +19.2%, août +10.5%"
+      "t": "Évolution sur la semaine (vs 2026-11-18) : juin +10.0%, juil. +19.2%, août +10.2%"
      },
      {
       "c": "wait",
-      "t": "août : 18 % au-dessus du minimum observé et +10 % cette semaine — en hausse ; décidez vite pour éviter de payer plus."
+      "t": "août : 17 % au-dessus du minimum observé et +10 % cette semaine — en hausse ; décidez vite pour éviter de payer plus."
      },
      {
       "c": "wait",
@@ -460,7 +460,7 @@
      },
      {
       "c": "wait",
-      "t": "juin : 8 % au-dessus du minimum observé et +8 % cette semaine — en hausse ; décidez vite pour éviter de payer plus."
+      "t": "juin : 10 % au-dessus du minimum observé et +10 % cette semaine — en hausse ; décidez vite pour éviter de payer plus."
      },
      {
       "c": "info",
