@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-26T18:34:57Z",
+ "updated": "2026-11-26T19:31:15Z",
  "routes": {
   "YUL-PEK": {
    "days": 23,
@@ -350,21 +350,21 @@
    }
   },
   "YUL-CGO": {
-   "days": 22,
-   "latest": "2026-11-25",
+   "days": 23,
+   "latest": "2026-11-26",
    "bullets": {
     "zh": [
      {
       "c": "info",
-      "t": "已收集 22 天的数据（最新：2026-11-25）。"
+      "t": "已收集 23 天的数据（最新：2026-11-26）。"
      },
      {
       "c": "info",
-      "t": "各月当前平均最低价（低→高）：8月 3450, 7月 3784, 6月 4151 CAD"
+      "t": "各月当前平均最低价（低→高）：8月 3376, 7月 3840, 6月 4078 CAD"
      },
      {
       "c": "good",
-      "t": "当前最便宜的组合：08-10 出发 / 09-08 返程 3277 CAD; 08-12 出发 / 09-10 返程 3277 CAD; 08-12 出发 / 09-12 返程 3277 CAD"
+      "t": "当前最便宜的组合：08-07 出发 / 09-08 返程 3082 CAD; 08-14 出发 / 09-15 返程 3082 CAD; 08-10 出发 / 09-08 返程 3277 CAD"
      },
      {
       "c": "info",
@@ -372,37 +372,37 @@
      },
      {
       "c": "info",
-      "t": "近一周变化（对比 2026-11-18）：6月 +10.0%, 7月 +19.2%, 8月 +10.2%"
+      "t": "近一周变化（对比 2026-11-19）：6月 +3.0%, 7月 +12.7%, 8月 +10.3%"
      },
      {
       "c": "wait",
-      "t": "8月：高于已观察低点 17% 且一周涨 10%，上涨中，不想再涨可尽早决定。"
+      "t": "8月：高于已观察低点 15% 且一周涨 10%，上涨中，不想再涨可尽早决定。"
      },
      {
       "c": "wait",
-      "t": "7月：高于已观察低点 20% 且一周涨 19%，上涨中，不想再涨可尽早决定。"
+      "t": "7月：高于已观察低点 22% 且一周涨 13%，上涨中，不想再涨可尽早决定。"
      },
      {
       "c": "wait",
-      "t": "6月：高于已观察低点 10% 且一周涨 10%，上涨中，不想再涨可尽早决定。"
+      "t": "6月：高于已观察低点 8% 且一周涨 3%，上涨中，不想再涨可尽早决定。"
      },
      {
       "c": "info",
-      "t": "“星期几买票最划算”需要至少 28 天数据（目前 22 天）。"
+      "t": "“星期几买票最划算”需要至少 28 天数据（目前 23 天）。"
      }
     ],
     "en": [
      {
       "c": "info",
-      "t": "Collected 22 days of data (latest: 2026-11-25)."
+      "t": "Collected 23 days of data (latest: 2026-11-26)."
      },
      {
       "c": "info",
-      "t": "Current average lowest price by month (low→high): Aug 3450, Jul 3784, Jun 4151 CAD"
+      "t": "Current average lowest price by month (low→high): Aug 3376, Jul 3840, Jun 4078 CAD"
      },
      {
       "c": "good",
-      "t": "Cheapest combinations now: depart 08-10 / return 09-08 3277 CAD; depart 08-12 / return 09-10 3277 CAD; depart 08-12 / return 09-12 3277 CAD"
+      "t": "Cheapest combinations now: depart 08-07 / return 09-08 3082 CAD; depart 08-14 / return 09-15 3082 CAD; depart 08-10 / return 09-08 3277 CAD"
      },
      {
       "c": "info",
@@ -410,37 +410,37 @@
      },
      {
       "c": "info",
-      "t": "Change over the past week (vs 2026-11-18): Jun +10.0%, Jul +19.2%, Aug +10.2%"
+      "t": "Change over the past week (vs 2026-11-19): Jun +3.0%, Jul +12.7%, Aug +10.3%"
      },
      {
       "c": "wait",
-      "t": "Aug: 17% above the lowest seen and up 10% this week — rising; decide soon if you don't want to pay more."
+      "t": "Aug: 15% above the lowest seen and up 10% this week — rising; decide soon if you don't want to pay more."
      },
      {
       "c": "wait",
-      "t": "Jul: 20% above the lowest seen and up 19% this week — rising; decide soon if you don't want to pay more."
+      "t": "Jul: 22% above the lowest seen and up 13% this week — rising; decide soon if you don't want to pay more."
      },
      {
       "c": "wait",
-      "t": "Jun: 10% above the lowest seen and up 10% this week — rising; decide soon if you don't want to pay more."
+      "t": "Jun: 8% above the lowest seen and up 3% this week — rising; decide soon if you don't want to pay more."
      },
      {
       "c": "info",
-      "t": "“Best weekday to buy” needs at least 28 days of data (currently 22)."
+      "t": "“Best weekday to buy” needs at least 28 days of data (currently 23)."
      }
     ],
     "fr": [
      {
       "c": "info",
-      "t": "22 jours de données collectés (dernier : 2026-11-25)."
+      "t": "23 jours de données collectés (dernier : 2026-11-26)."
      },
      {
       "c": "info",
-      "t": "Prix minimum moyen actuel par mois (bas→haut) : août 3450, juil. 3784, juin 4151 CAD"
+      "t": "Prix minimum moyen actuel par mois (bas→haut) : août 3376, juil. 3840, juin 4078 CAD"
      },
      {
       "c": "good",
-      "t": "Combinaisons les moins chères : départ 08-10 / retour 09-08 3277 CAD; départ 08-12 / retour 09-10 3277 CAD; départ 08-12 / retour 09-12 3277 CAD"
+      "t": "Combinaisons les moins chères : départ 08-07 / retour 09-08 3082 CAD; départ 08-14 / retour 09-15 3082 CAD; départ 08-10 / retour 09-08 3277 CAD"
      },
      {
       "c": "info",
@@ -448,23 +448,23 @@
      },
      {
       "c": "info",
-      "t": "Évolution sur la semaine (vs 2026-11-18) : juin +10.0%, juil. +19.2%, août +10.2%"
+      "t": "Évolution sur la semaine (vs 2026-11-19) : juin +3.0%, juil. +12.7%, août +10.3%"
      },
      {
       "c": "wait",
-      "t": "août : 17 % au-dessus du minimum observé et +10 % cette semaine — en hausse ; décidez vite pour éviter de payer plus."
+      "t": "août : 15 % au-dessus du minimum observé et +10 % cette semaine — en hausse ; décidez vite pour éviter de payer plus."
      },
      {
       "c": "wait",
-      "t": "juil. : 20 % au-dessus du minimum observé et +19 % cette semaine — en hausse ; décidez vite pour éviter de payer plus."
+      "t": "juil. : 22 % au-dessus du minimum observé et +13 % cette semaine — en hausse ; décidez vite pour éviter de payer plus."
      },
      {
       "c": "wait",
-      "t": "juin : 10 % au-dessus du minimum observé et +10 % cette semaine — en hausse ; décidez vite pour éviter de payer plus."
+      "t": "juin : 8 % au-dessus du minimum observé et +3 % cette semaine — en hausse ; décidez vite pour éviter de payer plus."
      },
      {
       "c": "info",
-      "t": "« Meilleur jour pour acheter » nécessite au moins 28 jours de données (actuellement 22)."
+      "t": "« Meilleur jour pour acheter » nécessite au moins 28 jours de données (actuellement 23)."
      }
     ]
    }
