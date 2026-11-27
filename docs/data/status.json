@@ -1,17 +1,21 @@
 {
- "updated": "2026-11-27T20:09:53Z",
- "ok": 1684,
+ "updated": "2026-11-27T20:54:17Z",
+ "ok": 1690,
  "failed": 0,
  "errors": [
   "YUL-PEK matrix 2027-03-13->2027-04-24: RuntimeError: no result after 2 attempts (empty/error response)",
-  "YUL-PEK matrix 2027-07-06->2027-08-17: RuntimeError: no result after 2 attempts (empty/error response)",
-  "YUL-PEK matrix 2027-07-16->2027-08-27: RuntimeError: no result after 2 attempts (empty/error response)",
+  "YUL-PEK matrix 2027-07-12->2027-08-23: RuntimeError: no result after 2 attempts (empty/error response)",
   "YUL-PEK matrix 2027-07-08->2027-08-19: RuntimeError: no result after 2 attempts (empty/error response)",
   "YUL-PEK matrix 2027-07-22->2027-09-02: RuntimeError: no result after 2 attempts (empty/error response)",
-  "YUL-PEK matrix 2027-07-12->2027-08-23: RuntimeError: no result after 2 attempts (empty/error response)",
-  "YUL-PEK matrix 2027-07-13->2027-08-24: RuntimeError: throttled by Google; run stopped",
+  "YUL-PEK matrix 2027-06-19->2027-07-31: RuntimeError: no result after 2 attempts (empty/error response)",
+  "YUL-PEK matrix 2027-03-29->2027-05-10: RuntimeError: no result after 2 attempts (empty/error response)",
+  "YUL-PEK matrix 2027-04-12->2027-05-24: RuntimeError: no result after 2 attempts (empty/error response)",
+  "YUL-PEK matrix 2027-04-09->2027-05-21: RuntimeError: no result after 2 attempts (empty/error response)",
+  "YUL-PEK matrix 2027-04-16->2027-05-28: RuntimeError: no result after 2 attempts (empty/error response)",
+  "YUL-PEK matrix 2027-04-19->2027-05-31: RuntimeError: no result after 2 attempts (empty/error response)",
+  "YUL-PEK matrix 2027-05-01->2027-06-12: RuntimeError: throttled by Google; run stopped",
   "YUL-PEK matrix: stopped for this run (request quota / time budget / throttling); the next run resumes",
-  "YUL-CGO: time budget reached",
-  "YUL-PVG: time budget reached"
+  "YUL-PVG: time budget reached",
+  "YUL-CGO: time budget reached"
  ]
 }
