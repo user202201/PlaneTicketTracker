@@ -1,17 +1,17 @@
 {
- "updated": "2026-11-28T08:26:09Z",
- "ok": 1668,
+ "updated": "2026-11-28T09:19:17Z",
+ "ok": 1666,
  "failed": 0,
  "errors": [
   "YUL-PEK matrix 2027-04-16->2027-05-28: RuntimeError: no result after 2 attempts (empty/error response)",
   "YUL-PEK matrix 2027-03-16->2027-04-27: RuntimeError: no result after 2 attempts (empty/error response)",
-  "YUL-PEK matrix 2027-03-03->2027-04-14: RuntimeError: no result after 2 attempts (empty/error response)",
-  "YUL-PEK matrix 2027-04-20->2027-06-01: RuntimeError: no result after 2 attempts (empty/error response)",
-  "YUL-PEK matrix 2027-03-29->2027-05-10: RuntimeError: no result after 2 attempts (empty/error response)",
+  "YUL-PEK matrix 2027-03-03->2027-04-14: RuntimeError: no result after 2 attempts (SearchHTTPError: Google Flights returned an error response (HTTP 429). T",
   "YUL-PEK matrix 2027-04-25->2027-06-06: RuntimeError: no result after 2 attempts (empty/error response)",
-  "YUL-PEK matrix 2027-03-23->2027-05-04: RuntimeError: throttled by Google; run stopped",
+  "YUL-PEK matrix 2027-03-29->2027-05-10: RuntimeError: no result after 2 attempts (empty/error response)",
+  "YUL-PEK matrix 2027-03-05->2027-04-16: RuntimeError: no result after 2 attempts (empty/error response)",
+  "YUL-PEK matrix 2027-04-20->2027-06-01: RuntimeError: throttled by Google; run stopped",
   "YUL-PEK matrix: stopped for this run (request quota / time budget / throttling); the next run resumes",
-  "YUL-CGO: time budget reached",
-  "YUL-PVG: time budget reached"
+  "YUL-PVG: time budget reached",
+  "YUL-CGO: time budget reached"
  ]
 }
